@@ -2,7 +2,6 @@
 An [RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol) client implementation.
 
 ## Requirements
-[![Build Status](https://travis-ci.com/conqp/rcon.svg?branch=master)](https://travis-ci.com/conqp/rcon)  
 `rcon` requires Python 3.8 or higher.
 
 ## Documentation
