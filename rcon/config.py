@@ -9,11 +9,12 @@ from typing import Dict, Iterator, NamedTuple, Tuple
 from rcon.exceptions import InvalidConfig
 
 
-__all__ = ['servers']
+__all__ = ['CONFIG_FILE', 'LOG_FORMAT', 'Config', 'servers']
 
 
 CONFIG = ConfigParser()
 CONFIG_FILE = Path('/etc/rcon.conf')
+LOG_FORMAT = '[%(levelname)s] %(name)s: %(message)s'
 LOGGER = getLogger('RCON Config')
 
 
@@ -64,8 +65,8 @@ def entries(config_parser: ConfigParser) -> Iterator[Tuple[str, Config]]:
         yield (section, Config.from_config_section(config_parser[section]))
 
 
-def servers() -> Dict[str, Config]:
+def servers(config_file: Path = CONFIG_FILE) -> Dict[str, Config]:
     """Returns a dictionary of servers."""
 
-    CONFIG.read(CONFIG_FILE)
+    CONFIG.read(config_file)
     return dict(entries(CONFIG))
