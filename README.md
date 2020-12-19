@@ -2,8 +2,8 @@
 An [RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol) client implementation.
 
 ## Requirements
-[![Build Status](https://travis-ci.com/conqp/rcon.svg?branch=master)](https://travis-ci.com/conqp/mcipc)  
-`mcipc` requires Python 3.8 or higher.
+[![Build Status](https://travis-ci.com/conqp/rcon.svg?branch=master)](https://travis-ci.com/conqp/rcon)  
+`rcon` requires Python 3.8 or higher.
 
 ## Documentation
 [![Documentation Status](https://readthedocs.org/projects/rcon/badge/?version=latest)](https://rcon.readthedocs.io/en/latest/?badge=latest)  
@@ -11,9 +11,9 @@ Documentation is available on [readthedocs](https://rcon.readthedocs.io/en/lates
 
 ## Installations
 
-Install mcipc from the [AUR](https://aur.archlinux.org/packages/python-rcon/) or via:
+Install rcon from the [AUR](https://aur.archlinux.org/packages/python-rcon/) or via:
 
-    pip install mcipc
+    pip install rcon
 
 ## Quick start
 The `RCON` protocol is used to remotely control a game server, i.e. execute
