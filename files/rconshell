@@ -1,0 +1,8 @@
+#! /usr/bin/env python3
+"""An interactive RCON shell."""
+
+from rcon.rconshell import main
+
+
+if __name__ == '__main__':
+    main()

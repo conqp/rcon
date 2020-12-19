@@ -1,0 +1,9 @@
+*.egg-info
+*.pyc
+*~
+.buildconfig
+.eggs
+.installed_files.txt
+__pycache__
+build
+dist
