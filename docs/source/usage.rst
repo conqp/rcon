@@ -51,7 +51,7 @@ To start a shell, run:
 
 Handling connection timeouts.
 -----------------------------
-You can specify an optional :code:`timeout=<sec>` parameter on both `Query` and `RCON` clients.
+You can specify an optional :code:`timeout=<sec>` parameter to allow a connection attempt to time out.
 If a timeout is reached during a connection attempt, it will raise a `socket.timeout <https://docs.python.org/3/library/socket.html#socket.timeout>`_ exception.
 The following example will raise a connection timeout after 1.5 seconds:
 
