@@ -24,7 +24,6 @@ class Config(NamedTuple):
     host: str
     port: int
     passwd: str = None
-    prompt: str = 'RCON> '
 
     @classmethod
     def from_string(cls, string: str) -> Config:
@@ -54,8 +53,7 @@ class Config(NamedTuple):
         host = section['host']
         port = section.getint('port')
         passwd = section.get('passwd')
-        prompt = section.get('prompt')
-        return cls(host, port, passwd, prompt)
+        return cls(host, port, passwd)
 
 
 def entries(config_parser: ConfigParser) -> Iterator[Tuple[str, Config]]:
