@@ -170,7 +170,7 @@ class Client:
 
         return True
 
-    def run(self, command: str, *arguments: str) -> str:
+    def run(self, command: str, *arguments: str, raw: bool = False) -> str:
         """Runs a command."""
         packet = Packet.from_args(command, *arguments)
 
@@ -183,4 +183,4 @@ class Client:
 
             raise
 
-        return response.payload
+        return response if raw else response.payload
