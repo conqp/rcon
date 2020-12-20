@@ -24,7 +24,7 @@ class ErrorHandler:
 
     def __exit__(self, typ, *_):
         """Checks for connection errors and exits respectively."""
-        for error, (message, returncode) in self.errors.items():
+        for error, message, returncode in self.errors:
             if isinstance(typ, error):
                 self.logger.error(message)
                 exit(returncode)
