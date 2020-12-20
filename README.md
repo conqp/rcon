@@ -21,15 +21,10 @@ commands on a game server and receive the respective results.
 ```python
 from rcon import Client
 
-with Client('127.0.0.1', 5000) as client:
-    client.login('mysecretpassword')    # Perform initial login.
-    seed = client.seed                  # Get the server's seed.
-    players = client.players            # Get the server's players info.
-    mansion = client.locate('Mansion')  # Get the next mansion's location.
+with Client('127.0.0.1', 5000, passwd='mysecretpassword') as client:
+    response = client.run('some_command', 'with', 'some', 'arguments')
 
-print(seed)
-print(players)
-print(mansion)
+print(response)
 ```
 
 ## License
