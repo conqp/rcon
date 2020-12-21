@@ -18,6 +18,7 @@ MSG_LOGIN_ABORTED = '\nLogin aborted. Bye.'
 MSG_EXIT = 'Bye.'
 MSG_SESSION_TIMEOUT = 'Session timed out. Please login again.'
 MSG_EXIT_USAGE = 'Usage: {} [<exit_code>].'
+PROMPT = 'RCON> '
 
 
 def read(prompt: str, typ: type = None) -> type:
@@ -64,10 +65,10 @@ def login(client: Client, passwd: str) -> str:
     return passwd
 
 
-def get_config(host: str, port: int, passwd: str, prompt: str) -> Config:
+def get_config(host: str, port: int, passwd: str) -> Config:
     """Reads the necessary arguments."""
 
-    while any(item is None for item in (host, port, passwd, prompt)):
+    while any(item is None for item in (host, port, passwd)):
         if host is None:
             host = read_or_none('Host: ')
 
@@ -77,10 +78,7 @@ def get_config(host: str, port: int, passwd: str, prompt: str) -> Config:
         if passwd is None:
             passwd = read_or_none('Password: ')
 
-        if prompt is None:
-            prompt = read_or_none('Prompt: ')
-
-    return Config(host, port, passwd, prompt)
+    return Config(host, port, passwd)
 
 
 def exit(exit_code: Union[int, str] = 0) -> int:    # pylint: disable=W0622
@@ -90,11 +88,11 @@ def exit(exit_code: Union[int, str] = 0) -> int:    # pylint: disable=W0622
     return int(exit_code)
 
 
-def rconcmd(host: str, port: int, passwd: str, prompt: str) -> int:
+def rconcmd(host: str, port: int, passwd: str, *, prompt: str = PROMPT) -> int:
     """Initializes the console."""
 
     try:
-        config = get_config(host, port, passwd, prompt)
+        config = get_config(host, port, passwd)
     except KeyboardInterrupt:
         print(MSG_ABORTED)
         return 1
@@ -108,7 +106,7 @@ def rconcmd(host: str, port: int, passwd: str, prompt: str) -> int:
 
         while True:
             try:
-                command = input(config.prompt)
+                command = input(prompt)
             except EOFError:
                 print(f'\n{MSG_EXIT}')
                 break

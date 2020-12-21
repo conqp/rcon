@@ -9,7 +9,7 @@ from sys import exit    # pylint: disable=W0622
 from rcon.errorhandler import ErrorHandler
 from rcon.rconclt import get_credentials
 from rcon.config import CONFIG_FILE, LOG_FORMAT
-from rcon.console import rconcmd
+from rcon.console import PROMPT, rconcmd
 
 
 __all__ = ['get_args', 'main']
@@ -28,7 +28,7 @@ def get_args() -> Namespace:
     parser.add_argument('server', nargs='?', help='the server to connect to')
     parser.add_argument('-c', '--config', type=Path, metavar='file',
                         default=CONFIG_FILE, help='the configuration file')
-    parser.add_argument('-p', '--prompt', default='RCON> ', metavar='PS1',
+    parser.add_argument('-p', '--prompt', default=PROMPT, metavar='PS1',
                         help='the shell prompt')
     return parser.parse_args()
 
@@ -45,6 +45,6 @@ def main():
         host = port = passwd = None
 
     with ErrorHandler(ERRORS, LOGGER):
-        exit_code = rconcmd(host, port, passwd, args.prompt)
+        exit_code = rconcmd(host, port, passwd, prompt=args.prompt)
 
     exit(exit_code)
