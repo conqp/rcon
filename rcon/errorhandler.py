@@ -14,6 +14,8 @@ ErrorMap = Iterable[Tuple[Exception, str, int]]
 class ErrorHandler:
     """Handles common errors and exits."""
 
+    __slots__ = ('errors', 'logger')
+
     def __init__(self, errors: ErrorMap, logger: Logger):
         """Sets the logger."""
         self.errors = errors
