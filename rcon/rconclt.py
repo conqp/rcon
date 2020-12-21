@@ -66,6 +66,7 @@ def get_credentials(args: Namespace) -> Tuple[str, int, str]:
 
     return (host, port, passwd)
 
+
 def main():
     """Runs the RCON client."""
 
