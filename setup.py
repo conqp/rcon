@@ -11,7 +11,7 @@ setup(
     author_email='mail@richard-neumann.de',
     python_requires='>=3.8',
     packages=['rcon'],
-    extras_require={'GUI':  ['pygtk']},
+    extras_require={'GUI':  ['pygobject', 'pygtk']},
     scripts=['files/rcongui', 'files/rconclt', 'files/rconshell'],
     url='https://github.com/conqp/rcon',
     license='GPLv3',
