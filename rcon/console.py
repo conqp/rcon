@@ -76,7 +76,7 @@ def get_config(host: str, port: int, passwd: str) -> Config:
             port = read_or_none('Port: ', typ=int)
 
         if passwd is None:
-            passwd = read_or_none('Password: ')
+            passwd = getpass('Password: ')
 
     return Config(host, port, passwd)
 
