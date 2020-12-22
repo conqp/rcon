@@ -192,7 +192,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
             self.show_error(' '.join(error.args))
         except ConnectionRefusedError:
             self.show_error('Connection refused.')
-        except timeout:
+        except (TimeoutError, timeout):
             self.show_error('Connection timed out.')
         except RequestIdMismatch:
             self.show_error('Request ID mismatch.')
