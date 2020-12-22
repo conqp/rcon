@@ -5,14 +5,14 @@ from logging import basicConfig, getLogger
 from os import getenv, name
 from pathlib import Path
 from socket import timeout
-from typing import NamedTuple
+from typing import Iterable, NamedTuple
 
 from gi import require_version
 require_version('Gtk', '3.0')
 # pylint: disable=C0413
 from gi.repository import Gtk
 
-from rcon.config import LOG_FORMAT, LOGGER
+from rcon.config import LOG_FORMAT
 from rcon.exceptions import RequestIdMismatch, WrongPassword
 from rcon.proto import Client
 
@@ -38,7 +38,7 @@ class RCONParams(NamedTuple):
     host: str
     port: int
     passwd: str
-    command: str
+    command: Iterable[str]
 
 
 class GUI(Gtk.Window):  # pylint: disable=R0902
@@ -163,9 +163,6 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         if not (port := self.port.get_text().strip()):
             raise ValueError('No port specified.')
 
-        if not (command := self.command.get_text().strip()):
-            raise ValueError('No command entered.')
-
         try:
             port = int(port)
         except ValueError:
@@ -174,6 +171,10 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         if not 0 <= port <= 65535:
             raise ValueError('Invalid port specified.')
 
+        if not (command := self.command.get_text().strip()):
+            raise ValueError('No command entered.')
+
+        command = tuple(filter(None, command.split()))
         return RCONParams(host, port, self.passwd.get_text(), command)
 
     def run_rcon(self) -> str:
@@ -181,7 +182,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         params = self.get_rcon_params()
 
         with Client(params.host, params.port, passwd=params.passwd) as client:
-            return client.run(params.command)
+            return client.run(*params.command)
 
     def on_button_clicked(self, _):
         """Runs the client."""
