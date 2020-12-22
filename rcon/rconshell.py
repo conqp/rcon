@@ -19,6 +19,7 @@ __all__ = ['get_args', 'main']
 ERRORS = (
     (ConnectionRefusedError, 'Connection refused.', 3),
     (timeout, 'Connection timeout.', 4),
+    (TimeoutError, 'Connection timeout.', 4),
     (RequestIdMismatch, 'Unexpected request ID mismatch.', 5)
 )
 LOGGER = getLogger('rconshell')

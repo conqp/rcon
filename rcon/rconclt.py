@@ -21,6 +21,7 @@ __all__ = ['get_credentials', 'main']
 ERRORS = (
     (ConnectionRefusedError, 'Connection refused.', 3),
     (timeout, 'Connection timeout.', 4),
+    (TimeoutError, 'Connection timeout.', 4),
     (RequestIdMismatch, 'Unexpected request ID mismatch.', 5),
     (WrongPassword, 'Wrong password.', 6)
 )
