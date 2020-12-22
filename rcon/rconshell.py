@@ -1,6 +1,7 @@
 """An interactive RCON shell."""
 
 from argparse import ArgumentParser, Namespace
+from contextlib import suppress
 from logging import INFO, basicConfig, getLogger
 from pathlib import Path
 from readline import read_history_file, write_history_file
@@ -42,7 +43,9 @@ def main():
 
     args = get_args()
     basicConfig(level=INFO, format=LOG_FORMAT)
-    read_history_file(HIST_FILE)
+
+    with suppress(FileNotFoundError):
+        read_history_file(HIST_FILE)
 
     if args.server:
         host, port, passwd = get_credentials(args)
