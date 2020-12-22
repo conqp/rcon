@@ -44,7 +44,7 @@ def main():
     args = get_args()
     basicConfig(level=INFO, format=LOG_FORMAT)
 
-    with suppress(FileNotFoundError):
+    with suppress(FileNotFoundError, PermissionError):
         read_history_file(HIST_FILE)
 
     if args.server:
@@ -55,5 +55,7 @@ def main():
     with ErrorHandler(ERRORS, LOGGER):
         exit_code = rconcmd(host, port, passwd, prompt=args.prompt)
 
-    write_history_file(HIST_FILE)
+    with suppress(PermissionError):
+        write_history_file(HIST_FILE)
+
     exit(exit_code)
