@@ -3,6 +3,9 @@
 from getpass import getpass
 from typing import Union
 
+# For CLI history, etc.
+import readline     # pylint: disable=W0611
+
 from rcon.config import Config
 from rcon.exceptions import RequestIdMismatch, WrongPassword
 from rcon.proto import Client
