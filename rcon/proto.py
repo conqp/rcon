@@ -54,7 +54,7 @@ class LittleEndianSignedInt32(int):
 
 
 class Type(Enum):
-    """Available packet types."""
+    """RCON packet types."""
 
     SERVERDATA_AUTH = 3
     SERVERDATA_AUTH_RESPONSE = 2
