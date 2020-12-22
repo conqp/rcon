@@ -74,8 +74,8 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         self.button.connect('clicked', self.on_button_clicked)
         self.grid.attach(self.button, 2, 1, 1, 1)
 
-        self.result = Gtk.Entry()
-        self.result.set_placeholder_text('Result')
+        self.result = Gtk.TextView()
+        self.result.set_wrap_mode(Gtk.WrapMode.WORD)
         self.grid.attach(self.result, 0, 2, 2, 1)
 
         self.savepw = Gtk.CheckButton(label='Save password')
@@ -84,13 +84,29 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         self.load_gui_settings()
 
     @property
+    def result_text(self) -> str:
+        """Returns the result text."""
+        if (buf := self.result.get_buffer()) is not None:
+            start = buf.get_iter_at_line(0)
+            end = buf.get_iter_at_line(buf.get_line_count())
+            return buf.get_text(start, end, True)
+
+        return ''
+
+    @result_text.setter
+    def result_text(self, text: str):
+        """Sets the result text."""
+        if (buf := self.result.get_buffer()) is not None:
+            buf.set_text(text)
+
+    @property
     def gui_settings(self) -> dict:
         """Returns the GUI settings as a dict."""
         json = {
             'host': self.host.get_text(),
             'port': self.port.get_text(),
             'command': self.command.get_text(),
-            'result': self.result.get_text(),
+            'result': self.result_text,
             'savepw': (savepw := self.savepw.get_active())
         }
 
@@ -106,7 +122,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         self.port.set_text(json.get('port', ''))
         self.passwd.set_text(json.get('passwd', ''))
         self.command.set_text(json.get('command', ''))
-        self.result.set_text(json.get('result', ''))
+        self.result_text = json.get('result', '')
         self.savepw.set_active(json.get('savepw', False))
 
     def load_gui_settings(self) -> dict:
@@ -141,13 +157,13 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
 
     def get_rcon_params(self) -> RCONParams:
         """Returns all settings as a dict."""
-        if not (host := self.host.get_text()):  # pylint: disable=C0325
+        if not (host := self.host.get_text().strip()):
             raise ValueError('No host specified.')
 
-        if not (port := self.port.get_text()):  # pylint: disable=C0325
+        if not (port := self.port.get_text().strip()):
             raise ValueError('No port specified.')
 
-        if not (command := self.command.get_text()):    # pylint: disable=C0325
+        if not (command := self.command.get_text().strip()):
             raise ValueError('No command entered.')
 
         try:
@@ -182,7 +198,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         except WrongPassword:
             self.show_error('Invalid password.')
         else:
-            self.result.set_text(result)
+            self.result_text = result
 
     def terminate(self, *args, **kwargs):
         """Saves the settings and terminates the application."""
