@@ -10,6 +10,7 @@ setup(
     author='Richard Neumann',
     author_email='mail@richard-neumann.de',
     python_requires='>=3.8',
+    install_requires=['gobject'],
     packages=['rcon'],
     scripts=['files/rcongui', 'files/rconclt', 'files/rconshell'],
     url='https://github.com/conqp/rcon',
