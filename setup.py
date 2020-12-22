@@ -11,7 +11,7 @@ setup(
     author_email='mail@richard-neumann.de',
     python_requires='>=3.8',
     packages=['rcon'],
-    scripts=['files/rconclt', 'files/rconshell'],
+    scripts=['files/rcongui', 'files/rconclt', 'files/rconshell'],
     url='https://github.com/conqp/rcon',
     license='GPLv3',
     description='A RCON client library library.',
