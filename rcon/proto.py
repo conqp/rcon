@@ -56,9 +56,10 @@ class LittleEndianSignedInt32(int):
 class Type(Enum):
     """Available packet types."""
 
-    LOGIN = 3
-    COMMAND = 2
-    RESPONSE = 0
+    SERVERDATA_AUTH = 3
+    SERVERDATA_AUTH_RESPONSE = 2
+    SERVERDATA_EXECCOMMAND = 2
+    SERVERDATA_RESPONSE_VALUE = 0
 
     def __int__(self):
         """Returns the actual integer value."""
@@ -106,12 +107,13 @@ class Packet(NamedTuple):
     @classmethod
     def from_args(cls, *args: str) -> Packet:
         """Creates a command packet."""
-        return cls(random_request_id(), Type.COMMAND, ' '.join(args))
+        return cls(random_request_id(), Type.SERVERDATA_EXECCOMMAND,
+                   ' '.join(args))
 
     @classmethod
     def from_login(cls, passwd: str) -> Packet:
         """Creates a login packet."""
-        return cls(random_request_id(), Type.LOGIN, passwd)
+        return cls(random_request_id(), Type.SERVERDATA_AUTH, passwd)
 
 
 class Client:
