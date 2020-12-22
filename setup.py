@@ -13,6 +13,13 @@ setup(
     packages=['rcon'],
     extras_require={'GUI':  ['pygobject', 'pygtk']},
     scripts=['files/rcongui', 'files/rconclt', 'files/rconshell'],
+    entry_points={
+        'console_scripts': [
+            'rcongui = rcon.gui:main',
+            'rconclt = rcon.rconclt:main',
+            'rconshell = rcon.rconshell:main',
+        ],
+    },
     url='https://github.com/conqp/rcon',
     license='GPLv3',
     description='A RCON client library library.',
