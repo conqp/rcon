@@ -54,7 +54,7 @@ def run() -> int:
 def main():
     """Wraps the run function."""
 
-    with CommandHistory():
+    with CommandHistory(LOGGER):
         returncode = run()
 
     exit(returncode)
