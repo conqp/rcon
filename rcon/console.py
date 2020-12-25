@@ -38,7 +38,7 @@ def read_port() -> int:
 
         try:
             port = int(port)
-        except KeyboardInterrupt:
+        except ValueError:
             print(f'Invalid integer: {port}')
             continue
 
