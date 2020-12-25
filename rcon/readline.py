@@ -22,7 +22,7 @@ if name == 'posix':
 
         def __enter__(self):
             try:
-                read_history_file()
+                read_history_file(HIST_FILE)
             except FileNotFoundError:
                 self.logger.warning('Could not find history file: %s',
                                     HIST_FILE)
