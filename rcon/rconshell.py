@@ -4,7 +4,6 @@ from argparse import ArgumentParser, Namespace
 from logging import INFO, basicConfig, getLogger
 from pathlib import Path
 from socket import timeout
-from sys import exit    # pylint: disable=W0622
 
 from rcon.errorhandler import ErrorHandler
 from rcon.exceptions import RequestIdMismatch
@@ -49,6 +48,4 @@ def main() -> None:
 
     with ErrorHandler(ERRORS, LOGGER):
         with CommandHistory(LOGGER):
-            returncode = rconcmd(host, port, passwd, prompt=args.prompt)
-
-    exit(returncode)
+            rconcmd(host, port, passwd, prompt=args.prompt)

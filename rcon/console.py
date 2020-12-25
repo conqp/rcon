@@ -1,7 +1,6 @@
 """An interactive console."""
 
 from getpass import getpass
-from typing import Union
 
 from rcon.config import Config
 from rcon.exceptions import RequestIdMismatch, WrongPassword
@@ -12,131 +11,133 @@ __all__ = ['rconcmd']
 
 
 EXIT_COMMANDS = {'exit', 'quit'}
-MSG_QUERY_LATER = '\nOkay, I will ask again later.'
-MSG_ABORTED = '\nAborted...'
 MSG_LOGIN_ABORTED = '\nLogin aborted. Bye.'
-MSG_EXIT = 'Bye.'
+MSG_EXIT = '\nBye.'
 MSG_SESSION_TIMEOUT = 'Session timed out. Please login again.'
-MSG_EXIT_USAGE = 'Usage: {} [<exit_code>].'
 PROMPT = 'RCON> '
 
 
-def read(prompt: str, typ: type = None) -> type:
-    """Reads input and converts it to the respective type."""
+def read_host() -> str:
+    """Reads the host."""
 
     while True:
-        raw = input(prompt)
-
-        if typ is not None:
-            try:
-                return typ(raw)
-            except (TypeError, ValueError):
-                print(f'Invalid {typ}: {raw}')
-                continue
-
-        return raw
-
-
-def read_or_none(prompt: str, typ: type = None) -> type:
-    """Reads the input and returns None on EOFError."""
-
-    try:
-        return read(prompt, typ=typ)
-    except EOFError:
-        print(MSG_QUERY_LATER)
-        return None
-
-
-def login(client: Client, passwd: str) -> str:
-    """Performs a login."""
-
-    if passwd is None:
-        passwd = getpass('Password: ')
-
-    logged_in = False
-
-    while not logged_in:
         try:
-            logged_in = client.login(passwd)
-        except WrongPassword:
-            print('Invalid password.')
-            passwd = getpass('Password: ')
+            return input('Host: ')
+        except KeyboardInterrupt:
+            continue
 
-    return passwd
+
+def read_port() -> int:
+    """Reads the port."""
+
+    while True:
+        try:
+            port = input('Port: ')
+        except KeyboardInterrupt:
+            continue
+
+        try:
+            port = int(port)
+        except KeyboardInterrupt:
+            print(f'Invalid integer: {port}')
+            continue
+
+        if 0 <= port <= 65535:
+            return port
+
+        print(f'Invalid port: {port}')
+        continue
+
+
+def read_passwd() -> str:
+    """Reads the password."""
+
+    while True:
+        try:
+            return getpass('Password: ')
+        except KeyboardInterrupt:
+            continue
 
 
 def get_config(host: str, port: int, passwd: str) -> Config:
     """Reads the necessary arguments."""
 
-    while any(item is None for item in (host, port, passwd)):
-        if host is None:
-            host = read_or_none('Host: ')
+    if host is None:
+        host = read_host()
 
-        if port is None:
-            port = read_or_none('Port: ', typ=int)
+    if port is None:
+        port = read_port()
 
-        if passwd is None:
-            passwd = getpass('Password: ')
+    if passwd is None:
+        passwd = read_passwd()
 
     return Config(host, port, passwd)
 
 
-def exit(exit_code: Union[int, str] = 0) -> int:    # pylint: disable=W0622
-    """Exits the interactive shell via exit command."""
+def login(client: Client, passwd: str) -> str:
+    """Performs a login."""
 
-    print(MSG_EXIT)
-    return int(exit_code)
+    while True:
+        try:
+            client.login(passwd)
+        except WrongPassword:
+            print('Invalid password.')
+            passwd = read_passwd()
+            continue
+
+        return passwd
 
 
-def rconcmd(host: str, port: int, passwd: str, *, prompt: str = PROMPT) -> int:
+def process_input(client: Client, passwd: str, prompt: str) -> bool:
+    """Processes the CLI input."""
+
+    try:
+        command = input(prompt)
+    except KeyboardInterrupt:
+        print()
+        return True
+    except EOFError:
+        print(MSG_EXIT)
+        return False
+
+    try:
+        command, *args = command.split()
+    except ValueError:
+        return True
+
+    if command in EXIT_COMMANDS:
+        return False
+
+    try:
+        result = client.run(command, *args)
+    except RequestIdMismatch:
+        print(MSG_SESSION_TIMEOUT)
+
+        try:
+            passwd = login(client, passwd)
+        except EOFError:
+            print(MSG_LOGIN_ABORTED)
+            return False
+
+    print(result)
+    return True
+
+
+def rconcmd(host: str, port: int, passwd: str, *, prompt: str = PROMPT):
     """Initializes the console."""
 
     try:
-        config = get_config(host, port, passwd)
-    except KeyboardInterrupt:
-        print(MSG_ABORTED)
-        return 1
+        host, port, passwd = get_config(host, port, passwd)
+    except EOFError:
+        print(MSG_EXIT)
+        return
 
-    with Client(config.host, config.port) as client:
+    with Client(host, port) as client:
         try:
-            passwd = login(client, config.passwd)
-        except (EOFError, KeyboardInterrupt):
+            passwd = login(client, passwd)
+        except EOFError:
             print(MSG_LOGIN_ABORTED)
-            return 1
+            return
 
-        while True:
-            try:
-                command = input(prompt)
-            except EOFError:
-                print(f'\n{MSG_EXIT}')
-                break
-            except KeyboardInterrupt:
-                print()
-                continue
-
-            try:
-                command, *args = command.split()
-            except ValueError:
-                continue
-
-            if command in EXIT_COMMANDS:
-                try:
-                    return exit(*args)  # pylint: disable=R1722
-                except (TypeError, ValueError):
-                    print(MSG_EXIT_USAGE.format(command))
-                    continue
-
-            try:
-                result = client.run(command, *args)
-            except RequestIdMismatch:
-                print(MSG_SESSION_TIMEOUT)
-
-                try:
-                    passwd = login(client, passwd)
-                except (EOFError, KeyboardInterrupt):
-                    print(MSG_LOGIN_ABORTED)
-                    return 2
-
-            print(result)
-
-    return 0
+        while process_input(client, passwd, prompt):
+            pass
