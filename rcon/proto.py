@@ -147,10 +147,14 @@ class Client:
 
     def communicate(self, packet: Packet) -> Packet:
         """Sends and receives a packet."""
-        self._socket.send(bytes(packet))
-        header = self._socket.recv(4)
-        length = int.from_bytes(header, 'little')
-        payload = self._socket.recv(length)
+        with self._socket.makefile('wb') as file:
+            file.write(bytes(packet))
+
+        with self._socket.makefile('rb') as file:
+            header = file.read(4)
+            length = int.from_bytes(header, 'little')
+            payload = file.read(length)
+
         response = Packet.from_bytes(payload)
 
         if response.id == packet.id:
