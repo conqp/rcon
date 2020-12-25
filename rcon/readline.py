@@ -1,5 +1,6 @@
 """Wrapper for readline support."""
 
+from logging import Logger
 from os import name
 from pathlib import Path
 
@@ -16,15 +17,33 @@ if name == 'posix':
     class CommandHistory:
         """Context manager for the command line history."""
 
+        def __init__(self, logger: Logger):
+            self.logger = logger
+
         def __enter__(self):
-            read_history_file()
+            try:
+                read_history_file()
+            except FileNotFoundError:
+                self.logger.warning('Could not find history file: %s',
+                                    HIST_FILE)
+            except PermissionError:
+                self.logger.error('Insufficient permissions to read: %s',
+                                  HIST_FILE)
+
             return self
 
         def __exit__(self, *_):
-            write_history_file(HIST_FILE)
+            try:
+                write_history_file(HIST_FILE)
+            except PermissionError:
+                self.logger.error('Insufficient permissions to write: %s',
+                                  HIST_FILE)
 else:
     class CommandHistory:
-        """Context manager for the command line history."""
+        """Context manager mockup for non-posix systems."""
+
+        def __init__(self, logger: Logger):
+            logger.warning('Command line history unavailable on this system.')
 
         def __enter__(self):
             return self
