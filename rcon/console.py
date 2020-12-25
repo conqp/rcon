@@ -24,6 +24,7 @@ def read_host() -> str:
         try:
             return input('Host: ')
         except KeyboardInterrupt:
+            print()
             continue
 
 
@@ -34,6 +35,7 @@ def read_port() -> int:
         try:
             port = input('Port: ')
         except KeyboardInterrupt:
+            print()
             continue
 
         try:
@@ -56,6 +58,7 @@ def read_passwd() -> str:
         try:
             return getpass('Password: ')
         except KeyboardInterrupt:
+            print()
             continue
 
 
