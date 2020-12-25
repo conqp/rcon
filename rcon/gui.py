@@ -207,7 +207,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         Gtk.main_quit(*args, **kwargs)
 
 
-def main():
+def main() -> None:
     """Starts the GUI."""
 
     basicConfig(format=LOG_FORMAT)
