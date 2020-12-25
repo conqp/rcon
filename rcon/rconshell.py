@@ -36,7 +36,7 @@ def get_args() -> Namespace:
     return parser.parse_args()
 
 
-def run() -> int:
+def main() -> None:
     """Runs the RCON shell."""
 
     args = get_args()
@@ -48,13 +48,7 @@ def run() -> int:
         host = port = passwd = None
 
     with ErrorHandler(ERRORS, LOGGER):
-        return rconcmd(host, port, passwd, prompt=args.prompt)
-
-
-def main():
-    """Wraps the run function."""
-
-    with CommandHistory(LOGGER):
-        returncode = run()
+        with CommandHistory(LOGGER):
+            returncode = rconcmd(host, port, passwd, prompt=args.prompt)
 
     exit(returncode)
