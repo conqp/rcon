@@ -5,7 +5,7 @@ from enum import Enum
 from logging import getLogger
 from random import randint
 from socket import SOCK_STREAM, socket
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 from rcon.exceptions import RequestIdMismatch
 from rcon.exceptions import WrongPassword
@@ -121,8 +121,9 @@ class Client:
 
     __slots__ = ('_socket', 'host', 'port', 'timeout', 'passwd')
 
-    def __init__(self, host: str, port: int, *, timeout: float = None,
-                 passwd: str = None):
+    def __init__(self, host: str, port: int, *,
+                 timeout: Optional[float] = None,
+                 passwd: Optional[str] = None):
         """Initializes the base client with the SOCK_STREAM socket type."""
         self._socket = socket(type=SOCK_STREAM)
         self.host = host
