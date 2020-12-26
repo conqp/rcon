@@ -12,7 +12,6 @@ setup(
     python_requires='>=3.8',
     packages=['rcon'],
     extras_require={'GUI':  ['pygobject', 'pygtk']},
-    scripts=['files/rcongui', 'files/rconclt', 'files/rconshell'],
     entry_points={
         'console_scripts': [
             'rcongui = rcon.gui:main',
