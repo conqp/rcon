@@ -71,8 +71,7 @@ def main() -> None:
     """Runs the RCON client."""
 
     args = get_args()
-    log_level = DEBUG if args.debug else INFO
-    basicConfig(level=log_level, format=LOG_FORMAT)
+    basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
     host, port, passwd = get_credentials(args)
 
     with ErrorHandler(ERRORS, LOGGER):
