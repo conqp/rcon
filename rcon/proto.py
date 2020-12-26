@@ -41,7 +41,7 @@ class LittleEndianSignedInt32(int):
         super().__init__()
 
         if not self.MIN <= self <= self.MAX:
-            raise ValueError('Signed int32 out of bounds:', self)
+            raise ValueError('Signed int32 out of bounds:', int(self))
 
     def __bytes__(self):
         """Returns the integer as signed little endian."""
