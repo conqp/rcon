@@ -1,7 +1,8 @@
 """GTK based GUI."""
 
+from argparse import ArgumentParser, Namespace
 from json import dump, load
-from logging import basicConfig, getLogger
+from logging import DEBUG, INFO, basicConfig, getLogger
 from os import getenv, name
 from pathlib import Path
 from socket import timeout
@@ -32,6 +33,17 @@ CACHE_FILE = CACHE_DIR.joinpath('rcongui.json')
 LOGGER = getLogger('rcongui')
 
 
+def get_args() -> Namespace:
+    """Parses the command line arguments."""
+
+    parser = ArgumentParser(description='A minimalistic, GTK-based RCON GUI.')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='print additional debug information')
+    parser.add_argument('-t', '--timeout', type=float, metavar='seconds',
+                        help='connection timeout in seconds')
+    return parser.parse_args()
+
+
 class RCONParams(NamedTuple):
     """Represents the RCON parameters."""
 
@@ -44,9 +56,10 @@ class RCONParams(NamedTuple):
 class GUI(Gtk.Window):  # pylint: disable=R0902
     """A GTK based GUI for RCON."""
 
-    def __init__(self):
+    def __init__(self, args: Namespace):
         """Initializes the GUI."""
         super().__init__(title='RCON GUI')
+        self.args = args
 
         self.set_position(Gtk.WindowPosition.CENTER)
 
@@ -181,7 +194,8 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         """Returns the current RCON settings."""
         params = self.get_rcon_params()
 
-        with Client(params.host, params.port, passwd=params.passwd) as client:
+        with Client(params.host, params.port, timeout=self.args.timeout,
+                    passwd=params.passwd) as client:
             return client.run(*params.command)
 
     def on_button_clicked(self, _):
@@ -210,8 +224,9 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
 def main() -> None:
     """Starts the GUI."""
 
-    basicConfig(format=LOG_FORMAT)
-    win = GUI()
+    args = get_args()
+    basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
+    win = GUI(args)
     win.connect('destroy', win.terminate)
     win.show_all()
     Gtk.main()
