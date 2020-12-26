@@ -14,7 +14,7 @@ EXIT_COMMANDS = {'exit', 'quit'}
 MSG_LOGIN_ABORTED = '\nLogin aborted. Bye.'
 MSG_EXIT = '\nBye.'
 MSG_SESSION_TIMEOUT = 'Session timed out. Please login again.'
-PROMPT = 'RCON> '
+PROMPT = 'RCON {host}:{port}> '
 
 
 def read_host() -> str:
@@ -134,6 +134,8 @@ def rconcmd(host: str, port: int, passwd: str, *, prompt: str = PROMPT):
     except EOFError:
         print(MSG_EXIT)
         return
+
+    prompt = prompt.format(host=host, port=port)
 
     with Client(host, port) as client:
         try:
