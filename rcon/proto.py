@@ -67,7 +67,7 @@ class Type(Enum):
 
     def __bytes__(self):
         """Returns the integer value as little endian."""
-        return int(self).to_bytes(4, 'little', signed=True)
+        return bytes(self.value)
 
     @classmethod
     def read(cls, file: IO) -> Type:
@@ -99,8 +99,9 @@ class Packet(NamedTuple):
         id_ = LittleEndianSignedInt32.read(file)
         type_ = Type.read(file)
         payload = file.read(size - 10).decode()
+        terminator = file.read(2).decode()
 
-        if (terminator := file.read(2).decode()) != TERMINATOR:
+        if terminator != TERMINATOR:
             LOGGER.warning('Unexpected terminator: %s', terminator)
 
         return cls(id_, type_, payload, terminator)
