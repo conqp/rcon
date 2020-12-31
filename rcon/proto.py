@@ -121,32 +121,50 @@ class Packet(NamedTuple):
 class Client:
     """An RCON client."""
 
-    __slots__ = ('host', 'port', 'timeout', 'passwd', '_socket')
+    __slots__ = ('_socket', 'host', 'port', 'passwd')
 
     def __init__(self, host: str, port: int, *,
                  timeout: Optional[float] = None,
                  passwd: Optional[str] = None):
         """Initializes the base client with the SOCK_STREAM socket type."""
+        self._socket = socket(type=SOCK_STREAM)
         self.host = host
         self.port = port
         self.timeout = timeout
         self.passwd = passwd
-        self._socket = socket(type=SOCK_STREAM)
 
     def __enter__(self):
         """Attempts an auto-login if a password is set."""
         self._socket.__enter__()
-        self._socket.settimeout(self.timeout)
-        self._socket.connect((self.host, self.port))
-
-        if self.passwd is not None:
-            self.login(self.passwd)
-
+        self.connect(login=True)
         return self
 
     def __exit__(self, typ, value, traceback):
         """Delegates to the underlying socket's exit method."""
         return self._socket.__exit__(typ, value, traceback)
+
+    @property
+    def timeout(self) -> float:
+        """Returns the socket timeout."""
+        return self._socket.gettimeout()
+
+    @timeout.setter
+    def timeout(self, timeout: float):
+        """Sets the socket timeout."""
+        self._socket.settimeout(timeout)
+
+    def connect(self, login: bool = False) -> None:
+        """Connects the socket and attempts a
+        login if wanted and a password is set.
+        """
+        self._socket.connect((self.host, self.port))
+
+        if login and self.passwd is not None:
+            self.login(self.passwd)
+
+    def close(self) -> None:
+        """Closes the socket connection."""
+        self._socket.close()
 
     def communicate(self, packet: Packet) -> Packet:
         """Sends and receives a packet."""
