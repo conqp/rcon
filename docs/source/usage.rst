@@ -22,9 +22,8 @@ The configuration file format is:
     host = <hostname_or_ip_address>
     port = <port>
     passwd = <password>
-    prompt = <console_prompt>
 
-The :code:`passwd` and :code:`prompt` entries are optional.
+The :code:`passwd` entry is optional.
 
 rconclt
 -------
