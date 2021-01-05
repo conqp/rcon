@@ -3,10 +3,8 @@
 from argparse import ArgumentParser, Namespace
 from logging import INFO, basicConfig, getLogger
 from pathlib import Path
-from socket import timeout
 
 from rcon.errorhandler import ErrorHandler
-from rcon.exceptions import RequestIdMismatch
 from rcon.rconclt import get_credentials
 from rcon.readline import CommandHistory
 from rcon.config import CONFIG_FILE, LOG_FORMAT
@@ -15,11 +13,7 @@ from rcon.console import PROMPT, rconcmd
 
 __all__ = ['get_args', 'main']
 
-ERRORS = (
-    (ConnectionRefusedError, 'Connection refused.', 3),
-    ((TimeoutError, timeout), 'Connection timeout.', 4),
-    (RequestIdMismatch, 'Unexpected request ID mismatch.', 5)
-)
+
 LOGGER = getLogger('rconshell')
 
 
@@ -46,6 +40,6 @@ def main() -> None:
     else:
         host = port = passwd = None
 
-    with ErrorHandler(ERRORS, LOGGER):
+    with ErrorHandler(LOGGER):
         with CommandHistory(LOGGER):
             rconcmd(host, port, passwd, prompt=args.prompt)

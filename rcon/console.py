@@ -3,7 +3,6 @@
 from getpass import getpass
 
 from rcon.config import Config
-from rcon.exceptions import RequestIdMismatch, WrongPassword
 from rcon.proto import Client
 
 
@@ -83,8 +82,8 @@ def login(client: Client, passwd: str) -> str:
     while True:
         try:
             client.login(passwd)
-        except WrongPassword:
-            print('Invalid password.')
+        except RuntimeError as error:
+            print(error)
             passwd = read_passwd()
             continue
 
@@ -113,7 +112,7 @@ def process_input(client: Client, passwd: str, prompt: str) -> bool:
 
     try:
         result = client.run(command, *args)
-    except RequestIdMismatch:
+    except RuntimeError:
         print(MSG_SESSION_TIMEOUT)
 
         try:

@@ -7,8 +7,6 @@ from os import getenv, name
 from pathlib import Path
 from typing import Dict, Iterator, NamedTuple, Tuple
 
-from rcon.exceptions import InvalidConfig
-
 
 __all__ = ['CONFIG_FILE', 'LOG_FORMAT', 'Config', 'servers']
 
@@ -39,12 +37,9 @@ class Config(NamedTuple):
         try:
             host, port = string.split(':')
         except ValueError:
-            raise InvalidConfig(f'Invalid socket: {string}.') from None
+            raise ValueError(f'Invalid socket: {string}.') from None
 
-        try:
-            port = int(port)
-        except ValueError:
-            raise InvalidConfig(f'Not an integer: {port}.') from None
+        port = int(port)
 
         try:
             passwd, host = host.rsplit('@', maxsplit=1)

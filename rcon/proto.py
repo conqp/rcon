@@ -7,9 +7,6 @@ from random import randint
 from socket import SOCK_STREAM, socket
 from typing import IO, NamedTuple, Optional
 
-from rcon.exceptions import RequestIdMismatch
-from rcon.exceptions import WrongPassword
-
 
 __all__ = [
     'LittleEndianSignedInt32',
@@ -172,36 +169,27 @@ class Client:
             file.write(bytes(packet))
 
         with self._socket.makefile('rb') as file:
-            response = Packet.read(file)
+            return Packet.read(file)
 
-        if response.id == packet.id:
-            return response
-
-        raise RequestIdMismatch(packet.id, response.id)
-
-    def login(self, passwd: str) -> Packet:
+    def login(self, passwd: str) -> bool:
         """Performs a login."""
-        packet = Packet.make_login(passwd)
+        response = self.communicate(Packet.make_login(passwd))
 
-        try:
-            return self.communicate(packet)
-        except RequestIdMismatch as mismatch:
-            if mismatch.received == -1:
-                raise WrongPassword() from None
+        if response.id == -1:
+            raise RuntimeError('Wrong password.')
 
-            raise
+        return True
 
     def run(self, command: str, *arguments: str, raw: bool = False) -> str:
         """Runs a command."""
-        packet = Packet.make_command(command, *arguments)
+        request = Packet.make_command(command, *arguments)
+        response = self.communicate(request)
 
-        try:
-            response = self.communicate(packet)
-        except RequestIdMismatch:
-            if self.passwd is not None:  # Re-authenticate and retry command.
-                self.login(self.passwd)
-                return self.run(command, *arguments)
+        if response.id != request.id:
+            if self.passwd is not None:
+                if self.login(self.passwd):
+                    return self.run(command, *arguments)
 
-            raise
+            raise RuntimeError('Request ID mismatch.')
 
         return response if raw else response.payload

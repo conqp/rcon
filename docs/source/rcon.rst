@@ -20,10 +20,18 @@ rcon.console module
    :undoc-members:
    :show-inheritance:
 
-rcon.exceptions module
-----------------------
+rcon.errorhandler module
+------------------------
 
-.. automodule:: rcon.exceptions
+.. automodule:: rcon.errorhandler
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rcon.gui module
+---------------
+
+.. automodule:: rcon.gui
    :members:
    :undoc-members:
    :show-inheritance:
@@ -48,6 +56,14 @@ rcon.rconshell module
 ---------------------
 
 .. automodule:: rcon.rconshell
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rcon.readline module
+--------------------
+
+.. automodule:: rcon.readline
    :members:
    :undoc-members:
    :show-inheritance:

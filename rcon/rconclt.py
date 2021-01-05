@@ -4,26 +4,17 @@ from argparse import ArgumentParser, Namespace
 from getpass import getpass
 from logging import DEBUG, INFO, basicConfig, getLogger
 from pathlib import Path
-from socket import timeout
 from sys import exit    # pylint: disable=W0622
 from typing import Tuple
 
 from rcon.errorhandler import ErrorHandler
-from rcon.exceptions import InvalidConfig
 from rcon.config import CONFIG_FILE, LOG_FORMAT, Config, servers
-from rcon.exceptions import RequestIdMismatch, WrongPassword
 from rcon.proto import Client
 
 
 __all__ = ['get_credentials', 'main']
 
 
-ERRORS = (
-    (ConnectionRefusedError, 'Connection refused.', 3),
-    ((TimeoutError, timeout), 'Connection timeout.', 4),
-    (RequestIdMismatch, 'Unexpected request ID mismatch.', 5),
-    (WrongPassword, 'Wrong password.', 6)
-)
 LOGGER = getLogger('rconclt')
 
 
@@ -49,7 +40,7 @@ def get_credentials(args: Namespace) -> Tuple[str, int, str]:
 
     try:
         host, port, passwd = Config.from_string(args.server)
-    except InvalidConfig:
+    except ValueError:
         try:
             host, port, passwd = servers(args.config)[args.server]
         except KeyError:
@@ -74,7 +65,7 @@ def main() -> None:
     basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
     host, port, passwd = get_credentials(args)
 
-    with ErrorHandler(ERRORS, LOGGER):
+    with ErrorHandler(LOGGER):
         with Client(host, port, timeout=args.timeout) as client:
             client.login(passwd)
             text = client.run(args.command, *args.argument)
