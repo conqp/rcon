@@ -17,7 +17,7 @@ class TestRandomRequestId(TestCase):
 
     def _test_value(self, request_id: LittleEndianSignedInt32):
         """Tests the value of a request id."""
-        assert 0 <= request_id <= LittleEndianSignedInt32.MAX
+        self.assertTrue(0 <= request_id <= LittleEndianSignedInt32.MAX)
 
     def _test_request_id(self, request_id: LittleEndianSignedInt32):
         """Tests a request id."""
