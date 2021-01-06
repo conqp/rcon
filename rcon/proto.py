@@ -60,7 +60,7 @@ class Type(Enum):
 
     def __int__(self):
         """Returns the actual integer value."""
-        return self.value
+        return int(self.value)
 
     def __bytes__(self):
         """Returns the integer value as little endian."""
