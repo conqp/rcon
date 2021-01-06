@@ -1,3 +1,6 @@
+[![Documentation Status](https://readthedocs.org/projects/rcon/badge/?version=latest)](https://rcon.readthedocs.io/en/latest/)
+[![Testing Status](https://travis-ci.com/conqp/rcon.svg?branch=master&status=errored)](https://travis-ci.com/github/conqp/rcon)
+
 # rcon
 An [RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol) client implementation.
 
@@ -5,7 +8,6 @@ An [RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
 `rcon` requires Python 3.8 or higher.
 
 ## Documentation
-[![Documentation Status](https://readthedocs.org/projects/rcon/badge/?version=latest)](https://rcon.readthedocs.io/en/latest/)  
 Documentation is available on [readthedocs](https://rcon.readthedocs.io/en/latest/).
 
 ## Installations
