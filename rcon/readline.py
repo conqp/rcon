@@ -49,4 +49,4 @@ else:
             return self
 
         def __exit__(self, *_):
-            pass
+            return None     # Mockup for non-posix systems.
