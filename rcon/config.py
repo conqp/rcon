@@ -35,7 +35,7 @@ class Config(NamedTuple):
     def from_string(cls, string: str) -> Config:
         """Reads the credentials from the given string."""
         try:
-            host, port = string.split(':')
+            host, port = string.rsplit(':', maxsplit=1)
         except ValueError:
             raise ValueError(f'Invalid socket: {string}.') from None
 
