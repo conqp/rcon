@@ -47,7 +47,6 @@ def read_port() -> int:
             return port
 
         print(f'Invalid port: {port}')
-        continue
 
 
 def read_passwd() -> str:
@@ -58,7 +57,6 @@ def read_passwd() -> str:
             return getpass('Password: ')
         except KeyboardInterrupt:
             print()
-            continue
 
 
 def get_config(host: str, port: int, passwd: str) -> Config:
@@ -143,5 +141,6 @@ def rconcmd(host: str, port: int, passwd: str, *, prompt: str = PROMPT):
             print(MSG_LOGIN_ABORTED)
             return
 
-        while process_input(client, passwd, prompt):
-            pass
+        while True:
+            if not process_input(client, passwd, prompt):
+                break
