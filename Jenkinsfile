@@ -7,7 +7,8 @@ pipeline {
               python3 -m venv /tmp/jenkins-venv
               source /tmp/jenkins-venv/bin/activate
               pip install -U pytest setuptools setuptools-git-version
-              ls -R
+              git status
+              git tag
               python3 setup.py install
               pytest
 '''
