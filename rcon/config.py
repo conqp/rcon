@@ -8,7 +8,7 @@ from logging import getLogger
 from os import getenv, name
 from pathlib import Path
 from sys import exit    # pylint: disable=W0622
-from typing import Iterable, NamedTuple, Union
+from typing import Iterable, NamedTuple, Optional, Union
 
 
 __all__ = ['CONFIG_FILES', 'LOG_FORMAT', 'SERVERS', 'Config', 'from_args']
@@ -40,7 +40,7 @@ class Config(NamedTuple):
 
     host: str
     port: int
-    passwd: str = None
+    passwd: Optional[str] = None
 
     @classmethod
     def from_string(cls, string: str) -> Config:
