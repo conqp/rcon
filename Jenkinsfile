@@ -27,7 +27,7 @@ pipeline {
 
     stage('Wait for SonarQube analysis') {
       steps {
-        waitForQualityGate(abortPipeline: true)
+        waitForQualityGate()
       }
     }
 
