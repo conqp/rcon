@@ -1,5 +1,4 @@
 pipeline {
-  }
   stages {
     stage('pytest') {
       steps {
@@ -13,6 +12,5 @@ pipeline {
 '''
       }
     }
-
   }
 }
