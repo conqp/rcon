@@ -29,14 +29,22 @@ class TestConfig(TestCase):
         """Yields (host, port) tuples."""
         return product(self.hosts, self.ports)
 
+    def _test_from_string_with_password(self, host, port):
+        """Tests the Config.from_string() method with a password."""
+        config = Config.from_string(f'{self.passwd}@{host}:{port}')
+        self.assertEqual(config.host, host)
+        self.assertEqual(config.port, port)
+        self.assertEqual(config.passwd, self.passwd)
+
+    def _test_from_string_without_password(self, host, port):
+        """Tests the Config.from_string() method without a password."""
+        config = Config.from_string(f'{host}:{port}')
+        self.assertEqual(config.host, host)
+        self.assertEqual(config.port, port)
+        self.assertIsNone(config.passwd)
+
     def test_from_string(self):
         """Tests the Config.from_string() method."""
         for host, port in self.sockets:
-            config = Config.from_string(f'{host}:{port}')
-            self.assertEqual(config.host, host)
-            self.assertEqual(config.port, port)
-            self.assertIsNone(config.passwd)
-            config = Config.from_string(f'{self.passwd}@{host}:{port}')
-            self.assertEqual(config.host, host)
-            self.assertEqual(config.port, port)
-            self.assertEqual(config.passwd, self.passwd)
+            self._test_from_string_with_password(host, port)
+            self._test_from_string_without_password(host, port)
