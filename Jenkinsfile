@@ -1,9 +1,4 @@
 pipeline {
-  agent {
-    docker {
-      image 'qnib/pytest:latest'
-    }
-
   }
   stages {
     stage('pytest') {
@@ -12,6 +7,7 @@ pipeline {
               python3 -m venv /tmp/jenkins-venv
               source /tmp/jenkins-venv/bin/activate
               pip install -U pytest setuptools setuptools-git-version
+              ls -R
               python3 setup.py install
               pytest
 '''
