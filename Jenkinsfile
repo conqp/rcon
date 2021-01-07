@@ -1,5 +1,5 @@
 pipeline {
-  agent none
+  agent any
   stages {
     stage('pytest') {
       steps {
@@ -13,5 +13,6 @@ pipeline {
 '''
       }
     }
+
   }
 }
