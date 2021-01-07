@@ -22,7 +22,8 @@ pipeline {
     stage('Prepare SonarQube') {
       steps {
         withSonarQubeEnv(installationName: 'SonarQube', credentialsId: '4cdfb484-a052-41be-8739-3e1c232b5f38') {
-          sh '/opt/sonar-scanner/bin/sonar-scanner'
+          sh '/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=rcon'
+          waitForQualityGate(credentialsId: '4cdfb484-a052-41be-8739-3e1c232b5f38')
         }
 
       }
