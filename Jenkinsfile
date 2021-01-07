@@ -29,11 +29,5 @@ pipeline {
       }
     }
 
-    stage('Wait for SonarQube analysis') {
-      steps {
-        waitForQualityGate()
-      }
-    }
-
   }
 }
