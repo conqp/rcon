@@ -21,7 +21,7 @@ pipeline {
 
     stage('Prepare SonarQube') {
       steps {
-        withSonarQubeEnv('SonarQube') {
+        withSonarQubeEnv(installationName: 'SonarQube', credentialsId: 'rcon') {
           sh '/opt/sonar-scanner/bin/sonar-scanner'
         }
 
