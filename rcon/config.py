@@ -1,27 +1,38 @@
 """RCON server configuration."""
 
 from __future__ import annotations
+from argparse import Namespace
 from configparser import ConfigParser, SectionProxy
+from getpass import getpass
 from logging import getLogger
 from os import getenv, name
 from pathlib import Path
-from typing import Dict, Iterator, NamedTuple, Tuple
+from sys import exit    # pylint: disable=W0622
+from typing import Iterable, NamedTuple, Union
 
 
-__all__ = ['CONFIG_FILE', 'LOG_FORMAT', 'Config', 'servers']
+__all__ = ['CONFIG_FILES', 'LOG_FORMAT', 'SERVERS', 'Config', 'from_args']
 
 
 CONFIG = ConfigParser()
 
 if name == 'posix':
-    CONFIG_FILE = Path('/etc/rcon.conf')
+    CONFIG_FILES = (
+        Path('/etc/rcon.conf'),
+        Path('/usr/local/etc/rcon.conf'),
+        Path.home().joinpath('.rcon.conf')
+    )
 elif name == 'nt':
-    CONFIG_FILE = Path(getenv('LOCALAPPDATA')).joinpath('rcon.conf')
+    CONFIG_FILES = (
+        Path(getenv('LOCALAPPDATA')).joinpath('rcon.conf'),
+        Path.home().joinpath('.rcon.conf')
+    )
 else:
     raise NotImplementedError(f'Unsupported operating system: {name}')
 
 LOG_FORMAT = '[%(levelname)s] %(name)s: %(message)s'
 LOGGER = getLogger('RCON Config')
+SERVERS = {}
 
 
 class Config(NamedTuple):
@@ -59,15 +70,36 @@ class Config(NamedTuple):
         return cls(host, port, passwd)
 
 
-def entries(config_parser: ConfigParser) -> Iterator[Tuple[str, Config]]:
-    """Yields entries."""
+def load(config_files: Union[Path, Iterable[Path]] = CONFIG_FILES) -> None:
+    """Reads the configuration files and populates SERVERS."""
 
-    for section in config_parser.sections():
-        yield (section, Config.from_config_section(config_parser[section]))
+    SERVERS.clear()
+    CONFIG.read(config_files)
+
+    for section in CONFIG.sections():
+        SERVERS[section] = Config.from_config_section(CONFIG[section])
 
 
-def servers(config_file: Path = CONFIG_FILE) -> Dict[str, Config]:
-    """Returns a dictionary of servers."""
+def from_args(args: Namespace) -> Config:
+    """Get the credentials for a server from the respective arguments."""
 
-    CONFIG.read(config_file)
-    return dict(entries(CONFIG))
+    try:
+        host, port, passwd = Config.from_string(args.server)
+    except ValueError:
+        load(args.config)
+
+        try:
+            host, port, passwd = SERVERS[args.server]
+        except KeyError:
+            LOGGER.error('No such server: %s.', args.server)
+            exit(2)
+
+    if passwd is None:
+        try:
+            passwd = getpass('Password: ')
+        except (KeyboardInterrupt, EOFError):
+            print()
+            LOGGER.error('Aborted by user.')
+            exit(1)
+
+    return Config(host, port, passwd)

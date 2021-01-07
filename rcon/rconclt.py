@@ -1,18 +1,15 @@
 """RCON client CLI."""
 
 from argparse import ArgumentParser, Namespace
-from getpass import getpass
 from logging import DEBUG, INFO, basicConfig, getLogger
 from pathlib import Path
-from sys import exit    # pylint: disable=W0622
-from typing import Tuple
 
 from rcon.errorhandler import ErrorHandler
-from rcon.config import CONFIG_FILE, LOG_FORMAT, Config, servers
+from rcon.config import CONFIG_FILES, LOG_FORMAT, from_args
 from rcon.proto import Client
 
 
-__all__ = ['get_credentials', 'main']
+__all__ = ['main']
 
 
 LOGGER = getLogger('rconclt')
@@ -24,7 +21,7 @@ def get_args() -> Namespace:
     parser = ArgumentParser(description='A Minecraft RCON client.')
     parser.add_argument('server', help='the server to connect to')
     parser.add_argument('-c', '--config', type=Path, metavar='file',
-                        default=CONFIG_FILE, help='the configuration file')
+                        default=CONFIG_FILES, help='the configuration file')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='print additional debug information')
     parser.add_argument('-t', '--timeout', type=float, metavar='seconds',
@@ -35,35 +32,12 @@ def get_args() -> Namespace:
     return parser.parse_args()
 
 
-def get_credentials(args: Namespace) -> Tuple[str, int, str]:
-    """Get the credentials for a server from the respective server name."""
-
-    try:
-        host, port, passwd = Config.from_string(args.server)
-    except ValueError:
-        try:
-            host, port, passwd = servers(args.config)[args.server]
-        except KeyError:
-            LOGGER.error('No such server: %s.', args.server)
-            exit(2)
-
-    if passwd is None:
-        try:
-            passwd = getpass('Password: ')
-        except (KeyboardInterrupt, EOFError):
-            print()
-            LOGGER.error('Aborted by user.')
-            exit(1)
-
-    return (host, port, passwd)
-
-
 def main() -> None:
     """Runs the RCON client."""
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
-    host, port, passwd = get_credentials(args)
+    host, port, passwd = from_args(args)
 
     with ErrorHandler(LOGGER):
         with Client(host, port, timeout=args.timeout) as client:
