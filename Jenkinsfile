@@ -21,7 +21,7 @@ pipeline {
 
     stage('Prepare SonarQube') {
       steps {
-        withSonarQubeEnv 'sonarqubescanner'
+        withSonarQubeEnv 'BF41A1F2-AXbeJg1gSMYOIOxzTbKL'
       }
     }
 
