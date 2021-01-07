@@ -29,9 +29,7 @@ pipeline {
 
     stage('Install pytest') {
       steps {
-        sh '''python3 setup.py install
-              pytest
-'''
+        sh 'python3 setup.py install --user'
       }
     }
 
