@@ -3,8 +3,7 @@ pipeline {
   stages {
     stage('Install build dependencies') {
       steps {
-        sh '''
-              pip install -U --upgrade pip pytest setuptools setuptools-git-version'''
+        sh 'pip install -U --upgrade pip pytest setuptools setuptools-git-version'
       }
     }
 
