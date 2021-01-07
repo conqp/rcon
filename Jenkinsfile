@@ -19,5 +19,17 @@ pipeline {
       }
     }
 
+    stage('Prepare SonarQube') {
+      steps {
+        withSonarQubeEnv 'sonarqubescanner'
+      }
+    }
+
+    stage('Wait for SonarQube analysis') {
+      steps {
+        waitForQualityGate(abortPipeline: true)
+      }
+    }
+
   }
 }
