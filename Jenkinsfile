@@ -7,7 +7,7 @@ pipeline {
               python3 -m venv /tmp/jenkins-venv
               source /tmp/jenkins-venv/bin/activate
               pip install -U pytest
-              pip install -r requirements.txt
+              python3 setup.py install
               pytest
 '''
       }
