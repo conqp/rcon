@@ -4,7 +4,10 @@ pipeline {
     stage('pytest') {
       steps {
         sh '''python3 -m venv /var/build/jenkins
-source env/bin/activate
+              source /var/build/jenkins/bin/activate
+              pip install -U pytest
+              pip install -r requirements.txt
+              pytest
 '''
       }
     }
