@@ -19,6 +19,8 @@ HIST_FILE = Path.home().joinpath('.rconshell_history')
 class CommandHistory:
     """Context manager for the command line history."""
 
+    __slots__ = ('logger',)
+
     def __init__(self, logger: Logger):
         """Sets the logger to use."""
         self.logger = logger
