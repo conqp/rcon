@@ -24,7 +24,7 @@ pipeline {
 
     stage('Send Email') {
       steps {
-        mail(subject: 'RCON Build', body: 'RCON build successful.', from: 'jenkins@richard-neumann.de', to: 'mail@richard-neumann.de')
+        mail(subject: '[rcon] build successful', body: 'https://jenkins.richard-neumann.de/blue/organizations/jenkins/rcon/activity', from: 'jenkins@richard-neumann.de', to: 'mail@richard-neumann.de')
       }
     }
 
