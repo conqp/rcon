@@ -13,7 +13,7 @@ pipeline {
       }
     }
 
-    stage('Prepare SonarQube') {
+    stage('Run SonarQube') {
       steps {
         withSonarQubeEnv(installationName: 'rcon', credentialsId: '4cdfb484-a052-41be-8739-3e1c232b5f38') {
           sh '/opt/sonar-scanner/bin/sonar-scanner'
