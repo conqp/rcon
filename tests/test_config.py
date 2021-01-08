@@ -8,6 +8,7 @@ from unittest import TestCase
 
 from rcon.config import Config
 
+
 def random_passwd() -> str:
     """Generates a random password containing all printable characters."""
 
