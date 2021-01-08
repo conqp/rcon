@@ -22,5 +22,11 @@ pipeline {
       }
     }
 
+    stage('Send Email') {
+      steps {
+        mail(subject: 'RCON Build', body: 'RCON build successful.', from: 'jenkins@richard-neumann.de', to: 'mail@richard-neumann.de')
+      }
+    }
+
   }
 }
