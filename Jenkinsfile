@@ -9,7 +9,7 @@ pipeline {
 
     stage('Run pytest') {
       steps {
-        sh 'python3 -m pytest'
+        sh '/usr/local/bin/pytest-venv'
       }
     }
 
