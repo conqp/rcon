@@ -3,8 +3,8 @@ pipeline {
   stages {
     stage('Run pytest') {
       steps {
-        sh 'pip install --user -r requirements.txt'
         sh 'pip install --user --upgrade pytest'
+        sh 'pip install --user --upgrade -r requirements.txt'
         sh 'python -m pytest'
       }
     }
