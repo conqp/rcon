@@ -1,15 +1,11 @@
 pipeline {
   agent any
   stages {
-    stage('Install build dependencies') {
-      steps {
-        sh 'pip install -U --upgrade pytest'
-      }
-    }
-
     stage('Run pytest') {
       steps {
-        sh '/usr/local/bin/pytest-venv'
+        sh 'pip install --user -r requirements.txt'
+        sh 'pip install --user --upgrade pytest'
+        sh 'python -m pytest'
       }
     }
 
