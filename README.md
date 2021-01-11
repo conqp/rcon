@@ -37,6 +37,17 @@ with Client('127.0.0.1', 5000, passwd='mysecretpassword') as client:
 print(response)
 ```
 
+## Async support
+If you prefer to use `RCON` in an asynchronous environment, you can use `rcon()`.
+
+```python
+from rcon import rcon
+
+response = await rcon('some_command', 'with', 'some', 'arguments',
+                      host='127.0.0.1', port=5000, passwd='mysecretpassword')
+print(response)
+```
+
 ## License
 Copyright (C) 2018-2020 Richard Neumann <mail at richard dash neumann period de>
 

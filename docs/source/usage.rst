@@ -11,6 +11,18 @@ For usage in code, there is the class :py:class:`rcon.Client`.
 
     print(response)
 
+Async support
+-------------
+If you want to use RCOn in an asynchronous environment, use :py:function:`rcon.rcon`.
+
+.. code-block:: python
+
+    from rcon import rcon
+
+    response = await rcon('some_command', 'with', 'some', 'arguments',
+                          host='127.0.0.1', port=5000, passwd='mysecretpassword')
+    print(response)
+
 Configuration
 -------------
 `rconclt` servers can be configured in :file:`/etc/rcon.conf`.
