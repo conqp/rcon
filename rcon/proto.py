@@ -76,7 +76,7 @@ class Type(Enum):
     @classmethod
     async def aread(cls, file: IO) -> Type:
         """Reads the type from an asynchronous file-like object."""
-        return cls(await LittleEndianSignedInt32.read(file))
+        return cls(await LittleEndianSignedInt32.aread(file))
 
     @classmethod
     def read(cls, file: IO) -> Type:
@@ -104,9 +104,9 @@ class Packet(NamedTuple):
     @classmethod
     async def aread(cls, file: IO) -> Packet:
         """Reads a packet from an asynchronous file-like object."""
-        size = await LittleEndianSignedInt32.read(file)
-        id_ = await LittleEndianSignedInt32.read(file)
-        type_ = await Type.read(file)
+        size = await LittleEndianSignedInt32.aread(file)
+        id_ = await LittleEndianSignedInt32.aread(file)
+        type_ = await Type.aread(file)
         payload = await file.read(size - 10)
         terminator = await file.read(2)
 
