@@ -46,7 +46,7 @@ class LittleEndianSignedInt32(int):
 
     @classmethod
     def read(cls, file: IO) -> LittleEndianSignedInt32:
-        """Creates the integer from the given bytes."""
+        """Reads the integer from a file-like object."""
         return super().from_bytes(file.read(4), 'little', signed=True)
 
 
@@ -68,7 +68,7 @@ class Type(Enum):
 
     @classmethod
     def read(cls, file: IO) -> Type:
-        """Creates a type from the given bytes."""
+        """Reads the type from a file-like object."""
         return cls(LittleEndianSignedInt32.read(file))
 
 
