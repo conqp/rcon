@@ -12,6 +12,14 @@ rcon.asyncio module
    :undoc-members:
    :show-inheritance:
 
+rcon.client module
+------------------
+
+.. automodule:: rcon.client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 rcon.config module
 ------------------
 
