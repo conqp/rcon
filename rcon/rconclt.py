@@ -4,9 +4,9 @@ from argparse import ArgumentParser, Namespace
 from logging import DEBUG, INFO, basicConfig, getLogger
 from pathlib import Path
 
-from rcon.errorhandler import ErrorHandler
+from rcon.client import Client
 from rcon.config import CONFIG_FILES, LOG_FORMAT, from_args
-from rcon.proto import Client
+from rcon.errorhandler import ErrorHandler
 
 
 __all__ = ['main']

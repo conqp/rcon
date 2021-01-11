@@ -13,9 +13,9 @@ require_version('Gtk', '3.0')
 # pylint: disable=C0413
 from gi.repository import Gtk
 
+from rcon.client import Client
 from rcon.config import LOG_FORMAT
 from rcon.exceptions import RequestIdMismatch, WrongPassword
-from rcon.proto import Client
 
 
 __all__ = ['main']
