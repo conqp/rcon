@@ -4,6 +4,14 @@ rcon package
 Submodules
 ----------
 
+rcon.asyncio module
+-------------------
+
+.. automodule:: rcon.asyncio
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 rcon.config module
 ------------------
 
@@ -24,6 +32,14 @@ rcon.errorhandler module
 ------------------------
 
 .. automodule:: rcon.errorhandler
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rcon.exceptions module
+----------------------
+
+.. automodule:: rcon.exceptions
    :members:
    :undoc-members:
    :show-inheritance:
