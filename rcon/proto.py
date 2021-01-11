@@ -45,6 +45,11 @@ class LittleEndianSignedInt32(int):
         return self.to_bytes(4, 'little', signed=True)
 
     @classmethod
+    async def aread(cls, file: IO) -> LittleEndianSignedInt32:
+        """Reads the integer from an ansynchronous file-like object."""
+        return cls.from_bytes(await file.read(4), 'little', signed=True)
+
+    @classmethod
     def read(cls, file: IO) -> LittleEndianSignedInt32:
         """Reads the integer from a file-like object."""
         return cls.from_bytes(file.read(4), 'little', signed=True)
@@ -65,6 +70,11 @@ class Type(Enum):
     def __bytes__(self):
         """Returns the integer value as little endian."""
         return bytes(self.value)
+
+    @classmethod
+    async def aread(cls, file: IO) -> Type:
+        """Reads the type from an asynchronous file-like object."""
+        return cls(await LittleEndianSignedInt32.read(file))
 
     @classmethod
     def read(cls, file: IO) -> Type:
@@ -88,6 +98,20 @@ class Packet(NamedTuple):
         payload += self.terminator.encode()
         size = bytes(LittleEndianSignedInt32(len(payload)))
         return size + payload
+
+    @classmethod
+    async def aread(cls, file: IO) -> Packet:
+        """Reads a packet from an asynchronous file-like object."""
+        size = await LittleEndianSignedInt32.read(file)
+        id_ = await LittleEndianSignedInt32.read(file)
+        type_ = await Type.read(file)
+        payload = await file.read(size - 10)
+        terminator = await file.read(2)
+
+        if terminator != TERMINATOR:
+            LOGGER.warning('Unexpected terminator: %s', terminator)
+
+        return cls(id_, type_, payload.decode(), terminator.decode())
 
     @classmethod
     def read(cls, file: IO) -> Packet:
