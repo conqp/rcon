@@ -3,6 +3,7 @@
 from asyncio import open_connection
 from typing import IO
 
+from rcon.exceptions import RequestIdMismatch, WrongPassword
 from rcon.proto import Packet
 
 
@@ -26,12 +27,12 @@ async def rcon(command: str, *arguments: str, host: str, port: int,
     response = await communicate(reader, writer, login)
 
     if response.id == -1:
-        raise RuntimeError('Wrong password.')
+        raise WrongPassword()
 
     request = Packet.make_command(command, *arguments)
     response = await communicate(reader, writer, request)
 
     if response.id != request.id:
-        raise RuntimeError('Request ID mismatch.')
+        raise RequestIdMismatch(request.id, response.id)
 
     return response.payload

@@ -4,6 +4,8 @@ from logging import Logger
 from socket import timeout
 from sys import exit    # pylint: disable=W0622
 
+from rcon.exceptions import RequestIdMismatch, WrongPassword
+
 
 __all__ = ['ErrorHandler']
 
@@ -30,6 +32,10 @@ class ErrorHandler:
             self.logger.error('Connection timed out.')
             exit(4)
 
-        if isinstance(value, RuntimeError):
-            self.logger.error(str(value))
+        if isinstance(value, WrongPassword):
+            self.logger.error('Wrong password.')
+            exit(5)
+
+        if isinstance(value, RequestIdMismatch):
+            self.logger.error('Session timed out.')
             exit(5)

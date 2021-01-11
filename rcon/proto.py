@@ -7,6 +7,8 @@ from random import randint
 from socket import SOCK_STREAM, socket
 from typing import IO, NamedTuple, Optional
 
+from rcon.exceptions import RequestIdMismatch, WrongPassword
+
 
 __all__ = [
     'LittleEndianSignedInt32',
@@ -200,7 +202,7 @@ class Client:
         response = self.communicate(Packet.make_login(passwd))
 
         if response.id == -1:
-            raise RuntimeError('Wrong password.')
+            raise WrongPassword()
 
         return True
 
@@ -213,6 +215,6 @@ class Client:
             if self.passwd is not None and self.login(self.passwd):
                 return self.run(command, *arguments)
 
-            raise RuntimeError('Request ID mismatch.')
+            raise RequestIdMismatch(request.id, response.id)
 
         return response if raw else response.payload

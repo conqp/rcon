@@ -14,6 +14,7 @@ require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 from rcon.config import LOG_FORMAT
+from rcon.exceptions import RequestIdMismatch, WrongPassword
 from rcon.proto import Client
 
 
@@ -207,8 +208,12 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
             self.show_error('Connection refused.')
         except (TimeoutError, timeout):
             self.show_error('Connection timed out.')
-        except RuntimeError as error:
-            self.show_error(str(error))
+        except WrongPassword:
+            self.show_error('Wrong password.')
+        except RequestIdMismatch as mismatch:
+            self.show_error(
+                'Request ID mismatch.\n'
+                f'Expected {mismatch.sent}, but got {mismatch.received}.')
         else:
             self.result_text = result
 
