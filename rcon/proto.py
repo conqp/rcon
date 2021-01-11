@@ -212,9 +212,6 @@ class Client:
         response = self.communicate(request)
 
         if response.id != request.id:
-            if self.passwd is not None and self.login(self.passwd):
-                return self.run(command, *arguments)
-
             raise RequestIdMismatch(request.id, response.id)
 
         return response if raw else response.payload
