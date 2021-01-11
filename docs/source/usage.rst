@@ -13,7 +13,7 @@ For usage in code, there is the class :py:class:`rcon.Client`.
 
 Async support
 -------------
-If you want to use RCOn in an asynchronous environment, use :py:function:`rcon.rcon`.
+If you want to use RCOn in an asynchronous environment, use :py:func:`rcon.rcon`.
 
 .. code-block:: python
 
