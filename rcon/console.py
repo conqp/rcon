@@ -120,8 +120,53 @@ def process_input(client: Client, passwd: str, prompt: str) -> bool:
             print(MSG_LOGIN_ABORTED)
             return False
 
-    print(result)
+    print(colorize(result))
+    print("\033[0m")
     return True
+
+
+def esc_256f(rgb_full):
+    """Convert 8 bit RGB value to extended ANSI escape sequence"""
+    rgb_666_value = 16 + \
+                    36 * (round(rgb_full[0] / 255.0) * 5) + \
+                    6 * (round(rgb_full[1] / 255.0) * 5) + \
+                    (round(rgb_full[2] / 255.0) * 5)
+    return "\033[38;5;{}m".format(str(rgb_666_value))
+
+
+def colorize(text):
+    """Replace Minecraft formating codes with ANSI escape sequences"""
+    # https://www.digminecraft.com/lists/color_list_pc.php
+    # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    chat_codes = {
+        "§4": esc_256f((0xAA, 0x00, 0x00)),
+        "§c": esc_256f((0xFF, 0x55, 0x55)),
+        "§6": esc_256f((0xFF, 0xAA, 0x00)),
+        "§e": esc_256f((0xFF, 0xFF, 0x55)),
+        "§2": esc_256f((0x00, 0xAA, 0x00)),
+        "§a": esc_256f((0x55, 0xFF, 0x55)),
+        "§b": esc_256f((0x55, 0xFF, 0xFF)),
+        "§3": esc_256f((0x00, 0xAA, 0xAA)),
+        "§1": esc_256f((0x00, 0x00, 0xAA)),
+        "§9": esc_256f((0x55, 0x55, 0xFF)),
+        "§d": esc_256f((0xFF, 0x55, 0xFF)),
+        "§5": esc_256f((0xAA, 0x00, 0xAA)),
+        "§f": esc_256f((0xFF, 0xFF, 0xFF)),
+        "§7": esc_256f((0xAA, 0xAA, 0xAA)),
+        "§8": esc_256f((0x55, 0x55, 0x55)),
+        "§0": esc_256f((0x00, 0x00, 0x00)),
+
+        "§l": "\033[1m",      # bold
+        "§m": "\033[9m",      # strikethrough
+        "§n": "\033[4m",      # underline
+        "§o": "\033[3m",      # italic
+
+        "§r": "\033[0m",      # reset
+    }
+
+    for k, v in chat_codes.items():
+        text = text.replace(k, v)
+    return text
 
 
 def rconcmd(host: str, port: int, passwd: str, *, prompt: str = PROMPT):
