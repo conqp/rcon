@@ -1,13 +1,5 @@
 [![Documentation Status](https://readthedocs.org/projects/rcon/badge/?version=latest)](https://rcon.readthedocs.io/en/latest/)
-[![Bugs](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=bugs)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
-[![Code Smells](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=code_smells)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
-[![Lines of Code](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=ncloc)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
-[![Maintainability Rating](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=sqale_rating)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
 [![Quality Gate Status](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=alert_status)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
-[![Reliability Rating](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=reliability_rating)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
-[![Security Rating](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=security_rating)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
-[![Technical Debt](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=sqale_index)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
-[![Vulnerabilities](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=vulnerabilities)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
 
 # rcon
 An [RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol) client implementation.
