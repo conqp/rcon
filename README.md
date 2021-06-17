@@ -41,7 +41,7 @@ print(response)
 ```
 
 ## License
-Copyright (C) 2018-2020 Richard Neumann <mail at richard dash neumann period de>
+Copyright (C) 2018-2021 Richard Neumann <mail at richard dash neumann period de>
 
 rcon is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
