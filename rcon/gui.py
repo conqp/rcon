@@ -5,7 +5,7 @@ from json import dump, load
 from logging import DEBUG, INFO, basicConfig, getLogger
 from os import getenv, name
 from pathlib import Path
-from socket import timeout
+from socket import gaierror, timeout
 from typing import Iterable, NamedTuple
 
 from gi import require_version
@@ -204,6 +204,8 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
             result = self.run_rcon()
         except ValueError as error:
             self.show_error(str(error))
+        except gaierror as error:
+            self.show_error(error.strerror)
         except ConnectionRefusedError:
             self.show_error('Connection refused.')
         except (TimeoutError, timeout):
