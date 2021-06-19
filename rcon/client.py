@@ -4,7 +4,7 @@ from socket import socket
 from typing import Optional
 
 from rcon.exceptions import RequestIdMismatch, WrongPassword
-from rcon.proto import Packet
+from rcon.proto import Packet, Type
 
 
 __all__ = ['Client']
@@ -63,12 +63,18 @@ class Client:
         with self._socket.makefile('wb') as file:
             file.write(bytes(packet))
 
+        return self.read()
+
+    def read(self) -> Packet:
         with self._socket.makefile('rb') as file:
             return Packet.read(file)
 
     def login(self, passwd: str) -> bool:
         """Performs a login."""
         response = self.communicate(Packet.make_login(passwd))
+
+        while response.type != Type.SERVERDATA_AUTH_RESPONSE:
+            response = self.read()
 
         if response.id == -1:
             raise WrongPassword()
