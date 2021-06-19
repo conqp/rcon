@@ -66,6 +66,7 @@ class Client:
         return self.read()
 
     def read(self) -> Packet:
+        """Reads a packet."""
         with self._socket.makefile('rb') as file:
             return Packet.read(file)
 
