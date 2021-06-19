@@ -74,6 +74,8 @@ class Client:
         """Performs a login."""
         response = self.communicate(Packet.make_login(passwd))
 
+        # Wait for SERVERDATA_AUTH_RESPONSE according to:
+        # https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
         while response.type != Type.SERVERDATA_AUTH_RESPONSE:
             response = self.read()
 
