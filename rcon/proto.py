@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from enum import Enum
+from functools import partial
 from logging import getLogger
 from random import randint
 from typing import IO, NamedTuple
@@ -11,7 +12,7 @@ __all__ = ['LittleEndianSignedInt32', 'Type', 'Packet', 'random_request_id']
 
 
 LOGGER = getLogger(__file__)
-TERMINATOR = '\x00\x00'
+TERMINATOR = b'\x00\x00'
 
 
 def random_request_id() -> LittleEndianSignedInt32:
@@ -80,15 +81,15 @@ class Packet(NamedTuple):
 
     id: LittleEndianSignedInt32
     type: Type
-    payload: str
-    terminator: str = TERMINATOR
+    payload: bytes
+    terminator: bytes = TERMINATOR
 
     def __bytes__(self):
         """Returns the packet as bytes with prepended length."""
         payload = bytes(self.id)
         payload += bytes(self.type)
-        payload += self.payload.encode()
-        payload += self.terminator.encode()
+        payload += self.payload
+        payload += self.terminator
         size = bytes(LittleEndianSignedInt32(len(payload)))
         return size + payload
 
@@ -101,10 +102,10 @@ class Packet(NamedTuple):
         payload = await file.read(size - 10)
         terminator = await file.read(2)
 
-        if (terminator := terminator.decode()) != TERMINATOR:
+        if terminator != TERMINATOR:
             LOGGER.warning('Unexpected terminator: %s', terminator)
 
-        return cls(id_, type_, payload.decode(), terminator)
+        return cls(id_, type_, payload, terminator)
 
     @classmethod
     def read(cls, file: IO) -> Packet:
@@ -112,8 +113,8 @@ class Packet(NamedTuple):
         size = LittleEndianSignedInt32.read(file)
         id_ = LittleEndianSignedInt32.read(file)
         type_ = Type.read(file)
-        payload = file.read(size - 10).decode()
-        terminator = file.read(2).decode()
+        payload = file.read(size - 10)
+        terminator = file.read(2)
 
         if terminator != TERMINATOR:
             LOGGER.warning('Unexpected terminator: %s', terminator)
@@ -121,12 +122,13 @@ class Packet(NamedTuple):
         return cls(id_, type_, payload, terminator)
 
     @classmethod
-    def make_command(cls, *args: str) -> Packet:
+    def make_command(cls, *args: str, encoding: str = 'utf-8') -> Packet:
         """Creates a command packet."""
         return cls(random_request_id(), Type.SERVERDATA_EXECCOMMAND,
-                   ' '.join(args))
+                   b' '.join(map(partial(str.encode, encoding=encoding), args)))
 
     @classmethod
-    def make_login(cls, passwd: str) -> Packet:
+    def make_login(cls, passwd: bytes, *, encoding: str = 'utf-8') -> Packet:
         """Creates a login packet."""
-        return cls(random_request_id(), Type.SERVERDATA_AUTH, passwd)
+        return cls(random_request_id(), Type.SERVERDATA_AUTH,
+                   passwd.encode(encoding))
