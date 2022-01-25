@@ -137,7 +137,7 @@ class TestPacket(TestCase):
         self.packet = Packet(
             random_request_id(),
             Type.SERVERDATA_EXECCOMMAND,
-            'Lorem ipsum sit amet...'
+            'Lorem ipsum sit amet...'.encode()
         )
 
     def test_bytes_rw(self):

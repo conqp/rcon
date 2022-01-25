@@ -70,9 +70,10 @@ class Client:
         with self._socket.makefile('rb') as file:
             return Packet.read(file)
 
-    def login(self, passwd: str) -> bool:
+    def login(self, passwd: str, *, encoding: str = 'utf-8') -> bool:
         """Performs a login."""
-        response = self.communicate(Packet.make_login(passwd))
+        request = Packet.make_login(passwd, encoding=encoding)
+        response = self.communicate(request)
 
         # Wait for SERVERDATA_AUTH_RESPONSE according to:
         # https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
@@ -84,12 +85,12 @@ class Client:
 
         return True
 
-    def run(self, command: str, *arguments: str, raw: bool = False) -> str:
+    def run(self, command: str, *args: str, encoding: str = 'utf-8') -> str:
         """Runs a command."""
-        request = Packet.make_command(command, *arguments)
+        request = Packet.make_command(command, *args, encoding=encoding)
         response = self.communicate(request)
 
         if response.id != request.id:
             raise RequestIdMismatch(request.id, response.id)
 
-        return response if raw else response.payload
+        return response.payload.decode(encoding)

@@ -19,11 +19,11 @@ async def communicate(reader: IO, writer: IO, packet: Packet) -> Packet:
 
 
 async def rcon(command: str, *arguments: str, host: str, port: int,
-               passwd: str) -> str:
+               passwd: str, encoding: str = 'utf-8') -> str:
     """Runs a command asynchronously."""
 
     reader, writer = await open_connection(host, port)
-    login = Packet.make_login(passwd)
+    login = Packet.make_login(passwd, encoding=encoding)
     response = await communicate(reader, writer, login)
 
     # Wait for SERVERDATA_AUTH_RESPONSE according to:
@@ -34,10 +34,10 @@ async def rcon(command: str, *arguments: str, host: str, port: int,
     if response.id == -1:
         raise WrongPassword()
 
-    request = Packet.make_command(command, *arguments)
+    request = Packet.make_command(command, *arguments, encoding=encoding)
     response = await communicate(reader, writer, request)
 
     if response.id != request.id:
         raise RequestIdMismatch(request.id, response.id)
 
-    return response.payload
+    return response.payload.decode(encoding)
