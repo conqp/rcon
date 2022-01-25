@@ -10,7 +10,6 @@ from typing import Iterable, NamedTuple
 
 from gi import require_version
 require_version('Gtk', '3.0')
-# pylint: disable=C0413
 from gi.repository import Gtk
 
 from rcon.client import Client
@@ -70,7 +69,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         self.host.set_placeholder_text('Host')
         self.grid.attach(self.host, 0, 0, 1, 1)
 
-        self.port = Gtk.Entry()
+        self.port = Gtk.SpinButton.new_with_range(0, 65535, 1)
         self.port.set_placeholder_text('Port')
         self.grid.attach(self.port, 1, 0, 1, 1)
 
@@ -117,7 +116,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         """Returns the GUI settings as a dict."""
         json = {
             'host': self.host.get_text(),
-            'port': self.port.get_text(),
+            'port': self.port.get_value_as_int(),
             'command': self.command.get_text(),
             'result': self.result_text,
             'savepw': (savepw := self.savepw.get_active())
@@ -132,7 +131,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
     def gui_settings(self, json: dict):
         """Sets the GUI settings."""
         self.host.set_text(json.get('host', ''))
-        self.port.set_text(json.get('port', ''))
+        self.port.set_value(json.get('port', 0))
         self.passwd.set_text(json.get('passwd', ''))
         self.command.set_text(json.get('command', ''))
         self.result_text = json.get('result', '')
@@ -164,39 +163,20 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
             transient_for=self,
             message_type=Gtk.MessageType.ERROR,
             buttons=Gtk.ButtonsType.OK,
-            text=message)
+            text=message
+        )
         message_dialog.run()
         message_dialog.destroy()
 
-    def get_rcon_params(self) -> RCONParams:
-        """Returns all settings as a dict."""
-        if not (host := self.host.get_text().strip()):
-            raise ValueError('No host specified.')
-
-        if not (port := self.port.get_text().strip()):
-            raise ValueError('No port specified.')
-
-        try:
-            port = int(port)
-        except ValueError:
-            raise ValueError('Invalid port specified.') from None
-
-        if not 0 <= port <= 65535:
-            raise ValueError('Invalid port specified.')
-
-        if not (command := self.command.get_text().strip()):
-            raise ValueError('No command entered.')
-
-        command = tuple(filter(None, command.split()))
-        return RCONParams(host, port, self.passwd.get_text(), command)
-
     def run_rcon(self) -> str:
         """Returns the current RCON settings."""
-        params = self.get_rcon_params()
-
-        with Client(params.host, params.port, timeout=self.args.timeout,
-                    passwd=params.passwd) as client:
-            return client.run(*params.command)
+        with Client(
+                self.host.get_text().strip(),
+                self.port.get_value_as_int(),
+                timeout=self.args.timeout,
+                passwd=self.passwd.get_text()
+        ) as client:
+            return client.run(*self.command.get_text().strip().split())
 
     def on_button_clicked(self, _):
         """Runs the client."""
@@ -215,7 +195,8 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         except RequestIdMismatch as mismatch:
             self.show_error(
                 'Request ID mismatch.\n'
-                f'Expected {mismatch.sent}, but got {mismatch.received}.')
+                f'Expected {mismatch.sent}, but got {mismatch.received}.'
+            )
         else:
             self.result_text = result
 
@@ -234,3 +215,7 @@ def main() -> None:
     win.connect('destroy', win.terminate)
     win.show_all()
     Gtk.main()
+
+
+if __name__ == '__main__':
+    main()
