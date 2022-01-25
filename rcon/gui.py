@@ -88,6 +88,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
 
         self.result = Gtk.TextView()
         self.result.set_wrap_mode(Gtk.WrapMode.WORD)
+        self.result.set_property('editable', False)
         self.grid.attach(self.result, 0, 2, 2, 1)
 
         self.savepw = Gtk.CheckButton(label='Save password')
