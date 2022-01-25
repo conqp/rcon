@@ -216,7 +216,3 @@ def main() -> None:
     win.connect('destroy', win.terminate)
     win.show_all()
     Gtk.main()
-
-
-if __name__ == '__main__':
-    main()
