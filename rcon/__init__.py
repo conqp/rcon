@@ -1,6 +1,6 @@
 """RCON client library."""
 
-from rcon.asyncio import rcon
+from rcon.async_rcon import rcon
 from rcon.client import Client
 from rcon.exceptions import RequestIdMismatch, WrongPassword
 
