@@ -10,8 +10,7 @@ An [RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
 ## Documentation
 Documentation is available on [readthedocs](https://rcon.readthedocs.io/en/latest/).
 
-## Installations
-
+## Installation
 Install rcon from the [AUR](https://aur.archlinux.org/packages/python-rcon/) or via:
 
     pip install rcon
@@ -35,8 +34,10 @@ If you prefer to use `RCON` in an asynchronous environment, you can use `rcon()`
 ```python
 from rcon import rcon
 
-response = await rcon('some_command', 'with', 'some', 'arguments',
-                      host='127.0.0.1', port=5000, passwd='mysecretpassword')
+response = await rcon(
+    'some_command', 'with', 'some', 'arguments',
+    host='127.0.0.1', port=5000, passwd='mysecretpassword'
+)
 print(response)
 ```
 
