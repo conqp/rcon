@@ -21,7 +21,7 @@ setup(
     },
     url='https://github.com/conqp/rcon',
     license='GPLv3',
-    description='A RCON client library library.',
+    description='An RCON client library.',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     keywords='python rcon client'
