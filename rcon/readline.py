@@ -1,12 +1,11 @@
 """Wrapper for readline support."""
 
 from logging import Logger
-from os import name
 from pathlib import Path
 
-if name == 'posix':
+try:
     from readline import read_history_file, write_history_file
-else:
+except ModuleNotFoundError:
     read_history_file = write_history_file = lambda _: None
 
 
