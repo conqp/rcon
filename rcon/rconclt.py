@@ -7,6 +7,7 @@ from pathlib import Path
 from rcon.client import Client
 from rcon.config import CONFIG_FILES, LOG_FORMAT, from_args
 from rcon.errorhandler import ErrorHandler
+from rcon.exceptions import ConfigReadError
 
 
 __all__ = ['main']
@@ -39,12 +40,16 @@ def get_args() -> Namespace:
     return parser.parse_args()
 
 
-def main() -> None:
+def main() -> int:
     """Runs the RCON client."""
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
-    host, port, passwd = from_args(args)
+
+    try:
+        host, port, passwd = from_args(args)
+    except ConfigReadError as cre:
+        return cre.exit_code
 
     with ErrorHandler(LOGGER):
         with Client(host, port, timeout=args.timeout) as client:
@@ -52,3 +57,4 @@ def main() -> None:
             text = client.run(args.command, *args.argument)
 
     print(text, flush=True)
+    return 0

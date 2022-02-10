@@ -7,8 +7,9 @@ from getpass import getpass
 from logging import getLogger
 from os import getenv, name
 from pathlib import Path
-from sys import exit    # pylint: disable=W0622
 from typing import Iterable, NamedTuple, Optional, Union
+
+from rcon.exceptions import ConfigReadError
 
 
 __all__ = ['CONFIG_FILES', 'LOG_FORMAT', 'SERVERS', 'Config', 'from_args']
@@ -92,7 +93,7 @@ def from_args(args: Namespace) -> Config:
             host, port, passwd = SERVERS[args.server]
         except KeyError:
             LOGGER.error('No such server: %s.', args.server)
-            exit(2)
+            raise ConfigReadError(2)
 
     if passwd is None:
         try:
@@ -100,6 +101,6 @@ def from_args(args: Namespace) -> Config:
         except (KeyboardInterrupt, EOFError):
             print()
             LOGGER.error('Aborted by user.')
-            exit(1)
+            raise ConfigReadError(1)
 
     return Config(host, port, passwd)
