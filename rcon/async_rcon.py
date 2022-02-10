@@ -17,7 +17,9 @@ async def close(writer: StreamWriter) -> None:
 
 
 async def communicate(
-        reader: StreamReader, writer: StreamWriter, packet: Packet
+        reader: StreamReader,
+        writer: StreamWriter,
+        packet: Packet
 ) -> Packet:
     """Asynchronous requests."""
 
