@@ -3,10 +3,23 @@
 from logging import Logger
 from socket import timeout
 
-from rcon.exceptions import ConfigReadError, RequestIdMismatch, WrongPassword
+from rcon.exceptions import ConfigReadError
+from rcon.exceptions import RequestIdMismatch
+from rcon.exceptions import UserAbort
+from rcon.exceptions import WrongPassword
 
 
 __all__ = ['ErrorHandler']
+
+
+ERRORS = {
+    UserAbort: 1,
+    ConfigReadError: 2,
+    ConnectionRefusedError: 3,
+    (TimeoutError, timeout): 4,
+    WrongPassword: 5,
+    RequestIdMismatch: 6
+}
 
 
 class ErrorHandler:
@@ -22,23 +35,11 @@ class ErrorHandler:
     def __enter__(self):
         return self
 
-    def __exit__(self, _, value, __):
+    def __exit__(self, _, value: Exception, __):
         """Checks for connection errors and exits respectively."""
-        if isinstance(value, ConnectionRefusedError):
-            self.logger.error('Connection refused.')
-            self.exit_code = 3
-        elif isinstance(value, (TimeoutError, timeout)):
-            self.logger.error('Connection timed out.')
-            self.exit_code = 4
-        elif isinstance(value, WrongPassword):
-            self.logger.error('Wrong password.')
-            self.exit_code = 5
-        elif isinstance(value, RequestIdMismatch):
-            self.logger.error('Session timed out.')
-            self.exit_code = 6
-        elif isinstance(value, ConfigReadError):
-            self.exit_code = value.exit_code
-        else:
-            return None
+        for typ, exit_code in ERRORS.items():
+            if isinstance(value, typ):
+                self.exit_code = exit_code
+                return True
 
-        return True
+        return None

@@ -7,7 +7,6 @@ from pathlib import Path
 from rcon.config import CONFIG_FILES, LOG_FORMAT, from_args
 from rcon.console import PROMPT, rconcmd
 from rcon.errorhandler import ErrorHandler
-from rcon.exceptions import ConfigReadError
 from rcon.readline import CommandHistory
 
 
@@ -33,25 +32,25 @@ def get_args() -> Namespace:
     return parser.parse_args()
 
 
-def main() -> int:
+def run() -> None:
     """Runs the RCON shell."""
 
     args = get_args()
     basicConfig(level=INFO, format=LOG_FORMAT)
 
     if args.server:
-        try:
-            host, port, passwd = from_args(args)
-        except ConfigReadError as cre:
-            return cre.exit_code
+        host, port, passwd = from_args(args)
     else:
         host = port = passwd = None
 
+    with CommandHistory(LOGGER):
+        rconcmd(host, port, passwd, prompt=args.prompt)
+
+
+def main() -> int:
+    """Runs the main script with exceptions handled."""
+
     with ErrorHandler(LOGGER) as handler:
-        with CommandHistory(LOGGER):
-            rconcmd(host, port, passwd, prompt=args.prompt)
+        run()
 
-    if handler.exit_code:
-        return handler.exit_code
-
-    return 0
+    return handler.exit_code

@@ -9,7 +9,7 @@ from os import getenv, name
 from pathlib import Path
 from typing import Iterable, NamedTuple, Optional, Union
 
-from rcon.exceptions import ConfigReadError
+from rcon.exceptions import ConfigReadError, UserAbort
 
 
 __all__ = ['CONFIG_FILES', 'LOG_FORMAT', 'SERVERS', 'Config', 'from_args']
@@ -93,7 +93,7 @@ def from_args(args: Namespace) -> Config:
             host, port, passwd = SERVERS[args.server]
         except KeyError:
             LOGGER.error('No such server: %s.', args.server)
-            raise ConfigReadError(2)
+            raise ConfigReadError() from None
 
     if passwd is None:
         try:
@@ -101,6 +101,6 @@ def from_args(args: Namespace) -> Config:
         except (KeyboardInterrupt, EOFError):
             print()
             LOGGER.error('Aborted by user.')
-            raise ConfigReadError(1)
+            raise UserAbort() from None
 
     return Config(host, port, passwd)
