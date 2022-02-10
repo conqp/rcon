@@ -10,6 +10,13 @@ from rcon.proto import Packet, Type
 __all__ = ['rcon']
 
 
+async def close(socket: IO) -> None
+    """Close socket asynchronously"""
+
+    socket.close()
+    await socket.wait_closed()
+
+
 async def communicate(reader: IO, writer: IO, packet: Packet) -> Packet:
     """Asynchronous requests."""
 
@@ -32,10 +39,12 @@ async def rcon(command: str, *arguments: str, host: str, port: int,
         response = await Packet.aread(reader)
 
     if response.id == -1:
+        await close(writer)
         raise WrongPassword()
 
     request = Packet.make_command(command, *arguments, encoding=encoding)
     response = await communicate(reader, writer, request)
+    await close(writer)
 
     if response.id != request.id:
         raise RequestIdMismatch(request.id, response.id)
