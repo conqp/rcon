@@ -21,10 +21,14 @@ def get_args() -> Namespace:
 
     parser = ArgumentParser(description='An interactive RCON shell.')
     parser.add_argument('server', nargs='?', help='the server to connect to')
-    parser.add_argument('-c', '--config', type=Path, metavar='file',
-                        default=CONFIG_FILES, help='the configuration file')
-    parser.add_argument('-p', '--prompt', default=PROMPT, metavar='PS1',
-                        help='the shell prompt')
+    parser.add_argument(
+        '-c', '--config', type=Path, metavar='file', default=CONFIG_FILES,
+        help='the configuration file'
+    )
+    parser.add_argument(
+        '-p', '--prompt', default=PROMPT, metavar='PS1',
+        help='the shell prompt'
+    )
     return parser.parse_args()
 
 

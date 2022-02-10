@@ -20,15 +20,22 @@ def get_args() -> Namespace:
 
     parser = ArgumentParser(description='A Minecraft RCON client.')
     parser.add_argument('server', help='the server to connect to')
-    parser.add_argument('-c', '--config', type=Path, metavar='file',
-                        default=CONFIG_FILES, help='the configuration file')
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='print additional debug information')
-    parser.add_argument('-t', '--timeout', type=float, metavar='seconds',
-                        help='connection timeout in seconds')
+    parser.add_argument(
+        '-c', '--config', type=Path, metavar='file', default=CONFIG_FILES,
+        help='the configuration file'
+    )
+    parser.add_argument(
+        '-d', '--debug', action='store_true',
+        help='print additional debug information'
+    )
+    parser.add_argument(
+        '-t', '--timeout', type=float, metavar='seconds',
+        help='connection timeout in seconds'
+    )
     parser.add_argument('command', help='command to execute on the server')
-    parser.add_argument('argument', nargs='*', default=(),
-                        help='arguments for the command')
+    parser.add_argument(
+        'argument', nargs='*', default=(), help='arguments for the command'
+    )
     return parser.parse_args()
 
 

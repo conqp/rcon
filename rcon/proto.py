@@ -1,6 +1,7 @@
 """Low-level protocol stuff."""
 
 from __future__ import annotations
+from asyncio import StreamReader
 from enum import Enum
 from functools import partial
 from logging import getLogger
@@ -39,9 +40,9 @@ class LittleEndianSignedInt32(int):
         return self.to_bytes(4, 'little', signed=True)
 
     @classmethod
-    async def aread(cls, file: IO) -> LittleEndianSignedInt32:
-        """Reads the integer from an ansynchronous file-like object."""
-        return cls.from_bytes(await file.read(4), 'little', signed=True)
+    async def aread(cls, reader: StreamReader) -> LittleEndianSignedInt32:
+        """Reads the integer from an asynchronous file-like object."""
+        return cls.from_bytes(await reader.read(4), 'little', signed=True)
 
     @classmethod
     def read(cls, file: IO) -> LittleEndianSignedInt32:
@@ -66,9 +67,9 @@ class Type(Enum):
         return bytes(self.value)
 
     @classmethod
-    async def aread(cls, file: IO) -> Type:
+    async def aread(cls, reader: StreamReader) -> Type:
         """Reads the type from an asynchronous file-like object."""
-        return cls(await LittleEndianSignedInt32.aread(file))
+        return cls(await LittleEndianSignedInt32.aread(reader))
 
     @classmethod
     def read(cls, file: IO) -> Type:
@@ -94,13 +95,13 @@ class Packet(NamedTuple):
         return size + payload
 
     @classmethod
-    async def aread(cls, file: IO) -> Packet:
+    async def aread(cls, reader: StreamReader) -> Packet:
         """Reads a packet from an asynchronous file-like object."""
-        size = await LittleEndianSignedInt32.aread(file)
-        id_ = await LittleEndianSignedInt32.aread(file)
-        type_ = await Type.aread(file)
-        payload = await file.read(size - 10)
-        terminator = await file.read(2)
+        size = await LittleEndianSignedInt32.aread(reader)
+        id_ = await LittleEndianSignedInt32.aread(reader)
+        type_ = await Type.aread(reader)
+        payload = await reader.read(size - 10)
+        terminator = await reader.read(2)
 
         if terminator != TERMINATOR:
             LOGGER.warning('Unexpected terminator: %s', terminator)
@@ -124,11 +125,14 @@ class Packet(NamedTuple):
     @classmethod
     def make_command(cls, *args: str, encoding: str = 'utf-8') -> Packet:
         """Creates a command packet."""
-        return cls(random_request_id(), Type.SERVERDATA_EXECCOMMAND,
-                   b' '.join(map(partial(str.encode, encoding=encoding), args)))
+        return cls(
+            random_request_id(), Type.SERVERDATA_EXECCOMMAND,
+            b' '.join(map(partial(str.encode, encoding=encoding), args))
+        )
 
     @classmethod
-    def make_login(cls, passwd: bytes, *, encoding: str = 'utf-8') -> Packet:
+    def make_login(cls, passwd: str, *, encoding: str = 'utf-8') -> Packet:
         """Creates a login packet."""
-        return cls(random_request_id(), Type.SERVERDATA_AUTH,
-                   passwd.encode(encoding))
+        return cls(
+            random_request_id(), Type.SERVERDATA_AUTH, passwd.encode(encoding)
+        )

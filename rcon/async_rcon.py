@@ -1,7 +1,6 @@
 """Asynchronous RCON."""
 
-from asyncio import open_connection
-from typing import IO
+from asyncio import StreamReader, StreamWriter, open_connection
 
 from rcon.exceptions import RequestIdMismatch, WrongPassword
 from rcon.proto import Packet, Type
@@ -10,14 +9,16 @@ from rcon.proto import Packet, Type
 __all__ = ['rcon']
 
 
-async def close(socket: IO) -> None:
+async def close(writer: StreamWriter) -> None:
     """Close socket asynchronously."""
 
-    socket.close()
-    await socket.wait_closed()
+    writer.close()
+    await writer.wait_closed()
 
 
-async def communicate(reader: IO, writer: IO, packet: Packet) -> Packet:
+async def communicate(
+        reader: StreamReader, writer: StreamWriter, packet: Packet
+) -> Packet:
     """Asynchronous requests."""
 
     writer.write(bytes(packet))
@@ -25,8 +26,14 @@ async def communicate(reader: IO, writer: IO, packet: Packet) -> Packet:
     return await Packet.aread(reader)
 
 
-async def rcon(command: str, *arguments: str, host: str, port: int,
-               passwd: str, encoding: str = 'utf-8') -> str:
+async def rcon(
+        command: str,
+        *arguments: str,
+        host: str,
+        port: int,
+        passwd: str,
+        encoding: str = 'utf-8'
+) -> str:
     """Runs a command asynchronously."""
 
     reader, writer = await open_connection(host, port)

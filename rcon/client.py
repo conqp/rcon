@@ -15,9 +15,11 @@ class Client:
 
     __slots__ = ('_socket', 'host', 'port', 'passwd')
 
-    def __init__(self, host: str, port: int, *,
-                 timeout: Optional[float] = None,
-                 passwd: Optional[str] = None):
+    def __init__(
+            self, host: str, port: int, *,
+            timeout: Optional[float] = None,
+            passwd: Optional[str] = None
+    ):
         """Initializes the base client with the SOCK_STREAM socket type."""
         self._socket = socket()
         self.host = host

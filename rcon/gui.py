@@ -138,7 +138,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         self.result_text = json.get('result', '')
         self.savepw.set_active(json.get('savepw', False))
 
-    def load_gui_settings(self) -> dict:
+    def load_gui_settings(self) -> None:
         """Loads the GUI settings from the cache file."""
         try:
             with CACHE_FILE.open('r') as cache:

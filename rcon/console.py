@@ -7,7 +7,7 @@ from rcon.config import Config
 from rcon.exceptions import RequestIdMismatch, WrongPassword
 
 
-__all__ = ['rconcmd']
+__all__ = ['PROMPT', 'rconcmd']
 
 
 EXIT_COMMANDS = {'exit', 'quit'}
@@ -115,12 +115,13 @@ def process_input(client: Client, passwd: str, prompt: str) -> bool:
         print(MSG_SESSION_TIMEOUT)
 
         try:
-            passwd = login(client, passwd)
+            login(client, passwd)
         except EOFError:
             print(MSG_LOGIN_ABORTED)
             return False
+    else:
+        print(result)
 
-    print(result)
     return True
 
 

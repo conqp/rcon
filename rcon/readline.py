@@ -30,11 +30,13 @@ class CommandHistory:
         try:
             read_history_file(HIST_FILE)
         except FileNotFoundError:
-            self.logger.warning('Could not find history file: %s',
-                                HIST_FILE)
+            self.logger.warning(
+                'Could not find history file: %s', HIST_FILE
+            )
         except PermissionError:
-            self.logger.error('Insufficient permissions to read: %s',
-                              HIST_FILE)
+            self.logger.error(
+                'Insufficient permissions to read: %s', HIST_FILE
+            )
 
         return self
 
@@ -43,5 +45,6 @@ class CommandHistory:
         try:
             write_history_file(HIST_FILE)
         except PermissionError:
-            self.logger.error('Insufficient permissions to write: %s',
-                              HIST_FILE)
+            self.logger.error(
+                'Insufficient permissions to write: %s', HIST_FILE
+            )
