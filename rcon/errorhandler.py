@@ -13,12 +13,12 @@ __all__ = ['ErrorHandler']
 
 
 ERRORS = {
-    UserAbort: 1,
-    ConfigReadError: 2,
-    ConnectionRefusedError: 3,
-    (TimeoutError, timeout): 4,
-    WrongPassword: 5,
-    RequestIdMismatch: 6
+    UserAbort: (1, None),
+    ConfigReadError: (2, None),
+    ConnectionRefusedError: (3, 'Connection refused.'),
+    (TimeoutError, timeout): (4, 'Connection timed out.'),
+    WrongPassword: (5, 'Wrong password.'),
+    RequestIdMismatch: (6, 'Session timed out.')
 }
 
 
@@ -37,9 +37,16 @@ class ErrorHandler:
 
     def __exit__(self, _, value: Exception, __):
         """Checks for connection errors and exits respectively."""
-        for typ, exit_code in ERRORS.items():
+        if value is None:
+            return True
+
+        for typ, (exit_code, message) in ERRORS.items():
             if isinstance(value, typ):
                 self.exit_code = exit_code
+
+                if message:
+                    self.logger.error(message)
+
                 return True
 
         return None
