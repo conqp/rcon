@@ -22,7 +22,7 @@ pull:
 push:
 	@ git push
 
-pypi: | build publish clean
+pypi: | clean build publish
 
 uninstall:
 	@ while read FILE; do echo "Removing: $$FILE"; rm "$$FILE"; done < $(FILE_LIST)
