@@ -11,7 +11,7 @@ __all__ = ['rcon']
 
 
 async def close(socket: IO) -> None:
-    """Close socket asynchronously"""
+    """Close socket asynchronously."""
 
     socket.close()
     await socket.wait_closed()
