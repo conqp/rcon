@@ -2,9 +2,8 @@
 
 from logging import Logger
 from socket import timeout
-from sys import exit    # pylint: disable=W0622
 
-from rcon.exceptions import RequestIdMismatch, WrongPassword
+from rcon.exceptions import ConfigReadError, RequestIdMismatch, WrongPassword
 
 
 __all__ = ['ErrorHandler']
@@ -13,11 +12,12 @@ __all__ = ['ErrorHandler']
 class ErrorHandler:
     """Handles common errors and exits."""
 
-    __slots__ = ('logger',)
+    __slots__ = ('logger', 'exit_code')
 
     def __init__(self, logger: Logger):
         """Sets the logger."""
         self.logger = logger
+        self.exit_code = 0
 
     def __enter__(self):
         return self
@@ -26,16 +26,19 @@ class ErrorHandler:
         """Checks for connection errors and exits respectively."""
         if isinstance(value, ConnectionRefusedError):
             self.logger.error('Connection refused.')
-            exit(3)
-
-        if isinstance(value, (TimeoutError, timeout)):
+            self.exit_code = 3
+        elif isinstance(value, (TimeoutError, timeout)):
             self.logger.error('Connection timed out.')
-            exit(4)
-
-        if isinstance(value, WrongPassword):
+            self.exit_code = 4
+        elif isinstance(value, WrongPassword):
             self.logger.error('Wrong password.')
-            exit(5)
-
-        if isinstance(value, RequestIdMismatch):
+            self.exit_code = 5
+        elif isinstance(value, RequestIdMismatch):
             self.logger.error('Session timed out.')
-            exit(5)
+            self.exit_code = 6
+        elif isinstance(value, ConfigReadError):
+            self.exit_code = value.exit_code
+        else:
+            return None
+
+        return True

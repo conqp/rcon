@@ -47,8 +47,11 @@ def main() -> int:
     else:
         host = port = passwd = None
 
-    with ErrorHandler(LOGGER):
+    with ErrorHandler(LOGGER) as handler:
         with CommandHistory(LOGGER):
             rconcmd(host, port, passwd, prompt=args.prompt)
+
+    if handler.exit_code:
+        return handler.exit_code
 
     return 0

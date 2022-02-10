@@ -51,10 +51,13 @@ def main() -> int:
     except ConfigReadError as cre:
         return cre.exit_code
 
-    with ErrorHandler(LOGGER):
+    with ErrorHandler(LOGGER) as handler:
         with Client(host, port, timeout=args.timeout) as client:
             client.login(passwd)
             text = client.run(args.command, *args.argument)
+
+    if handler.exit_code:
+        return handler.exit_code
 
     print(text, flush=True)
     return 0
