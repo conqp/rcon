@@ -10,7 +10,7 @@ from rcon.proto import Packet, Type
 __all__ = ['rcon']
 
 
-async def close(socket: IO) -> None
+async def close(socket: IO) -> None:
     """Close socket asynchronously"""
 
     socket.close()
