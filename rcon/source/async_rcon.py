@@ -2,8 +2,8 @@
 
 from asyncio import StreamReader, StreamWriter, open_connection
 
-from rcon.exceptions import RequestIdMismatch, WrongPassword
-from rcon.proto import Packet, Type
+from rcon.source.exceptions import RequestIdMismatch, WrongPassword
+from rcon.source.proto import Packet, Type
 
 
 __all__ = ['rcon']

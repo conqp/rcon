@@ -12,9 +12,9 @@ from gi import require_version
 require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-from rcon.client import Client
-from rcon.config import LOG_FORMAT
-from rcon.exceptions import RequestIdMismatch, WrongPassword
+from rcon.source.client import Client
+from rcon.source.config import LOG_FORMAT
+from rcon.source.exceptions import RequestIdMismatch, WrongPassword
 
 
 __all__ = ['main']

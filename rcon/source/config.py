@@ -9,7 +9,7 @@ from os import getenv, name
 from pathlib import Path
 from typing import Iterable, NamedTuple, Optional, Union
 
-from rcon.exceptions import ConfigReadError, UserAbort
+from rcon.source.exceptions import ConfigReadError, UserAbort
 
 
 __all__ = ['CONFIG_FILES', 'LOG_FORMAT', 'SERVERS', 'Config', 'from_args']

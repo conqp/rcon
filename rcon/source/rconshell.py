@@ -4,10 +4,10 @@ from argparse import ArgumentParser, Namespace
 from logging import INFO, basicConfig, getLogger
 from pathlib import Path
 
-from rcon.config import CONFIG_FILES, LOG_FORMAT, from_args
-from rcon.console import PROMPT, rconcmd
+from rcon.readline import CommandHistory
+from rcon.source.config import CONFIG_FILES, LOG_FORMAT, from_args
+from rcon.source.console import PROMPT, rconcmd
 from rcon.source.errorhandler import ErrorHandler
-from rcon.source.readline import CommandHistory
 
 
 __all__ = ['get_args', 'main']

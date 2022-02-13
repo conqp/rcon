@@ -2,7 +2,9 @@
 [![Quality Gate Status](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=alert_status)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
 
 # rcon
-An [RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol) client implementation.
+An RCON client implementation.
+* [Source RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol)
+* [BattlEye RCon protocol](https://www.battleye.com/downloads/BERConProtocol.txt)
 
 ## Requirements
 `rcon` requires Python 3.8 or higher.
@@ -16,11 +18,12 @@ Install rcon from the [AUR](https://aur.archlinux.org/packages/python-rcon/) or 
     pip install rcon
 
 ## Quick start
-The `RCON` protocol is used to remotely control a game server, i.e. execute
+The `RCON` protocols are used to remotely control game servers, i.e. execute
 commands on a game server and receive the respective results.
 
+### Source RCON
 ```python
-from rcon import Client
+from rcon.source import Client
 
 with Client('127.0.0.1', 5000, passwd='mysecretpassword') as client:
     response = client.run('some_command', 'with', 'some', 'arguments')
@@ -28,11 +31,11 @@ with Client('127.0.0.1', 5000, passwd='mysecretpassword') as client:
 print(response)
 ```
 
-## Async support
+#### Async support
 If you prefer to use `RCON` in an asynchronous environment, you can use `rcon()`.
 
 ```python
-from rcon import rcon
+from rcon.source import rcon
 
 response = await rcon(
     'some_command', 'with', 'some', 'arguments',

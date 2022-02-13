@@ -2,9 +2,9 @@
 
 from getpass import getpass
 
-from rcon.client import Client
-from rcon.config import Config
-from rcon.exceptions import RequestIdMismatch, WrongPassword
+from rcon.source.client import Client
+from rcon.source.config import Config
+from rcon.source.exceptions import RequestIdMismatch, WrongPassword
 
 
 __all__ = ['PROMPT', 'rconcmd']
