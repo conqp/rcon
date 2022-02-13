@@ -16,15 +16,18 @@ Host = Union[str, IPv4Address]
 class Client(BaseClient):
     """BattlEye RCon client."""
 
-    def communicate(self, data: bytes, *, recv: int = 4096) -> bytes:
+    def communicate(self, data: bytes, *, size: int = 4096) -> bytes:
         """Sends and receives packets."""
         self._socket.send(data)
-        return self._socket.recv(recv)
+        return self._socket.recv(size)
 
     def login(self, passwd: str) -> bytes:
         """Logs the user in."""
         return self.communicate(bytes(LoginRequest.from_passwd(passwd)))
 
-    def command(self, command: str) -> bytes:
+    def run(self, command: str, *args: str) -> str:
         """Executes a command."""
-        return self.communicate(bytes(Command.from_command(command)))
+        packet = Command.from_command(command, *args)
+        _ = self.communicate(bytes(packet))
+        # TODO: Process response
+        return ''

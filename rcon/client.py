@@ -61,3 +61,7 @@ class BaseClient:
     def login(self, passwd: str) -> bool:
         """Performs a login."""
         raise NotImplementedError()
+
+    def run(self, command: str, *args: str) -> str:
+        """Runs a command."""
+        raise NotImplementedError()

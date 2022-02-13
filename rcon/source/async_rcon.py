@@ -2,7 +2,7 @@
 
 from asyncio import StreamReader, StreamWriter, open_connection
 
-from rcon.source.exceptions import RequestIdMismatch, WrongPassword
+from rcon.exceptions import SessionTimeout, WrongPassword
 from rcon.source.proto import Packet, Type
 
 
@@ -56,6 +56,6 @@ async def rcon(
     await close(writer)
 
     if response.id != request.id:
-        raise RequestIdMismatch(request.id, response.id)
+        raise SessionTimeout()
 
     return response.payload.decode(encoding)
