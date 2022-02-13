@@ -18,9 +18,9 @@ setup(
     extras_require={'GUI':  ['pygobject', 'pygtk']},
     entry_points={
         'console_scripts': [
-            'rcongui = rcon.source.gui:main',
-            'rconclt = rcon.source.rconclt:main',
-            'rconshell = rcon.source.rconshell:main',
+            'rcongui = rcon.gui:main',
+            'rconclt = rcon.rconclt:main',
+            'rconshell = rcon.rconshell:main',
         ],
     },
     url='https://github.com/conqp/rcon',
