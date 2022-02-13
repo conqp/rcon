@@ -14,16 +14,18 @@ class BaseClient:
 
     def __init__(
             self, host: str, port: int, *,
-            type: SocketKind = SOCK_STREAM,
             timeout: Optional[float] = None,
             passwd: Optional[str] = None
     ):
         """Initializes the base client with the SOCK_STREAM socket type."""
-        self._socket = socket(type=type)
+        self._socket = socket(type=self._socket_type)
         self.host = host
         self.port = port
         self.timeout = timeout
         self.passwd = passwd
+
+    def __init_subclass__(cls, *, socket_type: SocketKind = SOCK_STREAM):
+        cls._socket_type = socket_type
 
     def __enter__(self):
         """Attempts an auto-login if a password is set."""

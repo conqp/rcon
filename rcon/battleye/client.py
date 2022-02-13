@@ -1,6 +1,7 @@
 """BattlEye RCon client."""
 
 from ipaddress import IPv4Address
+from socket import SOCK_DGRAM
 from typing import Union
 
 from rcon.battleye.proto import Command, LoginRequest
@@ -13,7 +14,7 @@ __all__ = ['Client']
 Host = Union[str, IPv4Address]
 
 
-class Client(BaseClient):
+class Client(BaseClient, socket_type=SOCK_DGRAM):
     """BattlEye RCon client."""
 
     def communicate(self, data: bytes, *, recv: int = 4096) -> bytes:
