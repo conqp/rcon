@@ -6,13 +6,14 @@ from logging import DEBUG, INFO, basicConfig, getLogger
 from os import getenv, name
 from pathlib import Path
 from socket import gaierror, timeout
-from typing import Iterable, NamedTuple
+from typing import Iterable, NamedTuple, Type
 
 from gi import require_version
 require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-from rcon.source.client import Client
+from rcon import battleye, source
+from rcon.client import BaseClient
 from rcon.config import LOG_FORMAT
 from rcon.exceptions import SessionTimeout, WrongPassword
 
@@ -36,10 +37,14 @@ def get_args() -> Namespace:
     """Parses the command line arguments."""
 
     parser = ArgumentParser(description='A minimalistic, GTK-based RCON GUI.')
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='print additional debug information')
-    parser.add_argument('-t', '--timeout', type=float, metavar='seconds',
-                        help='connection timeout in seconds')
+    parser.add_argument(
+        '-d', '--debug', action='store_true',
+        help='print additional debug information'
+    )
+    parser.add_argument(
+        '-t', '--timeout', type=float, metavar='seconds',
+        help='connection timeout in seconds'
+    )
     return parser.parse_args()
 
 
@@ -95,6 +100,11 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         self.grid.attach(self.savepw, 2, 2, 1, 1)
 
         self.load_gui_settings()
+
+    @property
+    def client_cls(self) -> Type[BaseClient]:
+        """Returns the client class."""
+        return battleye.Client if self.args.battleye else source.Client
 
     @property
     def result_text(self) -> str:
@@ -171,7 +181,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
 
     def run_rcon(self) -> str:
         """Returns the current RCON settings."""
-        with Client(
+        with self.client_cls(
                 self.host.get_text().strip(),
                 self.port.get_value_as_int(),
                 timeout=self.args.timeout,
