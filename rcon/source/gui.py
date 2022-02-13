@@ -141,7 +141,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
     def load_gui_settings(self) -> None:
         """Loads the GUI settings from the cache file."""
         try:
-            with CACHE_FILE.open('r') as cache:
+            with CACHE_FILE.open('rb') as cache:
                 self.gui_settings = load(cache)
         except FileNotFoundError:
             LOGGER.warning('Cache file not found: %s', CACHE_FILE)
@@ -153,7 +153,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
     def save_gui_settings(self):
         """Saves the GUI settings to the cache file."""
         try:
-            with CACHE_FILE.open('w') as cache:
+            with CACHE_FILE.open('wb') as cache:
                 dump(self.gui_settings, cache)
         except PermissionError:
             LOGGER.error('Insufficient permissions to read: %s', CACHE_FILE)
