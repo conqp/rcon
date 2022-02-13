@@ -10,7 +10,11 @@ setup(
     author='Richard Neumann',
     author_email='mail@richard-neumann.de',
     python_requires='>=3.8',
-    packages=['rcon'],
+    packages=[
+        'rcon',
+        'rcon.battleye',
+        'rcon.source'
+    ],
     extras_require={'GUI':  ['pygobject', 'pygtk']},
     entry_points={
         'console_scripts': [
