@@ -1,15 +1,6 @@
 """RCON exceptions."""
 
-__all__ = [
-    'ConfigReadError',
-    'RequestIdMismatch',
-    'UserAbort',
-    'WrongPassword'
-]
-
-
-class ConfigReadError(Exception):
-    """Indicates an error while reading the configuration."""
+__all__ = ['RequestIdMismatch']
 
 
 class RequestIdMismatch(Exception):
@@ -20,11 +11,3 @@ class RequestIdMismatch(Exception):
         super().__init__()
         self.sent = sent
         self.received = received
-
-
-class UserAbort(Exception):
-    """Indicates that a required action has been aborted by the user."""
-
-
-class WrongPassword(Exception):
-    """Indicates a wrong password."""

@@ -1,7 +1,7 @@
 """Synchronous client."""
 
 from rcon.client import BaseClient
-from rcon.source.exceptions import RequestIdMismatch, WrongPassword
+from rcon.exceptions import SessionTimeout, WrongPassword
 from rcon.source.proto import Packet, Type
 
 
@@ -44,6 +44,6 @@ class Client(BaseClient):
         response = self.communicate(request)
 
         if response.id != request.id:
-            raise RequestIdMismatch(request.id, response.id)
+            raise SessionTimeout()
 
         return response.payload.decode(encoding)

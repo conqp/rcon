@@ -1,10 +1,11 @@
 """An interactive console."""
 
 from getpass import getpass
+from typing import Type
 
-from rcon.source.client import Client
-from rcon.source.config import Config
-from rcon.source.exceptions import RequestIdMismatch, WrongPassword
+from rcon.client import BaseClient
+from rcon.config import Config
+from rcon.exceptions import SessionTimeout, WrongPassword
 
 
 __all__ = ['PROMPT', 'rconcmd']
@@ -75,7 +76,7 @@ def get_config(host: str, port: int, passwd: str) -> Config:
     return Config(host, port, passwd)
 
 
-def login(client: Client, passwd: str) -> str:
+def login(client: BaseClient, passwd: str) -> str:
     """Performs a login."""
 
     while True:
@@ -89,7 +90,7 @@ def login(client: Client, passwd: str) -> str:
         return passwd
 
 
-def process_input(client: Client, passwd: str, prompt: str) -> bool:
+def process_input(client: BaseClient, passwd: str, prompt: str) -> bool:
     """Processes the CLI input."""
 
     try:
@@ -111,7 +112,7 @@ def process_input(client: Client, passwd: str, prompt: str) -> bool:
 
     try:
         result = client.run(command, *args)
-    except RequestIdMismatch:
+    except SessionTimeout:
         print(MSG_SESSION_TIMEOUT)
 
         try:
@@ -125,7 +126,10 @@ def process_input(client: Client, passwd: str, prompt: str) -> bool:
     return True
 
 
-def rconcmd(host: str, port: int, passwd: str, *, prompt: str = PROMPT):
+def rconcmd(
+        client_cls: Type[BaseClient], host: str, port: int, passwd: str, *,
+        prompt: str = PROMPT
+):
     """Initializes the console."""
 
     try:
@@ -136,7 +140,7 @@ def rconcmd(host: str, port: int, passwd: str, *, prompt: str = PROMPT):
 
     prompt = prompt.format(host=host, port=port)
 
-    with Client(host, port) as client:
+    with client_cls(host, port) as client:
         try:
             passwd = login(client, passwd)
         except EOFError:

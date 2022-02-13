@@ -6,15 +6,16 @@ from logging import DEBUG, INFO, basicConfig, getLogger
 from os import getenv, name
 from pathlib import Path
 from socket import gaierror, timeout
-from typing import Iterable, NamedTuple
+from typing import Iterable, NamedTuple, Type
 
 from gi import require_version
 require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-from rcon.source.client import Client
-from rcon.source.config import LOG_FORMAT
-from rcon.source.exceptions import RequestIdMismatch, WrongPassword
+from rcon import battleye, source
+from rcon.client import BaseClient
+from rcon.config import LOG_FORMAT
+from rcon.exceptions import SessionTimeout, WrongPassword
 
 
 __all__ = ['main']
@@ -36,10 +37,18 @@ def get_args() -> Namespace:
     """Parses the command line arguments."""
 
     parser = ArgumentParser(description='A minimalistic, GTK-based RCON GUI.')
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='print additional debug information')
-    parser.add_argument('-t', '--timeout', type=float, metavar='seconds',
-                        help='connection timeout in seconds')
+    parser.add_argument(
+        '-B', '--battleye', action='store_true',
+        help='use BattlEye RCon instead of Source RCON'
+    )
+    parser.add_argument(
+        '-d', '--debug', action='store_true',
+        help='print additional debug information'
+    )
+    parser.add_argument(
+        '-t', '--timeout', type=float, metavar='seconds',
+        help='connection timeout in seconds'
+    )
     return parser.parse_args()
 
 
@@ -97,6 +106,11 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         self.load_gui_settings()
 
     @property
+    def client_cls(self) -> Type[BaseClient]:
+        """Returns the client class."""
+        return battleye.Client if self.args.battleye else source.Client
+
+    @property
     def result_text(self) -> str:
         """Returns the result text."""
         if (buf := self.result.get_buffer()) is not None:
@@ -141,7 +155,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
     def load_gui_settings(self) -> None:
         """Loads the GUI settings from the cache file."""
         try:
-            with CACHE_FILE.open('r') as cache:
+            with CACHE_FILE.open('rb') as cache:
                 self.gui_settings = load(cache)
         except FileNotFoundError:
             LOGGER.warning('Cache file not found: %s', CACHE_FILE)
@@ -153,7 +167,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
     def save_gui_settings(self):
         """Saves the GUI settings to the cache file."""
         try:
-            with CACHE_FILE.open('w') as cache:
+            with CACHE_FILE.open('wb') as cache:
                 dump(self.gui_settings, cache)
         except PermissionError:
             LOGGER.error('Insufficient permissions to read: %s', CACHE_FILE)
@@ -171,7 +185,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
 
     def run_rcon(self) -> str:
         """Returns the current RCON settings."""
-        with Client(
+        with self.client_cls(
                 self.host.get_text().strip(),
                 self.port.get_value_as_int(),
                 timeout=self.args.timeout,
@@ -193,11 +207,8 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
             self.show_error('Connection timed out.')
         except WrongPassword:
             self.show_error('Wrong password.')
-        except RequestIdMismatch as mismatch:
-            self.show_error(
-                'Request ID mismatch.\n'
-                f'Expected {mismatch.sent}, but got {mismatch.received}.'
-            )
+        except SessionTimeout:
+            self.show_error('Session timed out.')
         else:
             self.result_text = result
 

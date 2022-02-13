@@ -4,9 +4,9 @@ from argparse import ArgumentParser, Namespace
 from logging import DEBUG, INFO, basicConfig, getLogger
 from pathlib import Path
 
-from rcon.source.client import Client
-from rcon.source.config import CONFIG_FILES, LOG_FORMAT, from_args
-from rcon.source.errorhandler import ErrorHandler
+from rcon import battleye, source
+from rcon.config import CONFIG_FILES, LOG_FORMAT, from_args
+from rcon.errorhandler import ErrorHandler
 
 
 __all__ = ['main']
@@ -20,6 +20,10 @@ def get_args() -> Namespace:
 
     parser = ArgumentParser(description='A Minecraft RCON client.')
     parser.add_argument('server', help='the server to connect to')
+    parser.add_argument(
+        '-B', '--battleye', action='store_true',
+        help='use BattlEye RCon instead of Source RCON'
+    )
     parser.add_argument(
         '-c', '--config', type=Path, metavar='file', default=CONFIG_FILES,
         help='the configuration file'
@@ -45,8 +49,9 @@ def run() -> None:
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
     host, port, passwd = from_args(args)
+    client_cls = battleye.Client if args.battleye else source.Client
 
-    with Client(host, port, timeout=args.timeout) as client:
+    with client_cls(host, port, timeout=args.timeout) as client:
         client.login(passwd)
         text = client.run(args.command, *args.argument)
 

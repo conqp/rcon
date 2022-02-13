@@ -99,6 +99,11 @@ class Command(NamedTuple):
         return Header.from_payload(self.payload)
 
     @classmethod
-    def from_command(cls, command: str):
-        """Creates a command packet from the given command."""
+    def from_string(cls, command: str):
+        """Creates a command packet from the given string."""
         return cls(0x01, 0x00, command)
+
+    @classmethod
+    def from_command(cls, command: str, *args: str):
+        """Creates a command packet from the command and arguments."""
+        return cls.from_string(' '.join([command, *args]))
