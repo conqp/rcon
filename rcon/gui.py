@@ -38,6 +38,10 @@ def get_args() -> Namespace:
 
     parser = ArgumentParser(description='A minimalistic, GTK-based RCON GUI.')
     parser.add_argument(
+        '-B', '--battleye', action='store_true',
+        help='use BattlEye RCon instead of Source RCON'
+    )
+    parser.add_argument(
         '-d', '--debug', action='store_true',
         help='print additional debug information'
     )
