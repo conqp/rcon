@@ -1,0 +1,1 @@
+"""BattlEye RCON implementation."""
