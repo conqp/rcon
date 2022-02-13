@@ -6,7 +6,7 @@ from string import printable
 from typing import Iterator, Tuple
 from unittest import TestCase
 
-from rcon.config import Config
+from rcon import Config
 
 
 def random_passwd() -> str:

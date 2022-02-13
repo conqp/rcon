@@ -5,7 +5,7 @@ from io import BytesIO
 from random import randint
 from unittest import TestCase
 
-from rcon.proto import LittleEndianSignedInt32, Packet, Type, random_request_id
+from rcon import LittleEndianSignedInt32, Packet, Type, random_request_id
 
 
 class TestRandomRequestId(TestCase):

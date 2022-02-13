@@ -6,8 +6,8 @@ from pathlib import Path
 
 from rcon.config import CONFIG_FILES, LOG_FORMAT, from_args
 from rcon.console import PROMPT, rconcmd
-from rcon.errorhandler import ErrorHandler
-from rcon.readline import CommandHistory
+from rcon.source.errorhandler import ErrorHandler
+from rcon.source.readline import CommandHistory
 
 
 __all__ = ['get_args', 'main']

@@ -1,8 +1,6 @@
 """RCON client library."""
 
-from rcon.async_rcon import rcon
-from rcon.client import Client
-from rcon.exceptions import RequestIdMismatch, WrongPassword
+from rcon.source import RequestIdMismatch, WrongPassword, Client, rcon
 
 
 __all__ = ['RequestIdMismatch', 'WrongPassword', 'Client', 'rcon']

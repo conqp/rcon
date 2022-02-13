@@ -6,7 +6,7 @@ from pathlib import Path
 
 from rcon.client import Client
 from rcon.config import CONFIG_FILES, LOG_FORMAT, from_args
-from rcon.errorhandler import ErrorHandler
+from rcon.source.errorhandler import ErrorHandler
 
 
 __all__ = ['main']
