@@ -44,9 +44,9 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
         """Receives a packet."""
         return RESPONSE_TYPES[
             (header := Header.from_bytes(
-                data := self._socket.recv(max_length)[:7]
+                data := self._socket.recv(max_length)[:8]
             )).type
-        ].from_bytes(header, data[7:])
+        ].from_bytes(header, data[8:])
 
     def receive(self, max_length: int = 4096) -> Response:
         """Receives a message."""
