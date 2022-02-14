@@ -15,3 +15,7 @@ class TestHeader(TestCase):
     def test_header_from_bytes(self):
         """Tests header object parsing."""
         self.assertEqual(Header.from_bytes(BYTES), HEADER)
+
+    def test_header_to_bytes(self):
+        """Tests header object parsing."""
+        self.assertEqual(bytes(HEADER), BYTES)
