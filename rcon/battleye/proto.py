@@ -1,15 +1,19 @@
 """Low-level protocol stuff."""
 
-from typing import IO, NamedTuple
+from typing import NamedTuple, Union
 from zlib import crc32
 
 
 __all__ = [
+    'RESPONSE_TYPES',
     'Header',
     'LoginRequest',
     'LoginResponse',
     'Command',
-    'CommandResponse'
+    'CommandResponse',
+    'ServerMessage',
+    'Request',
+    'Response'
 ]
 
 
@@ -28,7 +32,7 @@ class Header(NamedTuple):
         return b''.join((
             self.prefix.encode('ascii'),
             self.crc32.to_bytes(4, 'little'),
-            self.suffix.to_bytes(1, 'big')
+            self.suffix.to_bytes(1, 'little')
         ))
 
     @classmethod
@@ -41,18 +45,13 @@ class Header(NamedTuple):
         )
 
     @classmethod
-    def from_bytes(cls, prefix: bytes, crc32sum: bytes, suffix: bytes):
+    def from_bytes(cls, payload: bytes):
         """Creates a header from the given bytes."""
         return cls(
-            prefix.decode('ascii'),
-            int.from_bytes(crc32sum, 'little'),
-            int.from_bytes(suffix, 'big')
+            payload[:2].decode('ascii'),
+            int.from_bytes(payload[2:5], 'little'),
+            int.from_bytes(payload[5:6], 'little')
         )
-
-    @classmethod
-    def read(cls, file: IO):
-        """Reads the packet from a file-like object."""
-        return cls.from_bytes(file.read(2), file.read(4), file.read(1))
 
 
 class LoginRequest(NamedTuple):
@@ -88,18 +87,13 @@ class LoginResponse(NamedTuple):
     success: bool
 
     @classmethod
-    def from_bytes(cls, header: Header, typ: bytes, success: bytes):
+    def from_bytes(cls, header: Header, payload: bytes):
         """Creates a login response from the given bytes."""
         return cls(
             header,
-            int.from_bytes(typ, 'little'),
-            bool(int.from_bytes(success, 'little'))
+            int.from_bytes(payload[:1], 'little'),
+            bool(int.from_bytes(payload[2:3], 'little'))
         )
-
-    @classmethod
-    def read(cls, file: IO):
-        """Reads a login response from a file-like object."""
-        return cls.from_bytes(Header.read(file), file.read(1), file.read(1))
 
 
 class Command(NamedTuple):
@@ -146,16 +140,50 @@ class CommandResponse(NamedTuple):
     payload: bytes
 
     @classmethod
-    def from_bytes(cls, header: Header, data: bytes):
+    def from_bytes(cls, header: Header, payload: bytes):
         """Creates a command response from the given bytes."""
         return cls(
             header,
-            int.from_bytes(data[:1], 'little'),
-            int.from_bytes(data[1:2], 'little'),
-            data[2:]
+            int.from_bytes(payload[:1], 'little'),
+            int.from_bytes(payload[1:2], 'little'),
+            payload[2:]
         )
 
     @property
     def message(self) -> str:
         """Returns the text message."""
         return self.payload.decode('ascii')
+
+
+class ServerMessage(NamedTuple):
+    """A message from the server."""
+
+    header: Header
+    type: int
+    seq: int
+    payload: bytes
+
+    @classmethod
+    def from_bytes(cls, header: Header, payload: bytes):
+        """Creates a server message from the given bytes."""
+        return cls(
+            header,
+            int.from_bytes(payload[:1], 'little'),
+            int.from_bytes(payload[1:2], 'little'),
+            payload[2:]
+        )
+
+    @property
+    def message(self) -> str:
+        """Returns the text message."""
+        return self.payload.decode('ascii')
+
+
+Request = Union[LoginRequest, Command]
+Response = Union[LoginResponse, CommandResponse, ServerMessage]
+
+RESPONSE_TYPES = {
+    0x00: LoginResponse,
+    0x01: CommandResponse,
+    0x02: ServerMessage
+}
