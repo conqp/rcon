@@ -17,10 +17,10 @@ Host = Union[str, IPv4Address]
 class Client(BaseClient, socket_type=SOCK_DGRAM):
     """BattlEye RCon client."""
 
-    def communicate(self, data: bytes, *, size: int = 4096) -> bytes:
+    def communicate(self, data: bytes, *, read: int = 4096) -> bytes:
         """Sends and receives packets."""
         self._socket.send(data)
-        return self._socket.recv(size)
+        return self._socket.recv(read)
 
     def login(self, passwd: str) -> bytes:
         """Logs the user in."""
