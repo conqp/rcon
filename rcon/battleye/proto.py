@@ -18,47 +18,52 @@ __all__ = [
 
 
 PREFIX = 'BE'
-SUFFIX = 0xff
+INFIX = 0xff
 
 
 class Header(NamedTuple):
     """Packet header."""
 
-    prefix: str
     crc32: int
-    suffix: int
+    type: int
 
     def __bytes__(self):
         return b''.join((
-            self.prefix.encode('ascii'),
+            PREFIX.encode('ascii'),
             self.crc32.to_bytes(4, 'little'),
-            self.suffix.to_bytes(1, 'little')
+            INFIX.to_bytes(1, 'little'),
+            self.type.to_bytes(1, 'little')
         ))
 
     @classmethod
-    def from_payload(cls, payload: bytes):
+    def create(cls, typ: int, payload: bytes):
         """Creates a header for the given payload."""
         return cls(
-            PREFIX,
-            crc32(SUFFIX.to_bytes(1, 'little') + payload),
-            SUFFIX
+            crc32(b''.join((
+                INFIX.to_bytes(1, 'little'),
+                typ.to_bytes(1, 'little'),
+                payload
+            ))),
+            typ
         )
 
     @classmethod
     def from_bytes(cls, payload: bytes):
         """Creates a header from the given bytes."""
+        if (prefix := payload[:2].decode('ascii')) != PREFIX:
+            raise ValueError('Invalid prefix', prefix)
+
+        if (infix := int.from_bytes(payload[5:6], 'little')) != INFIX:
+            raise ValueError('Invalid infix', infix)
+
         return cls(
-            payload[:2].decode('ascii'),
             int.from_bytes(payload[2:5], 'little'),
-            int.from_bytes(payload[5:6], 'little')
+            int.from_bytes(payload[6:7], 'little')
         )
 
 
-class LoginRequest(NamedTuple):
+class LoginRequest(str):
     """Login request packet."""
-
-    type: int
-    passwd: str
 
     def __bytes__(self):
         return bytes(self.header) + self.payload
@@ -66,40 +71,29 @@ class LoginRequest(NamedTuple):
     @property
     def payload(self) -> bytes:
         """Returns the payload."""
-        return self.type.to_bytes(1, 'little') + self.passwd.encode('ascii')
+        return self.encode('ascii')
 
     @property
     def header(self) -> Header:
         """Returns the appropriate header."""
-        return Header.from_payload(self.payload)
-
-    @classmethod
-    def from_passwd(cls, passwd: str):
-        """Creates a login request with the given password."""
-        return cls(0x00, passwd)
+        return Header.create(0x00, self.payload)
 
 
 class LoginResponse(NamedTuple):
     """A login response."""
 
     header: Header
-    type: int
     success: bool
 
     @classmethod
     def from_bytes(cls, header: Header, payload: bytes):
         """Creates a login response from the given bytes."""
-        return cls(
-            header,
-            int.from_bytes(payload[:1], 'little'),
-            bool(int.from_bytes(payload[2:3], 'little'))
-        )
+        return cls(header, bool(int.from_bytes(payload[:1], 'little')))
 
 
 class Command(NamedTuple):
     """Command packet."""
 
-    type: int
     seq: int
     command: str
 
@@ -110,7 +104,6 @@ class Command(NamedTuple):
     def payload(self) -> bytes:
         """Returns the payload."""
         return b''.join((
-            self.type.to_bytes(1, 'little'),
             self.seq.to_bytes(1, 'little'),
             self.command.encode('ascii')
         ))
@@ -118,12 +111,12 @@ class Command(NamedTuple):
     @property
     def header(self) -> Header:
         """Returns the appropriate header."""
-        return Header.from_payload(self.payload)
+        return Header.create(0x01, self.payload)
 
     @classmethod
     def from_string(cls, command: str):
         """Creates a command packet from the given string."""
-        return cls(0x01, 0x00, command)
+        return cls(0x00, command)
 
     @classmethod
     def from_command(cls, command: str, *args: str):
@@ -135,7 +128,6 @@ class CommandResponse(NamedTuple):
     """A command response."""
 
     header: Header
-    type: int
     seq: int
     payload: bytes
 
@@ -145,8 +137,7 @@ class CommandResponse(NamedTuple):
         return cls(
             header,
             int.from_bytes(payload[:1], 'little'),
-            int.from_bytes(payload[1:2], 'little'),
-            payload[2:]
+            payload[1:]
         )
 
     @property
@@ -159,7 +150,6 @@ class ServerMessage(NamedTuple):
     """A message from the server."""
 
     header: Header
-    type: int
     seq: int
     payload: bytes
 
@@ -169,8 +159,7 @@ class ServerMessage(NamedTuple):
         return cls(
             header,
             int.from_bytes(payload[:1], 'little'),
-            int.from_bytes(payload[1:2], 'little'),
-            payload[2:]
+            payload[1:]
         )
 
     @property

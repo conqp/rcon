@@ -64,7 +64,7 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
 
     def login(self, passwd: str) -> bool:
         """Logs the user in."""
-        if not self.communicate(LoginRequest.from_passwd(passwd)).success:
+        if not self.communicate(LoginRequest(passwd)).success:
             raise WrongPassword()
 
         return True
