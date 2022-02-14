@@ -120,7 +120,10 @@ def process_input(client: BaseClient, passwd: str, prompt: str) -> bool:
         except EOFError:
             print(MSG_LOGIN_ABORTED)
             return False
-    else:
+
+        return True
+
+    if result:
         print(result)
 
     return True

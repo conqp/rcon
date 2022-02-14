@@ -53,9 +53,9 @@ def run() -> None:
 
     with client_cls(host, port, timeout=args.timeout) as client:
         client.login(passwd)
-        text = client.run(args.command, *args.argument)
 
-    print(text, flush=True)
+        if text := client.run(args.command, *args.argument):
+            print(text, flush=True)
 
 
 def main() -> int:
