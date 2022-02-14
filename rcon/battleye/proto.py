@@ -10,7 +10,7 @@ __all__ = [
     'Header',
     'LoginRequest',
     'LoginResponse',
-    'Command',
+    'CommandRequest',
     'CommandResponse',
     'ServerMessage',
     'Request',
@@ -95,7 +95,7 @@ class LoginResponse(NamedTuple):
         return cls(header, bool(int.from_bytes(payload[:1], 'little')))
 
 
-class Command(NamedTuple):
+class CommandRequest(NamedTuple):
     """Command packet."""
 
     seq: int
@@ -118,12 +118,12 @@ class Command(NamedTuple):
         return Header.create(0x01, self.payload)
 
     @classmethod
-    def from_string(cls, command: str) -> Command:
+    def from_string(cls, command: str) -> CommandRequest:
         """Creates a command packet from the given string."""
         return cls(0x00, command)
 
     @classmethod
-    def from_command(cls, command: str, *args: str) -> Command:
+    def from_command(cls, command: str, *args: str) -> CommandRequest:
         """Creates a command packet from the command and arguments."""
         return cls.from_string(' '.join([command, *args]))
 
@@ -172,7 +172,7 @@ class ServerMessage(NamedTuple):
         return self.payload.decode('ascii')
 
 
-Request = Union[LoginRequest, Command]
+Request = Union[LoginRequest, CommandRequest]
 Response = Union[LoginResponse, CommandResponse, ServerMessage]
 
 RESPONSE_TYPES = {

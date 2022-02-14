@@ -6,7 +6,7 @@ from socket import SOCK_DGRAM
 from typing import Callable, Union
 
 from rcon.battleye.proto import RESPONSE_TYPES
-from rcon.battleye.proto import Command
+from rcon.battleye.proto import CommandRequest
 from rcon.battleye.proto import Header
 from rcon.battleye.proto import LoginRequest
 from rcon.battleye.proto import Request
@@ -71,4 +71,6 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
 
     def run(self, command: str, *args: str) -> str:
         """Executes a command."""
-        return self.communicate(Command.from_command(command, *args)).message
+        return self.communicate(
+            CommandRequest.from_command(command, *args)
+        ).message
