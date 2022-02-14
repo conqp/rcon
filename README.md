@@ -84,7 +84,8 @@ Have a look at `rcon.battleye.proto.ServerMessage` for details on the
 respective objects.
 
 ## License
-Copyright (C) 2018-2021 Richard Neumann <mail at richard dash neumann period de>
+Copyright (C) 2018-2022 Richard Neumann <mail at richard dash neumann 
+period de>
 
 rcon is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
