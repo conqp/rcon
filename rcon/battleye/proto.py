@@ -4,7 +4,13 @@ from typing import IO, NamedTuple
 from zlib import crc32
 
 
-__all__ = ['LoginRequest', 'Command']
+__all__ = [
+    'Header',
+    'LoginRequest',
+    'LoginResponse',
+    'Command',
+    'CommandResponse'
+]
 
 
 PREFIX = 'BE'
@@ -45,7 +51,7 @@ class Header(NamedTuple):
 
     @classmethod
     def read(cls, file: IO):
-        """Reads the packet from a socket."""
+        """Reads the packet from a file-like object."""
         return cls.from_bytes(file.read(2), file.read(4), file.read(1))
 
 
@@ -72,6 +78,28 @@ class LoginRequest(NamedTuple):
     def from_passwd(cls, passwd: str):
         """Creates a login request with the given password."""
         return cls(0x00, passwd)
+
+
+class LoginResponse(NamedTuple):
+    """A login response."""
+
+    header: Header
+    type: int
+    success: bool
+
+    @classmethod
+    def from_bytes(cls, header: Header, typ: bytes, success: bytes):
+        """Creates a login response from the given bytes."""
+        return cls(
+            header,
+            int.from_bytes(typ, 'little'),
+            bool(int.from_bytes(success, 'little'))
+        )
+
+    @classmethod
+    def read(cls, file: IO):
+        """Reads a login response from a file-like object."""
+        return cls.from_bytes(Header.read(file), file.read(1), file.read(1))
 
 
 class Command(NamedTuple):
@@ -107,3 +135,27 @@ class Command(NamedTuple):
     def from_command(cls, command: str, *args: str):
         """Creates a command packet from the command and arguments."""
         return cls.from_string(' '.join([command, *args]))
+
+
+class CommandResponse(NamedTuple):
+    """A command response."""
+
+    header: Header
+    type: int
+    seq: int
+    payload: bytes
+
+    @classmethod
+    def from_bytes(cls, header: Header, data: bytes):
+        """Creates a command response from the given bytes."""
+        return cls(
+            header,
+            int.from_bytes(data[:1], 'little'),
+            int.from_bytes(data[1:2], 'little'),
+            data[2:]
+        )
+
+    @property
+    def message(self) -> str:
+        """Returns the text message."""
+        return self.payload.decode('ascii')
