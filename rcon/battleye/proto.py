@@ -50,15 +50,18 @@ class Header(NamedTuple):
     @classmethod
     def from_bytes(cls, payload: bytes):
         """Creates a header from the given bytes."""
+        if (size := len(payload)) != 8:
+            raise ValueError('Invalid payload size', size)
+
         if (prefix := payload[:2].decode('ascii')) != PREFIX:
             raise ValueError('Invalid prefix', prefix)
 
-        if (infix := int.from_bytes(payload[5:6], 'little')) != INFIX:
+        if (infix := int.from_bytes(payload[6:7], 'little')) != INFIX:
             raise ValueError('Invalid infix', infix)
 
         return cls(
-            int.from_bytes(payload[2:5], 'little'),
-            int.from_bytes(payload[6:7], 'little')
+            int.from_bytes(payload[2:6], 'little'),
+            int.from_bytes(payload[7:8], 'little')
         )
 
 
