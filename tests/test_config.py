@@ -3,7 +3,7 @@
 from itertools import product
 from random import shuffle
 from string import printable
-from typing import Iterator, Tuple
+from typing import Iterator
 from unittest import TestCase
 
 from rcon.config import Config
@@ -30,7 +30,7 @@ class TestConfig(TestCase):
         self.ports = range(65_536)
 
     @property
-    def _sockets(self) -> Iterator[Tuple[str, int]]:
+    def _sockets(self) -> Iterator[tuple[str, int]]:
         """Yields (host, port) tuples."""
         return product(self.hosts, self.ports)
 
