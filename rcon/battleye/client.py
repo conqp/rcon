@@ -19,7 +19,6 @@ from rcon.exceptions import WrongPassword
 __all__ = ['Client']
 
 
-Host = Union[str, IPv4Address]
 MessageHandler = Callable[[ServerMessage], None]
 
 
