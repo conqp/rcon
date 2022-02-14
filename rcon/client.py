@@ -10,8 +10,6 @@ __all__ = ['BaseClient']
 class BaseClient:
     """A common RCON client."""
 
-    __slots__ = ('_socket', 'host', 'port', 'passwd')
-
     def __init__(
             self, host: str, port: int, *,
             timeout: Optional[float] = None,
