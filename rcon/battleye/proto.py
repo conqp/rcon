@@ -1,5 +1,6 @@
 """Low-level protocol stuff."""
 
+from __future__ import annotations
 from typing import NamedTuple, Union
 from zlib import crc32
 
@@ -36,7 +37,7 @@ class Header(NamedTuple):
         ))
 
     @classmethod
-    def create(cls, typ: int, payload: bytes):
+    def create(cls, typ: int, payload: bytes) -> Header:
         """Creates a header for the given payload."""
         return cls(
             crc32(b''.join((
@@ -48,7 +49,7 @@ class Header(NamedTuple):
         )
 
     @classmethod
-    def from_bytes(cls, payload: bytes):
+    def from_bytes(cls, payload: bytes) -> Header:
         """Creates a header from the given bytes."""
         if (size := len(payload)) != 8:
             raise ValueError('Invalid payload size', size)
@@ -89,7 +90,7 @@ class LoginResponse(NamedTuple):
     success: bool
 
     @classmethod
-    def from_bytes(cls, header: Header, payload: bytes):
+    def from_bytes(cls, header: Header, payload: bytes) -> LoginResponse:
         """Creates a login response from the given bytes."""
         return cls(header, bool(int.from_bytes(payload[:1], 'little')))
 
@@ -117,12 +118,12 @@ class Command(NamedTuple):
         return Header.create(0x01, self.payload)
 
     @classmethod
-    def from_string(cls, command: str):
+    def from_string(cls, command: str) -> Command:
         """Creates a command packet from the given string."""
         return cls(0x00, command)
 
     @classmethod
-    def from_command(cls, command: str, *args: str):
+    def from_command(cls, command: str, *args: str) -> Command:
         """Creates a command packet from the command and arguments."""
         return cls.from_string(' '.join([command, *args]))
 
@@ -135,7 +136,7 @@ class CommandResponse(NamedTuple):
     payload: bytes
 
     @classmethod
-    def from_bytes(cls, header: Header, payload: bytes):
+    def from_bytes(cls, header: Header, payload: bytes) -> CommandResponse:
         """Creates a command response from the given bytes."""
         return cls(
             header,
@@ -157,7 +158,7 @@ class ServerMessage(NamedTuple):
     payload: bytes
 
     @classmethod
-    def from_bytes(cls, header: Header, payload: bytes):
+    def from_bytes(cls, header: Header, payload: bytes) -> ServerMessage:
         """Creates a server message from the given bytes."""
         return cls(
             header,
