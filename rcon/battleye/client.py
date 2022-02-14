@@ -1,9 +1,8 @@
 """BattlEye RCon client."""
 
-from ipaddress import IPv4Address
 from logging import getLogger
 from socket import SOCK_DGRAM
-from typing import Callable, Union
+from typing import Callable
 
 from rcon.battleye.proto import RESPONSE_TYPES
 from rcon.battleye.proto import CommandRequest
