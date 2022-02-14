@@ -42,9 +42,11 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
 
     def _receive(self, max_length: int) -> Response:
         """Receives a packet."""
-        data = self._socket.recv(max_length)[:7]
-        header = Header.from_bytes(data)
-        return RESPONSE_TYPES[header.type].from_bytes(header, data[7:])
+        return RESPONSE_TYPES[
+            (header := Header.from_bytes(
+                data := self._socket.recv(max_length)[:7]
+            )).type
+        ].from_bytes(header, data[7:])
 
     def receive(self, max_length: int = 4096) -> Response:
         """Receives a message."""
