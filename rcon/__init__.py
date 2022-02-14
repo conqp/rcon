@@ -1,5 +1,6 @@
 """RCON client library."""
 
+from typing import Any, Coroutine
 from warnings import warn
 
 from rcon.source import rcon as _rcon
@@ -10,18 +11,20 @@ class Client(_Client):
     """Backwards compatibility."""
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         warn(
             'rcon.Client() is deprecated. Use rcon.source.Client() instead.',
-            DeprecationWarning
+            DeprecationWarning,
+            stacklevel=2
         )
+        super().__init__(*args, **kwargs)
 
 
-async def rcon(*args, **kwargs) -> str:
+def rcon(*args, **kwargs) -> Coroutine[Any, Any, str]:
     """Backwards compatibility."""
 
     warn(
         'rcon.rcon() is deprecated. Use rcon.source.rcon() instead.',
-        DeprecationWarning
+        DeprecationWarning,
+        stacklevel=2
     )
-    return await _rcon(*args, **kwargs)
+    return _rcon(*args, **kwargs)
