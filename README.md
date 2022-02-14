@@ -32,7 +32,8 @@ print(response)
 ```
 
 #### Async support
-If you prefer to use `RCON` in an asynchronous environment, you can use `rcon()`.
+If you prefer to use Source RCON in an asynchronous environment, you can use 
+`rcon()`.
 
 ```python
 from rcon.source import rcon
@@ -43,6 +44,44 @@ response = await rcon(
 )
 print(response)
 ```
+
+### BattlEye RCon
+```python
+from rcon.battleye import Client
+
+with Client('127.0.0.1', 5000, passwd='mysecretpassword') as client:
+    response = client.run('some_command', 'with', 'some', 'arguments')
+
+print(response)
+```
+
+#### Handling server messages
+Since the BattlEye RCon server will also send server messages to the client 
+alongside command responses, you can register an event handler to process 
+those messages:
+
+```python
+from rcon.battleye import Client
+from rcon.battleye.proto import ServerMessage
+
+def my_message_handler(server_message: ServerMessage) -> None:
+    """Print server messages."""
+    
+    print('Server message:', server_message)
+
+with Client(
+        '127.0.0.1',
+        5000,
+        passwd='mysecretpassword',
+        message_handler=my_message_handler
+) as client:
+    response = client.run('some_command', 'with', 'some', 'arguments')
+
+print('Response:', response)
+```
+
+Have a look at `rcon.battleye.proto.ServerMessage` for details on the 
+respective objects.
 
 ## License
 Copyright (C) 2018-2021 Richard Neumann <mail at richard dash neumann period de>
