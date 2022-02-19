@@ -1,5 +1,7 @@
 """Synchronous client."""
 
+from socket import SOCK_STREAM
+
 from rcon.client import BaseClient
 from rcon.exceptions import SessionTimeout, WrongPassword
 from rcon.source.proto import Packet, Type
@@ -8,7 +10,7 @@ from rcon.source.proto import Packet, Type
 __all__ = ['Client']
 
 
-class Client(BaseClient):
+class Client(BaseClient, socket_type=SOCK_STREAM):
     """An RCON client."""
 
     def communicate(self, packet: Packet) -> Packet:

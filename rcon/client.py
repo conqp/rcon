@@ -1,6 +1,6 @@
 """Common base client."""
 
-from socket import SOCK_STREAM, SocketKind, socket
+from socket import SocketKind, socket
 from typing import Optional
 
 
@@ -22,8 +22,9 @@ class BaseClient:
         self.timeout = timeout
         self.passwd = passwd
 
-    def __init_subclass__(cls, *, socket_type: SocketKind = SOCK_STREAM):
-        cls._socket_type = socket_type
+    def __init_subclass__(cls, *, socket_type: SocketKind | None = None):
+        if socket_type is not None:
+            cls._socket_type = socket_type
 
     def __enter__(self):
         """Attempts an auto-login if a password is set."""
