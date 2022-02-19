@@ -9,7 +9,7 @@ setup(
     setup_requires=['setuptools_scm'],
     author='Richard Neumann',
     author_email='mail@richard-neumann.de',
-    python_requires='>=3.8',
+    python_requires='>=3.10',
     packages=[
         'rcon',
         'rcon.battleye',
