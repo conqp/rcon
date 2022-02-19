@@ -7,7 +7,7 @@ from getpass import getpass
 from logging import getLogger
 from os import getenv, name
 from pathlib import Path
-from typing import Iterable, NamedTuple, Optional, Union
+from typing import Iterable, NamedTuple
 
 from rcon.exceptions import ConfigReadError, UserAbort
 
@@ -41,7 +41,7 @@ class Config(NamedTuple):
 
     host: str
     port: int
-    passwd: Optional[str] = None
+    passwd: str | None = None
 
     @classmethod
     def from_string(cls, string: str) -> Config:
@@ -71,7 +71,7 @@ class Config(NamedTuple):
         return cls(host, port, passwd)
 
 
-def load(config_files: Union[Path, Iterable[Path]] = CONFIG_FILES) -> None:
+def load(config_files: Path | Iterable[Path] = CONFIG_FILES) -> None:
     """Reads the configuration files and populates SERVERS."""
 
     SERVERS.clear()

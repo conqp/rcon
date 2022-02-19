@@ -1,7 +1,6 @@
 """Common base client."""
 
 from socket import SocketKind, socket
-from typing import Optional
 
 
 __all__ = ['BaseClient']
@@ -12,8 +11,8 @@ class BaseClient:
 
     def __init__(
             self, host: str, port: int, *,
-            timeout: Optional[float] = None,
-            passwd: Optional[str] = None
+            timeout: float | None = None,
+            passwd: str | None = None
     ):
         """Initializes the base client with the SOCK_STREAM socket type."""
         self._socket = socket(type=self._socket_type)

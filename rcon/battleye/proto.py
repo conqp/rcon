@@ -1,7 +1,7 @@
 """Low-level protocol stuff."""
 
 from __future__ import annotations
-from typing import NamedTuple, Union
+from typing import NamedTuple
 from zlib import crc32
 
 
@@ -172,8 +172,8 @@ class ServerMessage(NamedTuple):
         return self.payload.decode('ascii')
 
 
-Request = Union[LoginRequest, CommandRequest]
-Response = Union[LoginResponse, CommandResponse, ServerMessage]
+Request = LoginRequest | CommandRequest
+Response = LoginResponse | CommandResponse | ServerMessage
 
 RESPONSE_TYPES = {
     0x00: LoginResponse,
