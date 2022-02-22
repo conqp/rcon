@@ -16,12 +16,6 @@ LOGGER = getLogger(__file__)
 TERMINATOR = b'\x00\x00'
 
 
-def random_request_id() -> LittleEndianSignedInt32:
-    """Generates a random request ID."""
-
-    return LittleEndianSignedInt32(randint(0, LittleEndianSignedInt32.MAX))
-
-
 class LittleEndianSignedInt32(int):
     """A little-endian, signed int32."""
 
@@ -136,3 +130,9 @@ class Packet(NamedTuple):
         return cls(
             random_request_id(), Type.SERVERDATA_AUTH, passwd.encode(encoding)
         )
+
+
+def random_request_id() -> LittleEndianSignedInt32:
+    """Generates a random request ID."""
+
+    return LittleEndianSignedInt32(randint(0, LittleEndianSignedInt32.MAX))
