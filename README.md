@@ -1,5 +1,4 @@
 [![Documentation Status](https://readthedocs.org/projects/rcon/badge/?version=latest)](https://rcon.readthedocs.io/en/latest/)
-[![Quality Gate Status](https://sonarqube.richard-neumann.de/api/project_badges/measure?project=rcon&metric=alert_status)](https://sonarqube.richard-neumann.de/dashboard?id=rcon)
 
 # rcon
 An RCON client implementation.
