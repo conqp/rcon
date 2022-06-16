@@ -168,7 +168,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         """Saves the GUI settings to the cache file."""
         try:
             with CACHE_FILE.open('w', encoding='utf-8') as cache:
-                dump(self.gui_settings, cache)
+                dump(self.gui_settings, cache, indent=2)
         except PermissionError:
             LOGGER.error('Insufficient permissions to read: %s', CACHE_FILE)
 
