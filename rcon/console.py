@@ -131,7 +131,11 @@ def process_input(client: BaseClient, passwd: str, prompt: str) -> bool:
 
 
 def rconcmd(
-        client_cls: Type[BaseClient], host: str, port: int, passwd: str, *,
+        client_cls: Type[BaseClient],
+        host: str,
+        port: int,
+        passwd: str,
+        *,
         prompt: str = PROMPT
 ):
     """Initialize the console."""
