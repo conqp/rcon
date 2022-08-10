@@ -16,6 +16,7 @@ MSG_LOGIN_ABORTED = '\nLogin aborted. Bye.'
 MSG_EXIT = '\nBye.'
 MSG_SESSION_TIMEOUT = 'Session timed out. Please login again.'
 PROMPT = 'RCON {host}:{port}> '
+VALID_PORTS = range(0, 65536)
 
 
 def read_host() -> str:
@@ -45,7 +46,7 @@ def read_port() -> int:
             print(f'Invalid integer: {port}')
             continue
 
-        if 0 <= port <= 65535:
+        if port in VALID_PORTS:
             return port
 
         print(f'Invalid port: {port}')
