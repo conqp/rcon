@@ -92,7 +92,7 @@ def login(client: BaseClient, passwd: str) -> str:
 
 
 def process_input(client: BaseClient, passwd: str, prompt: str) -> bool:
-    """Processe the CLI input."""
+    """Process the CLI input."""
 
     try:
         command = input(prompt)
