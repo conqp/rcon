@@ -28,7 +28,7 @@ class ErrorHandler:
     __slots__ = ('logger', 'exit_code')
 
     def __init__(self, logger: Logger):
-        """Sets the logger."""
+        """Set the logger."""
         self.logger = logger
         self.exit_code = 0
 
@@ -36,7 +36,7 @@ class ErrorHandler:
         return self
 
     def __exit__(self, _, value: Exception, __):
-        """Checks for connection errors and exits respectively."""
+        """Check for common errors and exit respectively."""
         if value is None:
             return True
 

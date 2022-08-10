@@ -8,7 +8,7 @@ from rcon.source import Client as _Client
 
 
 class Client(_Client):
-    """Backwards compatibility."""
+    """Wrapper for the rcon.source.Client for backwards compatibility."""
 
     def __init__(self, *args, **kwargs):
         warn(
@@ -20,7 +20,7 @@ class Client(_Client):
 
 
 def rcon(*args, **kwargs) -> Coroutine[Any, Any, str]:
-    """Backwards compatibility."""
+    """Wrapper for rcon.source.rcon() for backwards compatibility."""
 
     warn(
         'rcon.rcon() is deprecated. Use rcon.source.rcon() instead.',

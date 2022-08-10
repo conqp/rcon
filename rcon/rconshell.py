@@ -18,7 +18,7 @@ LOGGER = getLogger('rconshell')
 
 
 def get_args() -> Namespace:
-    """Parses and returns the CLI arguments."""
+    """Parse and returns the CLI arguments."""
 
     parser = ArgumentParser(description='An interactive RCON shell.')
     parser.add_argument('server', nargs='?', help='the server to connect to')
@@ -38,7 +38,7 @@ def get_args() -> Namespace:
 
 
 def run() -> None:
-    """Runs the RCON shell."""
+    """Run the RCON shell."""
 
     args = get_args()
     basicConfig(level=INFO, format=LOG_FORMAT)
@@ -54,7 +54,7 @@ def run() -> None:
 
 
 def main() -> int:
-    """Runs the main script with exceptions handled."""
+    """Run the main script with exceptions handled."""
 
     with ErrorHandler(LOGGER) as handler:
         run()

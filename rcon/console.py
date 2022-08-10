@@ -19,7 +19,7 @@ PROMPT = 'RCON {host}:{port}> '
 
 
 def read_host() -> str:
-    """Reads the host."""
+    """Read the host."""
 
     while True:
         try:
@@ -30,7 +30,7 @@ def read_host() -> str:
 
 
 def read_port() -> int:
-    """Reads the port."""
+    """Read the port."""
 
     while True:
         try:
@@ -52,7 +52,7 @@ def read_port() -> int:
 
 
 def read_passwd() -> str:
-    """Reads the password."""
+    """Read the password."""
 
     while True:
         try:
@@ -62,7 +62,7 @@ def read_passwd() -> str:
 
 
 def get_config(host: str, port: int, passwd: str) -> Config:
-    """Reads the necessary arguments."""
+    """Read the necessary arguments."""
 
     if host is None:
         host = read_host()
@@ -77,7 +77,7 @@ def get_config(host: str, port: int, passwd: str) -> Config:
 
 
 def login(client: BaseClient, passwd: str) -> str:
-    """Performs a login."""
+    """Perform a login."""
 
     while True:
         try:
@@ -91,7 +91,7 @@ def login(client: BaseClient, passwd: str) -> str:
 
 
 def process_input(client: BaseClient, passwd: str, prompt: str) -> bool:
-    """Processes the CLI input."""
+    """Processe the CLI input."""
 
     try:
         command = input(prompt)
@@ -133,7 +133,7 @@ def rconcmd(
         client_cls: Type[BaseClient], host: str, port: int, passwd: str, *,
         prompt: str = PROMPT
 ):
-    """Initializes the console."""
+    """Initialize the console."""
 
     try:
         host, port, passwd = get_config(host, port, passwd)

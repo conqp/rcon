@@ -23,24 +23,24 @@ class LittleEndianSignedInt32(int):
     MAX = 2_147_483_647
 
     def __init__(self, *_):
-        """Checks the boundaries."""
+        """Check the boundaries."""
         super().__init__()
 
         if not self.MIN <= self <= self.MAX:
             raise ValueError('Signed int32 out of bounds:', int(self))
 
     def __bytes__(self):
-        """Returns the integer as signed little endian."""
+        """Return the integer as signed little endian."""
         return self.to_bytes(4, 'little', signed=True)
 
     @classmethod
     async def aread(cls, reader: StreamReader) -> LittleEndianSignedInt32:
-        """Reads the integer from an asynchronous file-like object."""
+        """Read the integer from an asynchronous file-like object."""
         return cls.from_bytes(await reader.read(4), 'little', signed=True)
 
     @classmethod
     def read(cls, file: IO) -> LittleEndianSignedInt32:
-        """Reads the integer from a file-like object."""
+        """Read the integer from a file-like object."""
         return cls.from_bytes(file.read(4), 'little', signed=True)
 
 
@@ -53,21 +53,21 @@ class Type(Enum):
     SERVERDATA_RESPONSE_VALUE = LittleEndianSignedInt32(0)
 
     def __int__(self):
-        """Returns the actual integer value."""
+        """Return the actual integer value."""
         return int(self.value)
 
     def __bytes__(self):
-        """Returns the integer value as little endian."""
+        """Return the integer value as little endian."""
         return bytes(self.value)
 
     @classmethod
     async def aread(cls, reader: StreamReader) -> Type:
-        """Reads the type from an asynchronous file-like object."""
+        """Read the type from an asynchronous file-like object."""
         return cls(await LittleEndianSignedInt32.aread(reader))
 
     @classmethod
     def read(cls, file: IO) -> Type:
-        """Reads the type from a file-like object."""
+        """Read the type from a file-like object."""
         return cls(LittleEndianSignedInt32.read(file))
 
 
@@ -80,7 +80,7 @@ class Packet(NamedTuple):
     terminator: bytes = TERMINATOR
 
     def __bytes__(self):
-        """Returns the packet as bytes with prepended length."""
+        """Return the packet as bytes with prepended length."""
         payload = bytes(self.id)
         payload += bytes(self.type)
         payload += self.payload
@@ -90,7 +90,7 @@ class Packet(NamedTuple):
 
     @classmethod
     async def aread(cls, reader: StreamReader) -> Packet:
-        """Reads a packet from an asynchronous file-like object."""
+        """Read a packet from an asynchronous file-like object."""
         size = await LittleEndianSignedInt32.aread(reader)
         id_ = await LittleEndianSignedInt32.aread(reader)
         type_ = await Type.aread(reader)
@@ -104,7 +104,7 @@ class Packet(NamedTuple):
 
     @classmethod
     def read(cls, file: IO) -> Packet:
-        """Reads a packet from a file-like object."""
+        """Read a packet from a file-like object."""
         size = LittleEndianSignedInt32.read(file)
         id_ = LittleEndianSignedInt32.read(file)
         type_ = Type.read(file)
@@ -118,7 +118,7 @@ class Packet(NamedTuple):
 
     @classmethod
     def make_command(cls, *args: str, encoding: str = 'utf-8') -> Packet:
-        """Creates a command packet."""
+        """Create a command packet."""
         return cls(
             random_request_id(), Type.SERVERDATA_EXECCOMMAND,
             b' '.join(map(partial(str.encode, encoding=encoding), args))
@@ -126,13 +126,13 @@ class Packet(NamedTuple):
 
     @classmethod
     def make_login(cls, passwd: str, *, encoding: str = 'utf-8') -> Packet:
-        """Creates a login packet."""
+        """Create a login packet."""
         return cls(
             random_request_id(), Type.SERVERDATA_AUTH, passwd.encode(encoding)
         )
 
 
 def random_request_id() -> LittleEndianSignedInt32:
-    """Generates a random request ID."""
+    """Generate a random request ID."""
 
     return LittleEndianSignedInt32(randint(0, LittleEndianSignedInt32.MAX))

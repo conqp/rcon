@@ -16,7 +16,7 @@ LOGGER = getLogger('rconclt')
 
 
 def get_args() -> Namespace:
-    """Parses and returns the CLI arguments."""
+    """Parse and return the command line arguments."""
 
     parser = ArgumentParser(description='A Minecraft RCON client.')
     parser.add_argument('server', help='the server to connect to')
@@ -44,7 +44,7 @@ def get_args() -> Namespace:
 
 
 def run() -> None:
-    """Runs the RCON client."""
+    """Run the RCON client."""
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
@@ -59,7 +59,7 @@ def run() -> None:
 
 
 def main() -> int:
-    """Runs the main script with exceptions handled."""
+    """Run the main script with exceptions handled."""
 
     with ErrorHandler(LOGGER) as handler:
         run()

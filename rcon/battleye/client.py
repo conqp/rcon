@@ -39,7 +39,7 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
         self._handle_server_message = message_handler
 
     def _receive(self, max_length: int) -> Response:
-        """Receives a packet."""
+        """Receive a packet."""
         return RESPONSE_TYPES[
             (header := Header.from_bytes(
                 (data := self._socket.recv(max_length))[:8]
@@ -47,28 +47,28 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
         ].from_bytes(header, data[8:])
 
     def receive(self, max_length: int = 4096) -> Response:
-        """Receives a message."""
+        """Receive a message."""
         while isinstance(response := self._receive(max_length), ServerMessage):
             self._handle_server_message(response)
 
         return response
 
     def communicate(self, request: Request) -> Response:
-        """Logs the user in."""
+        """Send a request and receive a response."""
         with self._socket.makefile('wb') as file:
             file.write(bytes(request))
 
         return self.receive()
 
     def login(self, passwd: str) -> bool:
-        """Logs the user in."""
+        """Log-in the user."""
         if not self.communicate(LoginRequest(passwd)).success:
             raise WrongPassword()
 
         return True
 
     def run(self, command: str, *args: str) -> str:
-        """Executes a command."""
+        """Execute a command and return the text message."""
         return self.communicate(
             CommandRequest.from_command(command, *args)
         ).message

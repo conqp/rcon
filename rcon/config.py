@@ -45,7 +45,7 @@ class Config(NamedTuple):
 
     @classmethod
     def from_string(cls, string: str) -> Config:
-        """Reads the credentials from the given string."""
+        """Read the credentials from the given string."""
         try:
             host, port = string.rsplit(':', maxsplit=1)
         except ValueError:
@@ -62,7 +62,7 @@ class Config(NamedTuple):
 
     @classmethod
     def from_config_section(cls, section: SectionProxy) -> Config:
-        """Creates a credentials tuple from
+        """Create a credentials tuple from
         the respective config section.
         """
         host = section['host']
@@ -72,7 +72,7 @@ class Config(NamedTuple):
 
 
 def load(config_files: Path | Iterable[Path] = CONFIG_FILES) -> None:
-    """Reads the configuration files and populates SERVERS."""
+    """Read the configuration files and populates SERVERS."""
 
     SERVERS.clear()
     CONFIG.read(config_files)

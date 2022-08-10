@@ -14,19 +14,19 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
     """An RCON client."""
 
     def communicate(self, packet: Packet) -> Packet:
-        """Sends and receives a packet."""
+        """Send and receive a packet."""
         with self._socket.makefile('wb') as file:
             file.write(bytes(packet))
 
         return self.read()
 
     def read(self) -> Packet:
-        """Reads a packet."""
+        """Read a packet."""
         with self._socket.makefile('rb') as file:
             return Packet.read(file)
 
     def login(self, passwd: str, *, encoding: str = 'utf-8') -> bool:
-        """Performs a login."""
+        """Perform a login."""
         request = Packet.make_login(passwd, encoding=encoding)
         response = self.communicate(request)
 
@@ -41,7 +41,7 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
         return True
 
     def run(self, command: str, *args: str, encoding: str = 'utf-8') -> str:
-        """Runs a command."""
+        """Run a command."""
         request = Packet.make_command(command, *args, encoding=encoding)
         response = self.communicate(request)
 

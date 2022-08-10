@@ -21,7 +21,7 @@ async def communicate(
         writer: StreamWriter,
         packet: Packet
 ) -> Packet:
-    """Asynchronous requests."""
+    """Make an asynchronous request."""
 
     writer.write(bytes(packet))
     await writer.drain()
@@ -36,7 +36,7 @@ async def rcon(
         passwd: str,
         encoding: str = 'utf-8'
 ) -> str:
-    """Runs a command asynchronously."""
+    """Run a command asynchronously."""
 
     reader, writer = await open_connection(host, port)
     login = Packet.make_login(passwd, encoding=encoding)

@@ -14,7 +14,7 @@ class BaseClient:
             timeout: float | None = None,
             passwd: str | None = None
     ):
-        """Initializes the base client with the SOCK_STREAM socket type."""
+        """Initialize the base client with the SOCK_STREAM socket type."""
         self._socket = socket(type=self._socket_type)
         self.host = host
         self.port = port
@@ -26,27 +26,27 @@ class BaseClient:
             cls._socket_type = socket_type
 
     def __enter__(self):
-        """Attempts an auto-login if a password is set."""
+        """Attempt an auto-login if a password is set."""
         self._socket.__enter__()
         self.connect(login=True)
         return self
 
     def __exit__(self, typ, value, traceback):
-        """Delegates to the underlying socket's exit method."""
+        """Delegate to the underlying socket's exit method."""
         return self._socket.__exit__(typ, value, traceback)
 
     @property
     def timeout(self) -> float:
-        """Returns the socket timeout."""
+        """Return the socket timeout."""
         return self._socket.gettimeout()
 
     @timeout.setter
     def timeout(self, timeout: float):
-        """Sets the socket timeout."""
+        """Set the socket timeout."""
         self._socket.settimeout(timeout)
 
     def connect(self, login: bool = False) -> None:
-        """Connects the socket and attempts a
+        """Connect the socket and attempt a
         login if wanted and a password is set.
         """
         self._socket.connect((self.host, self.port))
@@ -55,13 +55,13 @@ class BaseClient:
             self.login(self.passwd)
 
     def close(self) -> None:
-        """Closes the socket connection."""
+        """Close the socket connection."""
         self._socket.close()
 
     def login(self, passwd: str) -> bool:
-        """Performs a login."""
+        """Perform a login."""
         raise NotImplementedError()
 
     def run(self, command: str, *args: str) -> str:
-        """Runs a command."""
+        """Run a command."""
         raise NotImplementedError()

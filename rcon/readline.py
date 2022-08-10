@@ -21,11 +21,11 @@ class CommandHistory:
     __slots__ = ('logger',)
 
     def __init__(self, logger: Logger):
-        """Sets the logger to use."""
+        """Set the logger to use."""
         self.logger = logger
 
     def __enter__(self):
-        """Loads the history file."""
+        """Load the history file."""
         try:
             read_history_file(HIST_FILE)
         except FileNotFoundError:
@@ -40,7 +40,7 @@ class CommandHistory:
         return self
 
     def __exit__(self, *_):
-        """Writes to the history file."""
+        """Write to the history file."""
         try:
             write_history_file(HIST_FILE)
         except PermissionError:

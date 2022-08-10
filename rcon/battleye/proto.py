@@ -38,7 +38,7 @@ class Header(NamedTuple):
 
     @classmethod
     def create(cls, typ: int, payload: bytes) -> Header:
-        """Creates a header for the given payload."""
+        """Create a header for the given payload."""
         return cls(
             crc32(b''.join((
                 INFIX.to_bytes(1, 'little'),
@@ -50,7 +50,7 @@ class Header(NamedTuple):
 
     @classmethod
     def from_bytes(cls, payload: bytes) -> Header:
-        """Creates a header from the given bytes."""
+        """Create a header from the given bytes."""
         if (size := len(payload)) != 8:
             raise ValueError('Invalid payload size', size)
 
@@ -74,12 +74,12 @@ class LoginRequest(str):
 
     @property
     def payload(self) -> bytes:
-        """Returns the payload."""
+        """Return the payload."""
         return self.encode('ascii')
 
     @property
     def header(self) -> Header:
-        """Returns the appropriate header."""
+        """Return the appropriate header."""
         return Header.create(0x00, self.payload)
 
 
@@ -91,7 +91,7 @@ class LoginResponse(NamedTuple):
 
     @classmethod
     def from_bytes(cls, header: Header, payload: bytes) -> LoginResponse:
-        """Creates a login response from the given bytes."""
+        """Create a login response from the given bytes."""
         return cls(header, bool(int.from_bytes(payload[:1], 'little')))
 
 
@@ -106,7 +106,7 @@ class CommandRequest(NamedTuple):
 
     @property
     def payload(self) -> bytes:
-        """Returns the payload."""
+        """Return the payload."""
         return b''.join((
             self.seq.to_bytes(1, 'little'),
             self.command.encode('ascii')
@@ -114,17 +114,17 @@ class CommandRequest(NamedTuple):
 
     @property
     def header(self) -> Header:
-        """Returns the appropriate header."""
+        """Return the appropriate header."""
         return Header.create(0x01, self.payload)
 
     @classmethod
     def from_string(cls, command: str) -> CommandRequest:
-        """Creates a command packet from the given string."""
+        """Create a command packet from the given string."""
         return cls(0x00, command)
 
     @classmethod
     def from_command(cls, command: str, *args: str) -> CommandRequest:
-        """Creates a command packet from the command and arguments."""
+        """Create a command packet from the command and arguments."""
         return cls.from_string(' '.join([command, *args]))
 
 
@@ -137,7 +137,7 @@ class CommandResponse(NamedTuple):
 
     @classmethod
     def from_bytes(cls, header: Header, payload: bytes) -> CommandResponse:
-        """Creates a command response from the given bytes."""
+        """Create a command response from the given bytes."""
         return cls(
             header,
             int.from_bytes(payload[:1], 'little'),
@@ -146,7 +146,7 @@ class CommandResponse(NamedTuple):
 
     @property
     def message(self) -> str:
-        """Returns the text message."""
+        """Return the text message."""
         return self.payload.decode('ascii')
 
 
@@ -159,7 +159,7 @@ class ServerMessage(NamedTuple):
 
     @classmethod
     def from_bytes(cls, header: Header, payload: bytes) -> ServerMessage:
-        """Creates a server message from the given bytes."""
+        """Create a server message from the given bytes."""
         return cls(
             header,
             int.from_bytes(payload[:1], 'little'),
@@ -168,7 +168,7 @@ class ServerMessage(NamedTuple):
 
     @property
     def message(self) -> str:
-        """Returns the text message."""
+        """Return the text message."""
         return self.payload.decode('ascii')
 
 

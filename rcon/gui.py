@@ -34,7 +34,7 @@ LOGGER = getLogger('rcongui')
 
 
 def get_args() -> Namespace:
-    """Parses the command line arguments."""
+    """Parse and return the command line arguments."""
 
     parser = ArgumentParser(description='A minimalistic, GTK-based RCON GUI.')
     parser.add_argument(
@@ -53,7 +53,7 @@ def get_args() -> Namespace:
 
 
 class RCONParams(NamedTuple):
-    """Represents the RCON parameters."""
+    """Represent the RCON parameters."""
 
     host: str
     port: int
@@ -65,7 +65,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
     """A GTK based GUI for RCON."""
 
     def __init__(self, args: Namespace):
-        """Initializes the GUI."""
+        """Initialize the GUI."""
         super().__init__(title='RCON GUI')
         self.args = args
 
@@ -107,12 +107,12 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
 
     @property
     def client_cls(self) -> Type[BaseClient]:
-        """Returns the client class."""
+        """Return the client class."""
         return battleye.Client if self.args.battleye else source.Client
 
     @property
     def result_text(self) -> str:
-        """Returns the result text."""
+        """Return the result text."""
         if (buf := self.result.get_buffer()) is not None:
             start = buf.get_iter_at_line(0)
             end = buf.get_iter_at_line(buf.get_line_count())
@@ -122,13 +122,13 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
 
     @result_text.setter
     def result_text(self, text: str):
-        """Sets the result text."""
+        """Set the result text."""
         if (buf := self.result.get_buffer()) is not None:
             buf.set_text(text)
 
     @property
     def gui_settings(self) -> dict:
-        """Returns the GUI settings as a dict."""
+        """Return the GUI settings as a dict."""
         json = {
             'host': self.host.get_text(),
             'port': self.port.get_value_as_int(),
@@ -144,7 +144,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
 
     @gui_settings.setter
     def gui_settings(self, json: dict):
-        """Sets the GUI settings."""
+        """Set the GUI settings."""
         self.host.set_text(json.get('host', ''))
         self.port.set_value(json.get('port', 0))
         self.passwd.set_text(json.get('passwd', ''))
@@ -153,7 +153,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         self.savepw.set_active(json.get('savepw', False))
 
     def load_gui_settings(self) -> None:
-        """Loads the GUI settings from the cache file."""
+        """Load the GUI settings from the cache file."""
         try:
             with CACHE_FILE.open('rb') as cache:
                 self.gui_settings = load(cache)
@@ -165,7 +165,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
             LOGGER.error('Cache file contains garbage: %s', CACHE_FILE)
 
     def save_gui_settings(self):
-        """Saves the GUI settings to the cache file."""
+        """Save the GUI settings to the cache file."""
         try:
             with CACHE_FILE.open('w', encoding='utf-8') as cache:
                 dump(self.gui_settings, cache, indent=2)
@@ -173,7 +173,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
             LOGGER.error('Insufficient permissions to read: %s', CACHE_FILE)
 
     def show_error(self, message: str):
-        """Shows an error message."""
+        """Show an error message."""
         message_dialog = Gtk.MessageDialog(
             transient_for=self,
             message_type=Gtk.MessageType.ERROR,
@@ -184,7 +184,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
         message_dialog.destroy()
 
     def run_rcon(self) -> str:
-        """Returns the current RCON settings."""
+        """Return the current RCON settings."""
         with self.client_cls(
                 self.host.get_text().strip(),
                 self.port.get_value_as_int(),
@@ -194,7 +194,7 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
             return client.run(*self.command.get_text().strip().split())
 
     def on_button_clicked(self, _):
-        """Runs the client."""
+        """Run the client."""
         try:
             result = self.run_rcon()
         except ValueError as error:
@@ -213,13 +213,13 @@ class GUI(Gtk.Window):  # pylint: disable=R0902
             self.result_text = result
 
     def terminate(self, *args, **kwargs):
-        """Saves the settings and terminates the application."""
+        """Save the settings and terminates the application."""
         self.save_gui_settings()
         Gtk.main_quit(*args, **kwargs)
 
 
 def main() -> None:
-    """Starts the GUI."""
+    """Start the GUI."""
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
