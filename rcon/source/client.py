@@ -25,7 +25,7 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
         with self._socket.makefile('rb') as file:
             packet = Packet.read(file)
 
-        if self.max_pkg_size and len(packet.payload) >= self.max_pkg_size:
+        if self._max_pkg_size and len(packet.payload) >= self._max_pkg_size:
             return packet + self.read_followup_packet()
 
         return packet

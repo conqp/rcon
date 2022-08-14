@@ -12,8 +12,7 @@ class BaseClient:
     def __init__(
             self, host: str, port: int, *,
             timeout: float | None = None,
-            passwd: str | None = None,
-            max_pkg_size: int | None = None
+            passwd: str | None = None
     ):
         """Initialize the base client with the SOCK_STREAM socket type."""
         self._socket = socket(type=self._socket_type)
@@ -21,11 +20,17 @@ class BaseClient:
         self.port = port
         self.timeout = timeout
         self.passwd = passwd
-        self.max_pkg_size = max_pkg_size
 
-    def __init_subclass__(cls, *, socket_type: SocketKind | None = None):
+    def __init_subclass__(
+            cls,
+            *,
+            socket_type: SocketKind | None = None,
+            max_pkg_size: int | None = None
+    ):
         if socket_type is not None:
             cls._socket_type = socket_type
+            
+        cls._max_pkg_size = max_pkg_size
 
     def __enter__(self):
         """Attempt an auto-login if a password is set."""
