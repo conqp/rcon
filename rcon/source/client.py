@@ -23,7 +23,7 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
     def read(self) -> Packet:
         """Read a packet."""
         with self._socket.makefile('rb') as file:
-            return Packet.read(file)
+            return Packet.read(file, max_pkg_size=self.max_pkg_size)
 
     def login(self, passwd: str, *, encoding: str = 'utf-8') -> bool:
         """Perform a login."""

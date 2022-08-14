@@ -103,16 +103,20 @@ class Packet(NamedTuple):
         return cls(id_, type_, payload, terminator)
 
     @classmethod
-    def read(cls, file: IO) -> Packet:
+    def read(cls, file: IO, *, max_pkg_size: int | None = None) -> Packet:
         """Read a packet from a file-like object."""
         size = LittleEndianSignedInt32.read(file)
         id_ = LittleEndianSignedInt32.read(file)
         type_ = Type.read(file)
-        payload = file.read(size - 10)
+        payload = file.read(size := size - 10)
         terminator = file.read(2)
 
         if terminator != TERMINATOR:
             LOGGER.warning('Unexpected terminator: %s', terminator)
+
+        # Attempt to read following packets on large responses.
+        if size >= max_pkg_size:
+            payload += cls.read(file, max_pkg_size=max_pkg_size).payload
 
         return cls(id_, type_, payload, terminator)
 
