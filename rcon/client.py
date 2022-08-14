@@ -12,7 +12,8 @@ class BaseClient:
     def __init__(
             self, host: str, port: int, *,
             timeout: float | None = None,
-            passwd: str | None = None
+            passwd: str | None = None,
+            max_pkg_size: int | None = None
     ):
         """Initialize the base client with the SOCK_STREAM socket type."""
         self._socket = socket(type=self._socket_type)
@@ -20,6 +21,7 @@ class BaseClient:
         self.port = port
         self.timeout = timeout
         self.passwd = passwd
+        self.max_pkg_size = max_pkg_size
 
     def __init_subclass__(cls, *, socket_type: SocketKind | None = None):
         if socket_type is not None:
