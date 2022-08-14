@@ -79,7 +79,10 @@ class Packet(NamedTuple):
     payload: bytes
     terminator: bytes = TERMINATOR
 
-    def __add__(self, other: Packet):
+    def __add__(self, other: Packet | None):
+        if other is None:
+            return self
+
         return Packet(
             self.id,
             self.type,
