@@ -122,7 +122,7 @@ class Packet(NamedTuple):
         size = LittleEndianSignedInt32.read(file)
         id_ = LittleEndianSignedInt32.read(file)
         type_ = Type.read(file)
-        payload = file.read(size := size - 10)
+        payload = file.read(size - 10)
         terminator = file.read(2)
 
         if terminator != TERMINATOR:
