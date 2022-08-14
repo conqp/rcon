@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from asyncio import StreamReader
-from contextlib import suppress
 from enum import Enum
 from functools import partial
 from logging import getLogger
@@ -80,6 +79,17 @@ class Packet(NamedTuple):
     payload: bytes
     terminator: bytes = TERMINATOR
 
+    def __add__(self, other: Packet):
+        return Packet(
+            self.id,
+            self.type,
+            self.payload + other.payload,
+            self.terminator
+        )
+
+    def __radd__(self, other: Packet):
+        return other.__add__(self)
+
     def __bytes__(self):
         """Return the packet as bytes with prepended length."""
         payload = bytes(self.id)
@@ -104,7 +114,7 @@ class Packet(NamedTuple):
         return cls(id_, type_, payload, terminator)
 
     @classmethod
-    def read(cls, file: IO, *, max_pkg_size: int | None = None) -> Packet:
+    def read(cls, file: IO) -> Packet:
         """Read a packet from a file-like object."""
         size = LittleEndianSignedInt32.read(file)
         id_ = LittleEndianSignedInt32.read(file)
@@ -114,11 +124,6 @@ class Packet(NamedTuple):
 
         if terminator != TERMINATOR:
             LOGGER.warning('Unexpected terminator: %s', terminator)
-
-        # Attempt to read following packets on large responses.
-        if size >= max_pkg_size:
-            with suppress(TimeoutError):
-                payload += cls.read(file, max_pkg_size=max_pkg_size).payload
 
         return cls(id_, type_, payload, terminator)
 
