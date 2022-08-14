@@ -28,18 +28,14 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
         if self._max_packet_size is None:
             return packet
 
-        if len(packet.payload) >= self._max_packet_size:
-            return packet + self.read_followup_packet()
+        if len(packet.payload) < self._max_packet_size:
+            return packet
 
-        return packet
-
-    def read_followup_packet(self) -> Packet | None:
-        """Reads a potential followup packet."""
-        with ChangedTimeout(self, 1) as client:
+        with ChangedTimeout(self, 1):
             try:
-                return client.read()
+                return packet + Packet.read(file)
             except TimeoutError:
-                return None
+                return packet
 
     def login(self, passwd: str, *, encoding: str = 'utf-8') -> bool:
         """Perform a login."""
@@ -75,10 +71,9 @@ class ChangedTimeout:
         self.timeout = timeout
         self.original_timeout = None
 
-    def __enter__(self) -> Client:
+    def __enter__(self) -> None:
         self.original_timeout = self.client.timeout
         self.client.timeout = self.timeout
-        return self.client
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.client.timeout = self.original_timeout
