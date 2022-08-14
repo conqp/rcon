@@ -1,6 +1,7 @@
 """Synchronous client."""
 
 from socket import SOCK_STREAM
+from typing import IO
 
 from rcon.client import BaseClient
 from rcon.exceptions import SessionTimeout, WrongPassword
@@ -23,7 +24,11 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
     def read(self) -> Packet:
         """Read a packet."""
         with self._socket.makefile('rb') as file:
-            packet = Packet.read(file)
+            return self._read_from_file(file)
+
+    def _read_from_file(self, file: IO) -> Packet:
+        """Read a packet from the given file."""
+        packet = Packet.read(file)
 
         if self._max_packet_size is None:
             return packet
