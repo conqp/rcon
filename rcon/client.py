@@ -9,7 +9,7 @@ __all__ = ['BaseClient']
 class BaseClient:
     """A common RCON client."""
 
-    _max_pkg_size: int | None = None
+    _max_packet_size: int | None = None
 
     def __init__(
             self, host: str, port: int, *,
@@ -27,13 +27,13 @@ class BaseClient:
             cls,
             *,
             socket_type: SocketKind | None = None,
-            max_pkg_size: int | None = None
+            max_packet_size: int | None = None
     ):
         if socket_type is not None:
             cls._socket_type = socket_type
 
-        if max_pkg_size is not None:
-            cls._max_pkg_size = max_pkg_size
+        if max_packet_size is not None:
+            cls._max_packet_size = max_packet_size
 
     def __enter__(self):
         """Attempt an auto-login if a password is set."""
