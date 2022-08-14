@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from asyncio import StreamReader
+from contextlib import suppress
 from enum import Enum
 from functools import partial
 from logging import getLogger
@@ -116,7 +117,8 @@ class Packet(NamedTuple):
 
         # Attempt to read following packets on large responses.
         if size >= max_pkg_size:
-            payload += cls.read(file, max_pkg_size=max_pkg_size).payload
+            with suppress(TimeoutError):
+                payload += cls.read(file, max_pkg_size=max_pkg_size).payload
 
         return cls(id_, type_, payload, terminator)
 
