@@ -24,7 +24,10 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
         """Set an optional fragmentation command
         in order to detect fragmented packets.
 
-        See: https://wiki.vg/RCON#Fragmentation
+        This packet should produce a response, which is
+        guaranteed to not be fragmented by the server.
+
+        For details see: https://wiki.vg/RCON#Fragmentation
         """
         super().__init_subclass__(*args, **kwargs)
 
