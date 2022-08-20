@@ -9,8 +9,6 @@ __all__ = ['BaseClient']
 class BaseClient:
     """A common RCON client."""
 
-    _max_packet_size: int | None = None
-
     def __init__(
             self, host: str, port: int, *,
             timeout: float | None = None,
@@ -23,17 +21,9 @@ class BaseClient:
         self.timeout = timeout
         self.passwd = passwd
 
-    def __init_subclass__(
-            cls,
-            *,
-            socket_type: SocketKind | None = None,
-            max_packet_size: int | None = None
-    ):
+    def __init_subclass__(cls, *, socket_type: SocketKind | None = None):
         if socket_type is not None:
             cls._socket_type = socket_type
-
-        if max_packet_size is not None:
-            cls._max_packet_size = max_packet_size
 
     def __enter__(self):
         """Attempt an auto-login if a password is set."""
