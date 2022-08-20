@@ -39,22 +39,23 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
         with self._socket.makefile('wb') as file:
             file.write(bytes(packet))
 
-        if self._frag_detect is not None:
-            with self._socket.makefile('wb') as file:
-                file.write(bytes(Packet.make_command(self._frag_detect)))
+        response = self.read()
 
-        return self.read()
+        if self._frag_detect is None:
+            return response
+
+        with self._socket.makefile('wb') as file:
+            file.write(bytes(Packet.make_command(self._frag_detect)))
+
+        while (successor := self.read()).id == response.id:
+            response += successor
+
+        return response
 
     def read(self) -> Packet:
         """Read a packet."""
         with self._socket.makefile('rb') as file:
-            packet = Packet.read(file)
-
-            if self._frag_detect is not None:
-                while (successor := Packet.read(file)).id == packet.id:
-                    packet += successor
-
-        return packet
+            return Packet.read(file)
 
     def login(self, passwd: str, *, encoding: str = 'utf-8') -> bool:
         """Perform a login."""
