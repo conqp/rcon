@@ -61,19 +61,19 @@ class Type(Enum):
         return bytes(self.value)
 
     @classmethod
-    async def aread(cls, reader: StreamReader) -> Type:
+    async def aread(cls, reader: StreamReader, *, prefix: str = '') -> Type:
         """Read the type from an asynchronous file-like object."""
-        LOGGER.debug('Reading type asynchronously.')
+        LOGGER.debug('%sReading type asynchronously.', prefix)
         value = await LittleEndianSignedInt32.aread(reader)
-        LOGGER.debug('  => value: %i', value)
+        LOGGER.debug('%s  => value: %i', prefix, value)
         return cls(value)
 
     @classmethod
-    def read(cls, file: IO) -> Type:
+    def read(cls, file: IO, *, prefix: str = '') -> Type:
         """Read the type from a file-like object."""
-        LOGGER.debug('Reading type.')
+        LOGGER.debug('%sReading type.', prefix)
         value = LittleEndianSignedInt32.read(file)
-        LOGGER.debug('  => value: %i', value)
+        LOGGER.debug('%s  => value: %i', prefix, value)
         return cls(value)
 
 
@@ -116,7 +116,7 @@ class Packet(NamedTuple):
         LOGGER.debug('  => size: %i', size)
         id_ = await LittleEndianSignedInt32.aread(reader)
         LOGGER.debug('  => id: %i', id_)
-        type_ = await Type.aread(reader)
+        type_ = await Type.aread(reader, prefix='  ')
         LOGGER.debug('  => type: %i', type_)
         payload = await reader.read(size - 10)
         LOGGER.debug('  => payload: %s', payload)
@@ -136,7 +136,7 @@ class Packet(NamedTuple):
         LOGGER.debug('  => size: %i', size)
         id_ = LittleEndianSignedInt32.read(file)
         LOGGER.debug('  => id: %i', id_)
-        type_ = Type.read(file)
+        type_ = Type.read(file, prefix='  ')
         LOGGER.debug('  => type: %i', type_)
         payload = file.read(size - 10)
         LOGGER.debug('  => payload: %s', payload)
