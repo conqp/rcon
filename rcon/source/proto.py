@@ -46,7 +46,7 @@ class LittleEndianSignedInt32(int):
         return cls.from_bytes(file.read(4), 'little', signed=True)
 
 
-class Type(Enum):
+class Type(LittleEndianSignedInt32, Enum):
     """RCON packet types."""
 
     SERVERDATA_AUTH = LittleEndianSignedInt32(3)
