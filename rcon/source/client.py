@@ -13,8 +13,8 @@ __all__ = ['Client']
 class Client(BaseClient, socket_type=SOCK_STREAM):
     """An RCON client."""
 
-    def __init_subclass__(
-            cls,
+    def __init__(
+            self,
             *args,
             frag_threshold: int = 4096,
             frag_detect_cmd: str = '',
@@ -25,9 +25,9 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
 
         For details see: https://wiki.vg/RCON#Fragmentation
         """
-        super().__init_subclass__(*args, **kwargs)
-        cls.frag_threshold = frag_threshold
-        cls.frag_detect_cmd = frag_detect_cmd
+        super().__init__(*args, **kwargs)
+        self.frag_threshold = frag_threshold
+        self.frag_detect_cmd = frag_detect_cmd
 
     def communicate(self, packet: Packet) -> Packet:
         """Send and receive a packet."""
