@@ -71,7 +71,7 @@ class Type(Enum):
     @classmethod
     def read(cls, file: IO) -> Type:
         """Read the type from a file-like object."""
-        LOGGER.debug('Reading type asynchronously.')
+        LOGGER.debug('Reading type.')
         value = LittleEndianSignedInt32.read(file)
         LOGGER.debug('  => value: %i', value)
         return cls(value)
