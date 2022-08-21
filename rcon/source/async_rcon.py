@@ -22,7 +22,7 @@ async def communicate(
         packet: Packet,
         *,
         frag_threshold: int = 4096,
-        frag_detect_cmd: str = '',
+        frag_detect_cmd: str = ''
 ) -> Packet:
     """Make an asynchronous request."""
 
@@ -49,7 +49,7 @@ async def rcon(
         passwd: str,
         encoding: str = 'utf-8',
         frag_threshold: int = 4096,
-        frag_detect_cmd: str = '',
+        frag_detect_cmd: str = ''
 ) -> str:
     """Run a command asynchronously."""
 
