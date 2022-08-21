@@ -32,16 +32,7 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
     def communicate(self, packet: Packet) -> Packet:
         """Send and receive a packet."""
         self.send(packet)
-
-        if len((response := self.read()).payload) < self.frag_threshold:
-            return response
-
-        self.send(Packet.make_command(self.frag_detect_cmd))
-
-        while (successor := self.read()).id == response.id:
-            response += successor
-
-        return response
+        return self.read()
 
     def send(self, packet: Packet) -> None:
         """Send a packet to the server."""
@@ -51,7 +42,17 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
     def read(self) -> Packet:
         """Read a packet from the server."""
         with self._socket.makefile('rb') as file:
-            return Packet.read(file)
+            response = Packet.read(file)
+
+            if len(response.payload) < self.frag_threshold:
+                return response
+
+            self.send(Packet.make_command(self.frag_detect_cmd))
+
+            while (successor := Packet.read(file)).id == response.id:
+                response += successor
+
+        return response
 
     def login(self, passwd: str, *, encoding: str = 'utf-8') -> bool:
         """Perform a login."""
