@@ -53,7 +53,7 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
             file.write(bytes(packet))
 
     def read(self) -> Packet:
-        """Read a packet."""
+        """Read a packet from the server."""
         with self._socket.makefile('rb') as file:
             return Packet.read(file)
 
