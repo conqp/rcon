@@ -91,6 +91,15 @@ class Packet(NamedTuple):
         if other is None:
             return self
 
+        if other.id != self.id:
+            raise ValueError('Can only add packages with same id.')
+
+        if other.type != self.type:
+            raise ValueError('Can only add packages of same type.')
+
+        if other.terminator != self.terminator:
+            raise ValueError('Can only add packages with same terminator.')
+
         return Packet(
             self.id,
             self.type,
