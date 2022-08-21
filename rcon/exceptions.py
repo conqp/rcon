@@ -2,6 +2,7 @@
 
 __all__ = [
     'ConfigReadError',
+    'EmptyResponse',
     'SessionTimeout',
     'UserAbort',
     'WrongPassword'
@@ -10,6 +11,10 @@ __all__ = [
 
 class ConfigReadError(Exception):
     """Indicates an error while reading the configuration."""
+
+
+class EmptyResponse(Exception):
+    """Indicates an empty response from the server."""
 
 
 class SessionTimeout(Exception):

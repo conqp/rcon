@@ -8,6 +8,8 @@ from logging import getLogger
 from random import randint
 from typing import IO, NamedTuple
 
+from rcon.exceptions import EmptyResponse
+
 
 __all__ = ['LittleEndianSignedInt32', 'Type', 'Packet', 'random_request_id']
 
@@ -114,6 +116,10 @@ class Packet(NamedTuple):
         LOGGER.debug('Reading packet asynchronously.')
         size = await LittleEndianSignedInt32.aread(reader)
         LOGGER.debug('  => size: %i', size)
+
+        if not size:
+            raise EmptyResponse()
+
         id_ = await LittleEndianSignedInt32.aread(reader)
         LOGGER.debug('  => id: %i', id_)
         type_ = await Type.aread(reader, prefix='  ')
@@ -134,6 +140,10 @@ class Packet(NamedTuple):
         LOGGER.debug('Reading packet.')
         size = LittleEndianSignedInt32.read(file)
         LOGGER.debug('  => size: %i', size)
+
+        if not size:
+            raise EmptyResponse()
+
         id_ = LittleEndianSignedInt32.read(file)
         LOGGER.debug('  => id: %i', id_)
         type_ = Type.read(file, prefix='  ')
