@@ -13,12 +13,11 @@ __all__ = ['Client']
 class Client(BaseClient, socket_type=SOCK_STREAM):
     """An RCON client."""
 
-    _frag_detect: str | None = None
-
     def __init_subclass__(
             cls,
             *args,
-            frag_detect: str | None = None,
+            frag_threshold: int = 4096,
+            frag_detect_cmd: str = '',
             **kwargs
     ):
         """Set an optional fragmentation command
@@ -30,9 +29,8 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
         For details see: https://wiki.vg/RCON#Fragmentation
         """
         super().__init_subclass__(*args, **kwargs)
-
-        if frag_detect is not None:
-            cls._frag_detect = frag_detect
+        cls.frag_threshold = frag_threshold
+        cls.frag_detect_cmd = frag_detect_cmd
 
     def communicate(self, packet: Packet) -> Packet:
         """Send and receive a packet."""
@@ -41,11 +39,11 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
 
         response = self.read()
 
-        if self._frag_detect is None:
+        if len(response.payload) < self.frag_threshold:
             return response
 
         with self._socket.makefile('wb') as file:
-            file.write(bytes(Packet.make_command(self._frag_detect)))
+            file.write(bytes(Packet.make_command(self.frag_detect_cmd)))
 
         while (successor := self.read()).id == response.id:
             response += successor
