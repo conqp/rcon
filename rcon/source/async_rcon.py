@@ -34,6 +34,7 @@ async def communicate(
         return response
 
     writer.write(bytes(Packet.make_command(frag_detect_cmd)))
+    await writer.drain()
 
     while (successor := await Packet.aread(reader)).id == response.id:
         response += successor
