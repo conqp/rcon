@@ -34,21 +34,23 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
 
     def communicate(self, packet: Packet) -> Packet:
         """Send and receive a packet."""
-        with self._socket.makefile('wb') as file:
-            file.write(bytes(packet))
-
+        self.send(packet)
         response = self.read()
 
         if len(response.payload) < self.frag_threshold:
             return response
 
-        with self._socket.makefile('wb') as file:
-            file.write(bytes(Packet.make_command(self.frag_detect_cmd)))
+        self.send(Packet.make_command(self.frag_detect_cmd))
 
         while (successor := self.read()).id == response.id:
             response += successor
 
         return response
+
+    def send(self, packet: Packet) -> None:
+        """Send a packet to the server."""
+        with self._socket.makefile('wb') as file:
+            file.write(bytes(packet))
 
     def read(self) -> Packet:
         """Read a packet."""
