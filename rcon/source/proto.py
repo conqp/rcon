@@ -108,7 +108,10 @@ class Packet(NamedTuple):
         )
 
     def __radd__(self, other: Packet):
-        return self.__add__(other)
+        if other is None:
+            return self
+
+        return other.__add__(self)
 
     def __bytes__(self):
         """Return the packet as bytes with prepended length."""
