@@ -35,9 +35,8 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
     def communicate(self, packet: Packet) -> Packet:
         """Send and receive a packet."""
         self.send(packet)
-        response = self.read()
 
-        if len(response.payload) < self.frag_threshold:
+        if len((response := self.read()).payload) < self.frag_threshold:
             return response
 
         self.send(Packet.make_command(self.frag_detect_cmd))
