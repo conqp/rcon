@@ -19,13 +19,26 @@ async def close(writer: StreamWriter) -> None:
 async def communicate(
         reader: StreamReader,
         writer: StreamWriter,
-        packet: Packet
+        packet: Packet,
+        *,
+        frag_threshold: int = 4096,
+        frag_detect_cmd: str = '',
 ) -> Packet:
     """Make an asynchronous request."""
 
     writer.write(bytes(packet))
     await writer.drain()
-    return await Packet.aread(reader)
+    response = await Packet.aread(reader)
+
+    if len(response.payload) < frag_threshold:
+        return response
+
+    writer.write(bytes(Packet.make_command(frag_detect_cmd)))
+
+    while (successor := await Packet.aread(reader)).id == response.id:
+        response += successor
+
+    return response
 
 
 async def rcon(
@@ -34,13 +47,20 @@ async def rcon(
         host: str,
         port: int,
         passwd: str,
-        encoding: str = 'utf-8'
+        encoding: str = 'utf-8',
+        frag_threshold: int = 4096,
+        frag_detect_cmd: str = '',
 ) -> str:
     """Run a command asynchronously."""
 
     reader, writer = await open_connection(host, port)
-    login = Packet.make_login(passwd, encoding=encoding)
-    response = await communicate(reader, writer, login)
+    response = await communicate(
+        reader,
+        writer,
+        Packet.make_login(passwd, encoding=encoding),
+        frag_threshold=frag_threshold,
+        frag_detect_cmd=frag_detect_cmd
+    )
 
     # Wait for SERVERDATA_AUTH_RESPONSE according to:
     # https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
