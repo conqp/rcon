@@ -63,12 +63,18 @@ class Type(Enum):
     @classmethod
     async def aread(cls, reader: StreamReader) -> Type:
         """Read the type from an asynchronous file-like object."""
-        return cls(await LittleEndianSignedInt32.aread(reader))
+        LOGGER.debug('Reading type asynchronously.')
+        value = await LittleEndianSignedInt32.aread(reader)
+        LOGGER.debug('  => value: %i', value)
+        return cls(value)
 
     @classmethod
     def read(cls, file: IO) -> Type:
         """Read the type from a file-like object."""
-        return cls(LittleEndianSignedInt32.read(file))
+        LOGGER.debug('Reading type asynchronously.')
+        value = LittleEndianSignedInt32.read(file)
+        LOGGER.debug('  => value: %i', value)
+        return cls(value)
 
 
 class Packet(NamedTuple):
@@ -105,11 +111,17 @@ class Packet(NamedTuple):
     @classmethod
     async def aread(cls, reader: StreamReader) -> Packet:
         """Read a packet from an asynchronous file-like object."""
+        LOGGER.debug('Reading packet asynchronously.')
         size = await LittleEndianSignedInt32.aread(reader)
+        LOGGER.debug('  => size: %i', size)
         id_ = await LittleEndianSignedInt32.aread(reader)
+        LOGGER.debug('  => id: %i', id_)
         type_ = await Type.aread(reader)
+        LOGGER.debug('  => type: %i', type_)
         payload = await reader.read(size - 10)
+        LOGGER.debug('  => payload: %s', payload)
         terminator = await reader.read(2)
+        LOGGER.debug('  => terminator: %s', terminator)
 
         if terminator != TERMINATOR:
             LOGGER.warning('Unexpected terminator: %s', terminator)
@@ -119,11 +131,17 @@ class Packet(NamedTuple):
     @classmethod
     def read(cls, file: IO) -> Packet:
         """Read a packet from a file-like object."""
+        LOGGER.debug('Reading packet.')
         size = LittleEndianSignedInt32.read(file)
+        LOGGER.debug('  => size: %i', size)
         id_ = LittleEndianSignedInt32.read(file)
+        LOGGER.debug('  => id: %i', id_)
         type_ = Type.read(file)
+        LOGGER.debug('  => type: %i', type_)
         payload = file.read(size - 10)
+        LOGGER.debug('  => payload: %s', payload)
         terminator = file.read(2)
+        LOGGER.debug('  => terminator: %s', terminator)
 
         if terminator != TERMINATOR:
             LOGGER.warning('Unexpected terminator: %s', terminator)
