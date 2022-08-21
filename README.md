@@ -6,7 +6,7 @@ An RCON client implementation.
 * [BattlEye RCon protocol](https://www.battleye.com/downloads/BERConProtocol.txt)
 
 ## Requirements
-`rcon` requires Python 3.8 or higher.
+`rcon` requires Python 3.10 or higher.
 
 ## Documentation
 Documentation is available on [readthedocs](https://rcon.readthedocs.io/en/latest/).
