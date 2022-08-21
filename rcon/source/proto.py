@@ -87,7 +87,7 @@ class Packet(NamedTuple):
     payload: bytes
     terminator: bytes = TERMINATOR
 
-    def __add__(self, other: Packet | None):
+    def __add__(self, other: Packet | None) -> Packet:
         if other is None:
             return self
 
@@ -107,7 +107,7 @@ class Packet(NamedTuple):
             self.terminator
         )
 
-    def __radd__(self, other: Packet):
+    def __radd__(self, other: Packet | None) -> Packet:
         if other is None:
             return self
 
