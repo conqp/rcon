@@ -55,13 +55,12 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
 
     def login(self, passwd: str, *, encoding: str = 'utf-8') -> bool:
         """Perform a login."""
-        request = Packet.make_login(passwd, encoding=encoding)
-        response = self.communicate(request)
+        self.send(Packet.make_login(passwd, encoding=encoding))
 
         # Wait for SERVERDATA_AUTH_RESPONSE according to:
         # https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
-        while response.type != Type.SERVERDATA_AUTH_RESPONSE:
-            response = self.read()
+        while (response := self.read()).type != Type.SERVERDATA_AUTH_RESPONSE:
+            pass
 
         if response.id == -1:
             raise WrongPassword()
