@@ -1,13 +1,15 @@
 """Synchronous client."""
 
 from socket import SOCK_STREAM
+from threading import Lock
 
 from rcon.client import BaseClient
 from rcon.exceptions import SessionTimeout, WrongPassword
 from rcon.source.proto import Packet, Type
 
-
 __all__ = ['Client']
+
+lock = Lock()
 
 
 class Client(BaseClient, socket_type=SOCK_STREAM):
@@ -31,8 +33,9 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
 
     def communicate(self, packet: Packet) -> Packet:
         """Send and receive a packet."""
-        self.send(packet)
-        return self.read()
+        with lock:
+            self.send(packet)
+            return self.read()
 
     def send(self, packet: Packet) -> None:
         """Send a packet to the server."""

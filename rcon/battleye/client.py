@@ -2,6 +2,7 @@
 
 from logging import getLogger
 from socket import SOCK_DGRAM
+from threading import Lock
 from typing import Callable
 
 from rcon.battleye.proto import RESPONSE_TYPES
@@ -17,7 +18,7 @@ from rcon.exceptions import WrongPassword
 
 __all__ = ['Client']
 
-
+lock = Lock()
 MessageHandler = Callable[[ServerMessage], None]
 
 
@@ -55,10 +56,11 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
 
     def communicate(self, request: Request) -> Response:
         """Send a request and receive a response."""
-        with self._socket.makefile('wb') as file:
-            file.write(bytes(request))
+        with lock:
+            with self._socket.makefile('wb') as file:
+                file.write(bytes(request))
 
-        return self.receive()
+            return self.receive()
 
     def login(self, passwd: str) -> bool:
         """Log-in the user."""
