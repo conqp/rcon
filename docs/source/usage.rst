@@ -1,27 +1,56 @@
 Usage
 =====
-For usage in code, there is the class :py:class:`rcon.Client`.
+Source RCON
+-----------
+To connect to a server using the Source RCON protocol, use :py:class:`rcon.source.Client`.
 
 .. code-block:: python
 
-    from rcon import Client
+    from rcon.source import Client
 
     with Client('127.0.0.1', 5000, passwd='mysecretpassword') as client:
         response = client.run('some_command', 'with', 'some', 'arguments')
 
     print(response)
 
-Async support
+BattlEye RCon
 -------------
-If you want to use RCOn in an asynchronous environment, use :py:func:`rcon.rcon`.
+To connecto to a server using the BattlEye RCon protocol, use :py:class:`rcon.battleye.Client`.
 
 .. code-block:: python
 
-    from rcon import rcon
+    from rcon.battleye import Client
 
-    response = await rcon('some_command', 'with', 'some', 'arguments',
-                          host='127.0.0.1', port=5000, passwd='mysecretpassword')
+    with Client('127.0.0.1', 5000, passwd='mysecretpassword') as client:
+        response = client.run('some_command', 'with', 'some', 'arguments')
+
     print(response)
+
+Handling server messages
+~~~~~~~~~~~~~~~~~~~~~~~~
+Since the BattlEye RCon server will also send server messages to the client
+alongside command responses, you can register an event handler to process
+those messages:
+
+.. code-block:: python
+
+    from rcon.battleye import Client
+    from rcon.battleye.proto import ServerMessage
+
+    def my_message_handler(server_message: ServerMessage) -> None:
+        """Print server messages."""
+
+        print('Server message:', server_message)
+
+    with Client(
+            '127.0.0.1',
+            5000,
+            passwd='mysecretpassword',
+            message_handler=my_message_handler
+    ) as client:
+        response = client.run('some_command', 'with', 'some', 'arguments')
+
+    print('Response:', response)
 
 Configuration
 -------------
