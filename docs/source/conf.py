@@ -9,7 +9,7 @@
 project = 'rcon'
 copyright = '2022, Richard Neumann'
 author = 'Richard Neumann'
-release = '2.3.6'
+release = '2.3.7'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
