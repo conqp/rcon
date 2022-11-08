@@ -34,8 +34,7 @@ those messages:
 
 .. code-block:: python
 
-    from rcon.battleye import Client
-    from rcon.battleye.proto import ServerMessage
+    from rcon.battleye import Client, ServerMessage
 
     def my_message_handler(server_message: ServerMessage) -> None:
         """Print server messages."""
