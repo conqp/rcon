@@ -14,7 +14,7 @@ class BaseClient:
             timeout: float | None = None,
             passwd: str | None = None
     ):
-        """Initialize the base client with the SOCK_STREAM socket type."""
+        """Initialize the base client."""
         self._socket = socket(type=self._socket_type)
         self.host = host
         self.port = port
