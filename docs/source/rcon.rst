@@ -1,16 +1,17 @@
 rcon package
 ============
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   rcon.battleye
+   rcon.source
+
 Submodules
 ----------
-
-rcon.asyncio module
--------------------
-
-.. automodule:: rcon.asyncio
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 rcon.client module
 ------------------
@@ -56,14 +57,6 @@ rcon.gui module
 ---------------
 
 .. automodule:: rcon.gui
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-rcon.proto module
------------------
-
-.. automodule:: rcon.proto
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,5 +1,5 @@
-Modules
-=======
+rcon
+====
 
 .. toctree::
    :maxdepth: 4
