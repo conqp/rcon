@@ -34,6 +34,10 @@ def get_args() -> Namespace:
         '-p', '--prompt', default=PROMPT, metavar='PS1',
         help='the shell prompt'
     )
+    parser.add_argument(
+        '-t', '--timeout', type=float, metavar='seconds',
+        help='connection timeout in seconds'
+    )
     return parser.parse_args()
 
 
@@ -50,7 +54,14 @@ def run() -> None:
         host = port = passwd = None
 
     with CommandHistory(LOGGER):
-        rconcmd(client_cls, host, port, passwd, prompt=args.prompt)
+        rconcmd(
+            client_cls,
+            host,
+            port,
+            passwd,
+            timeout=args.timeout,
+            prompt=args.prompt
+        )
 
 
 def main() -> int:

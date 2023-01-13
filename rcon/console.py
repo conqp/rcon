@@ -140,6 +140,7 @@ def rconcmd(
         port: int,
         passwd: str,
         *,
+        timeout: float | None = None,
         prompt: str = PROMPT
 ):
     """Initialize the console."""
@@ -152,7 +153,7 @@ def rconcmd(
 
     prompt = prompt.format(host=host, port=port)
 
-    with client_cls(host, port) as client:
+    with client_cls(host, port, timeout=timeout) as client:
         try:
             passwd = login(client, passwd)
         except EOFError:
