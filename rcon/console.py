@@ -5,7 +5,7 @@ from typing import Type
 
 from rcon.client import BaseClient
 from rcon.config import Config
-from rcon.exceptions import SessionTimeout, WrongPassword
+from rcon.exceptions import EmptyResponse, SessionTimeout, WrongPassword
 
 
 __all__ = ['PROMPT', 'rconcmd']
@@ -14,6 +14,7 @@ __all__ = ['PROMPT', 'rconcmd']
 EXIT_COMMANDS = {'exit', 'quit'}
 MSG_LOGIN_ABORTED = '\nLogin aborted. Bye.'
 MSG_EXIT = '\nBye.'
+MSG_SERVER_GONE = 'Server has gone away.'
 MSG_SESSION_TIMEOUT = 'Session timed out. Please login again.'
 PROMPT = 'RCON {host}:{port}> '
 VALID_PORTS = range(0, 65536)
@@ -113,6 +114,9 @@ def process_input(client: BaseClient, passwd: str, prompt: str) -> bool:
 
     try:
         result = client.run(command, *args)
+    except EmptyResponse:
+        print(MSG_SERVER_GONE)
+        return False
     except SessionTimeout:
         print(MSG_SESSION_TIMEOUT)
 
