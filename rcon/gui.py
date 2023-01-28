@@ -114,9 +114,11 @@ class GUI(Gtk.Window):
     def result_text(self) -> str:
         """Return the result text."""
         if (buf := self.result.get_buffer()) is not None:
-            start = buf.get_iter_at_line(0)
-            end = buf.get_iter_at_line(buf.get_line_count())
-            return buf.get_text(start, end, True)
+            return buf.get_text(
+                buf.get_iter_at_line(0),
+                buf.get_iter_at_line(buf.get_line_count()),
+                True
+            )
 
         return ''
 
