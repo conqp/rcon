@@ -12,7 +12,7 @@ except ModuleNotFoundError:
 __all__ = ['CommandHistory']
 
 
-HIST_FILE = Path.home().joinpath('.rconshell_history')
+HIST_FILE = Path.home() / '.rconshell_history'
 
 
 class CommandHistory:
