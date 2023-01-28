@@ -61,7 +61,7 @@ class RCONParams(NamedTuple):
     command: Iterable[str]
 
 
-class GUI(Gtk.Window):  # pylint: disable=R0902
+class GUI(Gtk.Window):
     """A GTK based GUI for RCON."""
 
     def __init__(self, args: Namespace):
