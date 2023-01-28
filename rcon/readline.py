@@ -18,23 +18,24 @@ HIST_FILE = Path.home().joinpath('.rconshell_history')
 class CommandHistory:
     """Context manager for the command line history."""
 
-    __slots__ = ('logger',)
+    __slots__ = ('logger', 'file')
 
-    def __init__(self, logger: Logger):
+    def __init__(self, logger: Logger, file: Path = HIST_FILE):
         """Set the logger to use."""
         self.logger = logger
+        self.file = file
 
     def __enter__(self):
         """Load the history file."""
         try:
-            read_history_file(HIST_FILE)
+            read_history_file(self.file)
         except FileNotFoundError:
             self.logger.warning(
-                'Could not find history file: %s', HIST_FILE
+                'Could not find history file: %s', self.file
             )
         except PermissionError:
             self.logger.error(
-                'Insufficient permissions to read: %s', HIST_FILE
+                'Insufficient permissions to read: %s', self.file
             )
 
         return self
@@ -42,8 +43,8 @@ class CommandHistory:
     def __exit__(self, *_):
         """Write to the history file."""
         try:
-            write_history_file(HIST_FILE)
+            write_history_file(self.file)
         except PermissionError:
             self.logger.error(
-                'Insufficient permissions to write: %s', HIST_FILE
+                'Insufficient permissions to write: %s', self.file
             )
