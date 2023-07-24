@@ -1,5 +1,6 @@
 """BattlEye RCon client."""
 
+from io import BufferedWriter
 from logging import getLogger
 from socket import SOCK_DGRAM
 from typing import Callable
@@ -11,6 +12,7 @@ from rcon.battleye.proto import LoginRequest
 from rcon.battleye.proto import Request
 from rcon.battleye.proto import Response
 from rcon.battleye.proto import ServerMessage
+from rcon.battleye.proto import ServerMessageAck
 from rcon.client import BaseClient
 from rcon.exceptions import WrongPassword
 
@@ -31,11 +33,14 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
     """BattlEye RCon client."""
 
     def __init__(
-            self, *args,
+            self,
+            *args,
+            max_length: int = 4096,
             message_handler: MessageHandler = log_message,
             **kwargs
     ):
         super().__init__(*args, **kwargs)
+        self.max_length = max_length
         self._handle_server_message = message_handler
 
     def _receive(self, max_length: int) -> Response:
@@ -46,9 +51,13 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
             )).type
         ].from_bytes(header, data[8:])
 
-    def receive(self, max_length: int = 4096) -> Response:
+    def receive(self, file: BufferedWriter) -> Response:
         """Receive a message."""
-        while isinstance(response := self._receive(max_length), ServerMessage):
+        while isinstance(
+                response := self._receive(self.max_length),
+                ServerMessage
+        ):
+            file.write(bytes(ServerMessageAck(response.seq)))
             self._handle_server_message(response)
 
         return response
@@ -57,8 +66,7 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
         """Send a request and receive a response."""
         with self._socket.makefile('wb') as file:
             file.write(bytes(request))
-
-        return self.receive()
+            return self.receive(file)
 
     def login(self, passwd: str) -> bool:
         """Log-in the user."""

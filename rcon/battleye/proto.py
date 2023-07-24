@@ -13,6 +13,7 @@ __all__ = [
     'CommandRequest',
     'CommandResponse',
     'ServerMessage',
+    'ServerMessageAck',
     'Request',
     'Response'
 ]
@@ -172,7 +173,21 @@ class ServerMessage(NamedTuple):
         return self.payload.decode('ascii')
 
 
-Request = LoginRequest | CommandRequest
+class ServerMessageAck(NamedTuple):
+    """An acknowledgement of a message from the server."""
+
+    seq: int
+
+    def __bytes__(self):
+        return (0x02).to_bytes(1, 'little') + self.payload
+
+    @property
+    def payload(self) -> bytes:
+        """Return the payload."""
+        return self.seq.to_bytes(1, 'little')
+
+
+Request = LoginRequest | CommandRequest | ServerMessageAck
 Response = LoginResponse | CommandResponse | ServerMessage
 
 RESPONSE_TYPES = {
