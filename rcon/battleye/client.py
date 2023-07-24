@@ -1,6 +1,6 @@
 """BattlEye RCon client."""
 
-from io import BufferedWriter
+from collections import defaultdict
 from logging import getLogger
 from socket import SOCK_DGRAM
 from typing import Callable
@@ -43,39 +43,45 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
         self.max_length = max_length
         self._handle_server_message = message_handler
 
-    def _receive(self, max_length: int) -> Response:
+    def receive(self) -> Response:
         """Receive a packet."""
         return RESPONSE_TYPES[
             (header := Header.from_bytes(
-                (data := self._socket.recv(max_length))[:8]
+                (data := self._socket.recv(self.max_length))[:8]
             )).type
         ].from_bytes(header, data[8:])
 
-    def receive(self, file: BufferedWriter) -> Response | str:
-        """Receive a message."""
-        server_messages = set()
-
-        while isinstance(
-                response := self._receive(self.max_length),
-                ServerMessage
-        ):
-            server_messages.add(response)
-            file.write(bytes(ServerMessageAck(response.seq)))
-            self._handle_server_message(response)
-
-        if not server_messages:
-            return response
-
-        return ''.join(
-            msg.message for msg in
-            sorted(server_messages, key=lambda msg: msg.seq)
-        )
-
     def communicate(self, request: Request) -> Response | str:
         """Send a request and receive a response."""
-        with self._socket.makefile('wb') as file:
-            file.write(bytes(request))
-            return self.receive(file)
+        acknowledged = defaultdict(set)
+        messages = []
+
+        while True:
+            with self._socket.makefile('wb') as file:
+                file.write(bytes(request))
+
+            response = self.receive()
+
+            try:
+                seq = response.seq
+            except AttributeError:
+                return response
+
+            if seq in acknowledged[msg_type := type(response)]:
+                break
+            else:
+                acknowledged[msg_type].add(seq)
+
+            if isinstance(response, ServerMessage):
+                self._handle_server_message(response)
+
+                with self._socket.makefile('wb') as file:
+                    file.write(bytes(ServerMessageAck(response.seq)))
+
+            else:
+                messages.append(response)
+
+        return ''.join(msg.message for msg in sorted(messages, key=lambda msg: msg.seq))
 
     def login(self, passwd: str) -> bool:
         """Log-in the user."""
