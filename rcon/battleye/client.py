@@ -51,18 +51,27 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
             )).type
         ].from_bytes(header, data[8:])
 
-    def receive(self, file: BufferedWriter) -> Response:
+    def receive(self, file: BufferedWriter) -> Response | bytes:
         """Receive a message."""
+        server_messages = set()
+
         while isinstance(
                 response := self._receive(self.max_length),
                 ServerMessage
         ):
+            server_messages.add(response)
             file.write(bytes(ServerMessageAck(response.seq)))
             self._handle_server_message(response)
 
-        return response
+        if not server_messages:
+            return response
 
-    def communicate(self, request: Request) -> Response:
+        return b''.join(
+            msg.payload for msg in
+            sorted(server_messages, key=lambda msg: msg.seq)
+        )
+
+    def communicate(self, request: Request) -> Response | bytes:
         """Send a request and receive a response."""
         with self._socket.makefile('wb') as file:
             file.write(bytes(request))
