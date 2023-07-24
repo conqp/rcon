@@ -81,7 +81,9 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
             else:
                 messages.append(response)
 
-        return ''.join(msg.message for msg in sorted(messages, key=lambda msg: msg.seq))
+        return ''.join(
+            msg.message for msg in sorted(messages, key=lambda msg: msg.seq)
+        )
 
     def login(self, passwd: str) -> bool:
         """Log-in the user."""
