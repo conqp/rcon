@@ -41,7 +41,14 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
     ):
         super().__init__(*args, **kwargs)
         self.max_length = max_length
-        self._handle_server_message = message_handler
+        self.message_handler = message_handler
+
+    def handle_server_message(self, message: ServerMessage):
+        """Handle the respective server message."""
+        with self._socket.makefile('wb') as file:
+            file.write(bytes(ServerMessageAck(message.seq)))
+
+        self.message_handler(message)
 
     def receive(self) -> Response:
         """Receive a packet."""
@@ -73,11 +80,7 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
                 acknowledged[msg_type].add(seq)
 
             if isinstance(response, ServerMessage):
-                self._handle_server_message(response)
-
-                with self._socket.makefile('wb') as file:
-                    file.write(bytes(ServerMessageAck(response.seq)))
-
+                self.handle_server_message(response)
             else:
                 messages.append(response)
 
