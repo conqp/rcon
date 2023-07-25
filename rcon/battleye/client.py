@@ -7,6 +7,7 @@ from typing import Callable
 
 from rcon.battleye.proto import RESPONSE_TYPES
 from rcon.battleye.proto import CommandRequest
+from rcon.battleye.proto import CommandResponse
 from rcon.battleye.proto import Header
 from rcon.battleye.proto import LoginRequest
 from rcon.battleye.proto import Request
@@ -35,7 +36,7 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
     def __init__(
             self,
             *args,
-            max_length: int = 4096,
+            max_length: int = 6096,
             message_handler: MessageHandler = log_message,
             **kwargs
     ):
@@ -61,12 +62,12 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
     def communicate(self, request: Request) -> Response | str:
         """Send a request and receive a response."""
         acknowledged = defaultdict(set)
-        messages = []
+        command_responses = []
+
+        with self._socket.makefile('wb') as file:
+            file.write(bytes(request))
 
         while True:
-            with self._socket.makefile('wb') as file:
-                file.write(bytes(request))
-
             response = self.receive()
 
             try:
@@ -74,18 +75,21 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
             except AttributeError:
                 return response
 
-            if seq in acknowledged[msg_type := type(response)]:
-                break
+            if isinstance(response, CommandResponse):
+                # Collect fragmented command responses with the same seq
+                command_responses.append(response)
             else:
-                acknowledged[msg_type].add(seq)
+                if seq in acknowledged[response_type := type(response)]:
+                    break
+                else:
+                    acknowledged[response_type].add(seq)
 
             if isinstance(response, ServerMessage):
                 self.handle_server_message(response)
-            else:
-                messages.append(response)
 
         return ''.join(
-            msg.message for msg in sorted(messages, key=lambda msg: msg.seq)
+            command_response.message for command_response in
+            sorted(command_responses, key=lambda cr: cr.seq)
         )
 
     def login(self, passwd: str) -> bool:
