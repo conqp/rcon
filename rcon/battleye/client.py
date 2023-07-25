@@ -44,7 +44,7 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
         self.max_length = max_length
         self.message_handler = message_handler
 
-    def handle_server_message(self, message: ServerMessage):
+    def handle_server_message(self, message: ServerMessage) -> None:
         """Handle the respective server message."""
         with self._socket.makefile('wb') as file:
             file.write(bytes(ServerMessageAck(message.seq)))
