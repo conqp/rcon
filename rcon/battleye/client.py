@@ -36,7 +36,7 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
     def __init__(
             self,
             *args,
-            max_length: int = 6096,
+            max_length: int = 4096,
             message_handler: MessageHandler = log_message,
             **kwargs
     ):
