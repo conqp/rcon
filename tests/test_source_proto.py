@@ -40,36 +40,35 @@ class TestLittleEndianSignedInt32(TestCase):
         """Tests the minimum value."""
         self.assertEqual(
             LittleEndianSignedInt32(LittleEndianSignedInt32.MIN),
-            LittleEndianSignedInt32.MIN
+            LittleEndianSignedInt32.MIN,
         )
 
     def test_max(self):
         """Tests the maximum value."""
         self.assertEqual(
             LittleEndianSignedInt32(LittleEndianSignedInt32.MAX),
-            LittleEndianSignedInt32.MAX
+            LittleEndianSignedInt32.MAX,
         )
 
     def test_below_min(self):
         """Tests a value below the minimum value."""
         self.assertRaises(
             ValueError,
-            partial(LittleEndianSignedInt32, LittleEndianSignedInt32.MIN - 1)
+            partial(LittleEndianSignedInt32, LittleEndianSignedInt32.MIN - 1),
         )
 
     def test_above_max(self):
         """Tests a value above the maximum value."""
         self.assertRaises(
             ValueError,
-            partial(LittleEndianSignedInt32, LittleEndianSignedInt32.MAX + 1)
+            partial(LittleEndianSignedInt32, LittleEndianSignedInt32.MAX + 1),
         )
 
     def test_random(self):
         """Tests random LittleEndianSignedInt32 values."""
         for _ in range(1000):
             random = randint(
-                LittleEndianSignedInt32.MIN,
-                LittleEndianSignedInt32.MAX + 1
+                LittleEndianSignedInt32.MIN, LittleEndianSignedInt32.MAX + 1
             )
             self.assertEqual(LittleEndianSignedInt32(random), random)
 
@@ -84,16 +83,12 @@ class TestType(TestCase):
 
     def test_serverdata_auth_bytes(self):
         """Tests the SERVERDATA_AUTH bytes."""
-        self.assertEqual(
-            bytes(Type.SERVERDATA_AUTH),
-            (3).to_bytes(4, 'little')
-        )
+        self.assertEqual(bytes(Type.SERVERDATA_AUTH), (3).to_bytes(4, "little"))
 
     def test_serverdata_auth_read(self):
         """Tests reading of SERVERDATA_AUTH."""
         self.assertIs(
-            Type.read(BytesIO((3).to_bytes(4, 'little'))),
-            Type.SERVERDATA_AUTH
+            Type.read(BytesIO((3).to_bytes(4, "little"))), Type.SERVERDATA_AUTH
         )
 
     def test_serverdata_auth_response_value(self):
@@ -104,15 +99,13 @@ class TestType(TestCase):
     def test_serverdata_auth_response_bytes(self):
         """Tests the SERVERDATA_AUTH_RESPONSE bytes."""
         self.assertEqual(
-            bytes(Type.SERVERDATA_AUTH_RESPONSE),
-            (2).to_bytes(4, 'little')
+            bytes(Type.SERVERDATA_AUTH_RESPONSE), (2).to_bytes(4, "little")
         )
 
     def test_serverdata_auth_response_read(self):
         """Tests the reading of SERVERDATA_AUTH_RESPONSE."""
         self.assertIs(
-            Type.read(BytesIO((2).to_bytes(4, 'little'))),
-            Type.SERVERDATA_AUTH_RESPONSE
+            Type.read(BytesIO((2).to_bytes(4, "little"))), Type.SERVERDATA_AUTH_RESPONSE
         )
 
     def test_serverdata_execcommand_value(self):
@@ -122,16 +115,12 @@ class TestType(TestCase):
 
     def test_serverdata_execcommand_bytes(self):
         """Tests the SERVERDATA_EXECCOMMAND bytes."""
-        self.assertEqual(
-            bytes(Type.SERVERDATA_EXECCOMMAND),
-            (2).to_bytes(4, 'little')
-        )
+        self.assertEqual(bytes(Type.SERVERDATA_EXECCOMMAND), (2).to_bytes(4, "little"))
 
     def test_serverdata_execcommand_read(self):
         """Tests the reading of SERVERDATA_EXECCOMMAND."""
         self.assertIs(
-            Type.read(BytesIO((2).to_bytes(4, 'little'))),
-            Type.SERVERDATA_EXECCOMMAND
+            Type.read(BytesIO((2).to_bytes(4, "little"))), Type.SERVERDATA_EXECCOMMAND
         )
 
     def test_serverdata_response_value_value(self):
@@ -142,15 +131,14 @@ class TestType(TestCase):
     def test_serverdata_response_value_bytes(self):
         """Tests the SERVERDATA_RESPONSE_VALUE bytes."""
         self.assertEqual(
-            bytes(Type.SERVERDATA_RESPONSE_VALUE),
-            (0).to_bytes(4, 'little')
+            bytes(Type.SERVERDATA_RESPONSE_VALUE), (0).to_bytes(4, "little")
         )
 
     def test_serverdata_response_value_read(self):
         """Tests the reading SERVERDATA_RESPONSE_VALUE."""
         self.assertIs(
-            Type.read(BytesIO((0).to_bytes(4, 'little'))),
-            Type.SERVERDATA_RESPONSE_VALUE
+            Type.read(BytesIO((0).to_bytes(4, "little"))),
+            Type.SERVERDATA_RESPONSE_VALUE,
         )
 
 
@@ -162,7 +150,7 @@ class TestPacket(TestCase):
         self.packet = Packet(
             random_request_id(),
             Type.SERVERDATA_EXECCOMMAND,
-            'Lorem ipsum sit amet...'.encode()
+            "Lorem ipsum sit amet...".encode(),
         )
 
     def test_bytes_rw(self):

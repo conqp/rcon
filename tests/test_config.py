@@ -14,7 +14,7 @@ def random_passwd() -> str:
 
     chars = list(printable)
     shuffle(chars)
-    return ''.join(chars)
+    return "".join(chars)
 
 
 class TestConfig(TestCase):
@@ -22,11 +22,7 @@ class TestConfig(TestCase):
 
     def setUp(self):
         """Sets up test and target data."""
-        self.hosts = [
-            'subsubdomain.subdomain.example.com',
-            'locahost',
-            '127.0.0.1'
-        ]
+        self.hosts = ["subsubdomain.subdomain.example.com", "locahost", "127.0.0.1"]
         self.ports = range(65_536)
 
     @property
@@ -37,14 +33,14 @@ class TestConfig(TestCase):
     def _test_from_string_with_password(self, host, port):
         """Tests the Config.from_string() method with a password."""
         passwd = random_passwd()
-        config = Config.from_string(f'{passwd}@{host}:{port}')
+        config = Config.from_string(f"{passwd}@{host}:{port}")
         self.assertEqual(config.host, host)
         self.assertEqual(config.port, port)
         self.assertEqual(config.passwd, passwd)
 
     def _test_from_string_without_password(self, host, port):
         """Tests the Config.from_string() method without a password."""
-        config = Config.from_string(f'{host}:{port}')
+        config = Config.from_string(f"{host}:{port}")
         self.assertEqual(config.host, host)
         self.assertEqual(config.port, port)
         self.assertIsNone(config.passwd)

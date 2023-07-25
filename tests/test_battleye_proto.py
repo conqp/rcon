@@ -6,7 +6,7 @@ from rcon.battleye.proto import Header
 
 
 HEADER = Header(920575337, 0x00)
-BYTES = b'BEi\xdd\xde6\xff\x00'
+BYTES = b"BEi\xdd\xde6\xff\x00"
 
 
 class TestHeader(TestCase):
