@@ -8,15 +8,15 @@ from rcon.config import Config
 from rcon.exceptions import EmptyResponse, SessionTimeout, WrongPassword
 
 
-__all__ = ['PROMPT', 'rconcmd']
+__all__ = ["PROMPT", "rconcmd"]
 
 
-EXIT_COMMANDS = {'exit', 'quit'}
-MSG_LOGIN_ABORTED = '\nLogin aborted. Bye.'
-MSG_EXIT = '\nBye.'
-MSG_SERVER_GONE = 'Server has gone away.'
-MSG_SESSION_TIMEOUT = 'Session timed out. Please login again.'
-PROMPT = 'RCON {host}:{port}> '
+EXIT_COMMANDS = {"exit", "quit"}
+MSG_LOGIN_ABORTED = "\nLogin aborted. Bye."
+MSG_EXIT = "\nBye."
+MSG_SERVER_GONE = "Server has gone away."
+MSG_SESSION_TIMEOUT = "Session timed out. Please login again."
+PROMPT = "RCON {host}:{port}> "
 VALID_PORTS = range(0, 65536)
 
 
@@ -25,7 +25,7 @@ def read_host() -> str:
 
     while True:
         try:
-            return input('Host: ')
+            return input("Host: ")
         except KeyboardInterrupt:
             print()
             continue
@@ -36,7 +36,7 @@ def read_port() -> int:
 
     while True:
         try:
-            port = input('Port: ')
+            port = input("Port: ")
         except KeyboardInterrupt:
             print()
             continue
@@ -44,13 +44,13 @@ def read_port() -> int:
         try:
             port = int(port)
         except ValueError:
-            print(f'Invalid integer: {port}')
+            print(f"Invalid integer: {port}")
             continue
 
         if port in VALID_PORTS:
             return port
 
-        print(f'Invalid port: {port}')
+        print(f"Invalid port: {port}")
 
 
 def read_passwd() -> str:
@@ -58,7 +58,7 @@ def read_passwd() -> str:
 
     while True:
         try:
-            return getpass('Password: ')
+            return getpass("Password: ")
         except KeyboardInterrupt:
             print()
 
@@ -85,7 +85,7 @@ def login(client: BaseClient, passwd: str) -> str:
         try:
             client.login(passwd)
         except WrongPassword:
-            print('Wrong password.')
+            print("Wrong password.")
             passwd = read_passwd()
             continue
 
@@ -135,13 +135,13 @@ def process_input(client: BaseClient, passwd: str, prompt: str) -> bool:
 
 
 def rconcmd(
-        client_cls: Type[BaseClient],
-        host: str,
-        port: int,
-        passwd: str,
-        *,
-        timeout: float | None = None,
-        prompt: str = PROMPT
+    client_cls: Type[BaseClient],
+    host: str,
+    port: int,
+    passwd: str,
+    *,
+    timeout: float | None = None,
+    prompt: str = PROMPT,
 ):
     """Initialize the console."""
 

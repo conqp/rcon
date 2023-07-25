@@ -12,27 +12,27 @@ from typing import Iterable, NamedTuple
 from rcon.exceptions import ConfigReadError, UserAbort
 
 
-__all__ = ['CONFIG_FILES', 'LOG_FORMAT', 'SERVERS', 'Config', 'from_args']
+__all__ = ["CONFIG_FILES", "LOG_FORMAT", "SERVERS", "Config", "from_args"]
 
 
 CONFIG = ConfigParser()
 
-if name == 'posix':
+if name == "posix":
     CONFIG_FILES = (
-        Path('/etc/rcon.conf'),
-        Path('/usr/local/etc/rcon.conf'),
-        Path.home().joinpath('.rcon.conf')
+        Path("/etc/rcon.conf"),
+        Path("/usr/local/etc/rcon.conf"),
+        Path.home().joinpath(".rcon.conf"),
     )
-elif name == 'nt':
+elif name == "nt":
     CONFIG_FILES = (
-        Path(getenv('LOCALAPPDATA')).joinpath('rcon.conf'),
-        Path.home().joinpath('.rcon.conf')
+        Path(getenv("LOCALAPPDATA")).joinpath("rcon.conf"),
+        Path.home().joinpath(".rcon.conf"),
     )
 else:
-    raise NotImplementedError(f'Unsupported operating system: {name}')
+    raise NotImplementedError(f"Unsupported operating system: {name}")
 
-LOG_FORMAT = '[%(levelname)s] %(name)s: %(message)s'
-LOGGER = getLogger('RCON Config')
+LOG_FORMAT = "[%(levelname)s] %(name)s: %(message)s"
+LOGGER = getLogger("RCON Config")
 SERVERS = {}
 
 
@@ -47,14 +47,14 @@ class Config(NamedTuple):
     def from_string(cls, string: str) -> Config:
         """Read the credentials from the given string."""
         try:
-            host, port = string.rsplit(':', maxsplit=1)
+            host, port = string.rsplit(":", maxsplit=1)
         except ValueError:
-            raise ValueError(f'Invalid socket: {string}.') from None
+            raise ValueError(f"Invalid socket: {string}.") from None
 
         port = int(port)
 
         try:
-            passwd, host = host.rsplit('@', maxsplit=1)
+            passwd, host = host.rsplit("@", maxsplit=1)
         except ValueError:
             passwd = None
 
@@ -65,9 +65,9 @@ class Config(NamedTuple):
         """Create a credentials tuple from
         the respective config section.
         """
-        host = section['host']
-        port = section.getint('port')
-        passwd = section.get('passwd')
+        host = section["host"]
+        port = section.getint("port")
+        passwd = section.get("passwd")
         return cls(host, port, passwd)
 
 
@@ -92,15 +92,15 @@ def from_args(args: Namespace) -> Config:
         try:
             host, port, passwd = SERVERS[args.server]
         except KeyError:
-            LOGGER.error('No such server: %s.', args.server)
+            LOGGER.error("No such server: %s.", args.server)
             raise ConfigReadError() from None
 
     if passwd is None:
         try:
-            passwd = getpass('Password: ')
+            passwd = getpass("Password: ")
         except (KeyboardInterrupt, EOFError):
             print()
-            LOGGER.error('Aborted by user.')
+            LOGGER.error("Aborted by user.")
             raise UserAbort() from None
 
     return Config(host, port, passwd)

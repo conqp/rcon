@@ -9,36 +9,44 @@ from rcon.config import CONFIG_FILES, LOG_FORMAT, from_args
 from rcon.errorhandler import ErrorHandler
 
 
-__all__ = ['main']
+__all__ = ["main"]
 
 
-LOGGER = getLogger('rconclt')
+LOGGER = getLogger("rconclt")
 
 
 def get_args() -> Namespace:
     """Parse and return the command line arguments."""
 
-    parser = ArgumentParser(description='A Minecraft RCON client.')
-    parser.add_argument('server', help='the server to connect to')
+    parser = ArgumentParser(description="A Minecraft RCON client.")
+    parser.add_argument("server", help="the server to connect to")
     parser.add_argument(
-        '-B', '--battleye', action='store_true',
-        help='use BattlEye RCon instead of Source RCON'
+        "-B",
+        "--battleye",
+        action="store_true",
+        help="use BattlEye RCon instead of Source RCON",
     )
     parser.add_argument(
-        '-c', '--config', type=Path, metavar='file', default=CONFIG_FILES,
-        help='the configuration file'
+        "-c",
+        "--config",
+        type=Path,
+        metavar="file",
+        default=CONFIG_FILES,
+        help="the configuration file",
     )
     parser.add_argument(
-        '-d', '--debug', action='store_true',
-        help='print additional debug information'
+        "-d", "--debug", action="store_true", help="print additional debug information"
     )
     parser.add_argument(
-        '-t', '--timeout', type=float, metavar='seconds',
-        help='connection timeout in seconds'
+        "-t",
+        "--timeout",
+        type=float,
+        metavar="seconds",
+        help="connection timeout in seconds",
     )
-    parser.add_argument('command', help='command to execute on the server')
+    parser.add_argument("command", help="command to execute on the server")
     parser.add_argument(
-        'argument', nargs='*', default=(), help='arguments for the command'
+        "argument", nargs="*", default=(), help="arguments for the command"
     )
     return parser.parse_args()
 

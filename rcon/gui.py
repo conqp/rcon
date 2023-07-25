@@ -9,7 +9,8 @@ from socket import gaierror, timeout
 from typing import Iterable, NamedTuple, Type
 
 from gi import require_version
-require_version('Gtk', '3.0')
+
+require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 from rcon import battleye, source
@@ -18,36 +19,40 @@ from rcon.config import LOG_FORMAT
 from rcon.exceptions import SessionTimeout, WrongPassword
 
 
-__all__ = ['main']
+__all__ = ["main"]
 
 
-if name == 'posix':
-    CACHE_DIR = Path.home().joinpath('.cache')
-elif name == 'nt':
-    CACHE_DIR = Path(getenv('TEMP') or getenv('TMP'))
+if name == "posix":
+    CACHE_DIR = Path.home().joinpath(".cache")
+elif name == "nt":
+    CACHE_DIR = Path(getenv("TEMP") or getenv("TMP"))
 else:
-    raise NotImplementedError('Unsupported operating system.')
+    raise NotImplementedError("Unsupported operating system.")
 
 
-CACHE_FILE = CACHE_DIR.joinpath('rcongui.json')
-LOGGER = getLogger('rcongui')
+CACHE_FILE = CACHE_DIR.joinpath("rcongui.json")
+LOGGER = getLogger("rcongui")
 
 
 def get_args() -> Namespace:
     """Parse and return the command line arguments."""
 
-    parser = ArgumentParser(description='A minimalistic, GTK-based RCON GUI.')
+    parser = ArgumentParser(description="A minimalistic, GTK-based RCON GUI.")
     parser.add_argument(
-        '-B', '--battleye', action='store_true',
-        help='use BattlEye RCon instead of Source RCON'
+        "-B",
+        "--battleye",
+        action="store_true",
+        help="use BattlEye RCon instead of Source RCON",
     )
     parser.add_argument(
-        '-d', '--debug', action='store_true',
-        help='print additional debug information'
+        "-d", "--debug", action="store_true", help="print additional debug information"
     )
     parser.add_argument(
-        '-t', '--timeout', type=float, metavar='seconds',
-        help='connection timeout in seconds'
+        "-t",
+        "--timeout",
+        type=float,
+        metavar="seconds",
+        help="connection timeout in seconds",
     )
     return parser.parse_args()
 
@@ -66,7 +71,7 @@ class GUI(Gtk.Window):
 
     def __init__(self, args: Namespace):
         """Initialize the GUI."""
-        super().__init__(title='RCON GUI')
+        super().__init__(title="RCON GUI")
         self.args = args
 
         self.set_position(Gtk.WindowPosition.CENTER)
@@ -75,32 +80,32 @@ class GUI(Gtk.Window):
         self.add(self.grid)
 
         self.host = Gtk.Entry()
-        self.host.set_placeholder_text('Host')
+        self.host.set_placeholder_text("Host")
         self.grid.attach(self.host, 0, 0, 1, 1)
 
         self.port = Gtk.SpinButton.new_with_range(0, 65535, 1)
-        self.port.set_placeholder_text('Port')
+        self.port.set_placeholder_text("Port")
         self.grid.attach(self.port, 1, 0, 1, 1)
 
         self.passwd = Gtk.Entry()
-        self.passwd.set_placeholder_text('Password')
+        self.passwd.set_placeholder_text("Password")
         self.passwd.set_visibility(False)
         self.grid.attach(self.passwd, 2, 0, 1, 1)
 
         self.command = Gtk.Entry()
-        self.command.set_placeholder_text('Command')
+        self.command.set_placeholder_text("Command")
         self.grid.attach(self.command, 0, 1, 2, 1)
 
-        self.button = Gtk.Button(label='Run')
-        self.button.connect('clicked', self.on_button_clicked)
+        self.button = Gtk.Button(label="Run")
+        self.button.connect("clicked", self.on_button_clicked)
         self.grid.attach(self.button, 2, 1, 1, 1)
 
         self.result = Gtk.TextView()
         self.result.set_wrap_mode(Gtk.WrapMode.WORD)
-        self.result.set_property('editable', False)
+        self.result.set_property("editable", False)
         self.grid.attach(self.result, 0, 2, 2, 1)
 
-        self.savepw = Gtk.CheckButton(label='Save password')
+        self.savepw = Gtk.CheckButton(label="Save password")
         self.grid.attach(self.savepw, 2, 2, 1, 1)
 
         self.load_gui_settings()
@@ -117,10 +122,10 @@ class GUI(Gtk.Window):
             return buf.get_text(
                 buf.get_iter_at_line(0),
                 buf.get_iter_at_line(buf.get_line_count()),
-                True
+                True,
             )
 
-        return ''
+        return ""
 
     @result_text.setter
     def result_text(self, text: str):
@@ -132,47 +137,47 @@ class GUI(Gtk.Window):
     def gui_settings(self) -> dict:
         """Return the GUI settings as a dict."""
         json = {
-            'host': self.host.get_text(),
-            'port': self.port.get_value_as_int(),
-            'command': self.command.get_text(),
-            'result': self.result_text,
-            'savepw': (savepw := self.savepw.get_active())
+            "host": self.host.get_text(),
+            "port": self.port.get_value_as_int(),
+            "command": self.command.get_text(),
+            "result": self.result_text,
+            "savepw": (savepw := self.savepw.get_active()),
         }
 
         if savepw:
-            json['passwd'] = self.passwd.get_text()
+            json["passwd"] = self.passwd.get_text()
 
         return json
 
     @gui_settings.setter
     def gui_settings(self, json: dict):
         """Set the GUI settings."""
-        self.host.set_text(json.get('host', ''))
-        self.port.set_value(json.get('port', 0))
-        self.passwd.set_text(json.get('passwd', ''))
-        self.command.set_text(json.get('command', ''))
-        self.result_text = json.get('result', '')
-        self.savepw.set_active(json.get('savepw', False))
+        self.host.set_text(json.get("host", ""))
+        self.port.set_value(json.get("port", 0))
+        self.passwd.set_text(json.get("passwd", ""))
+        self.command.set_text(json.get("command", ""))
+        self.result_text = json.get("result", "")
+        self.savepw.set_active(json.get("savepw", False))
 
     def load_gui_settings(self) -> None:
         """Load the GUI settings from the cache file."""
         try:
-            with CACHE_FILE.open('rb') as cache:
+            with CACHE_FILE.open("rb") as cache:
                 self.gui_settings = load(cache)
         except FileNotFoundError:
-            LOGGER.warning('Cache file not found: %s', CACHE_FILE)
+            LOGGER.warning("Cache file not found: %s", CACHE_FILE)
         except PermissionError:
-            LOGGER.error('Insufficient permissions to read: %s', CACHE_FILE)
+            LOGGER.error("Insufficient permissions to read: %s", CACHE_FILE)
         except ValueError:
-            LOGGER.error('Cache file contains garbage: %s', CACHE_FILE)
+            LOGGER.error("Cache file contains garbage: %s", CACHE_FILE)
 
     def save_gui_settings(self):
         """Save the GUI settings to the cache file."""
         try:
-            with CACHE_FILE.open('w', encoding='utf-8') as cache:
+            with CACHE_FILE.open("w", encoding="utf-8") as cache:
                 dump(self.gui_settings, cache, indent=2)
         except PermissionError:
-            LOGGER.error('Insufficient permissions to read: %s', CACHE_FILE)
+            LOGGER.error("Insufficient permissions to read: %s", CACHE_FILE)
 
     def show_error(self, message: str):
         """Show an error message."""
@@ -180,7 +185,7 @@ class GUI(Gtk.Window):
             transient_for=self,
             message_type=Gtk.MessageType.ERROR,
             buttons=Gtk.ButtonsType.OK,
-            text=message
+            text=message,
         )
         message_dialog.run()
         message_dialog.destroy()
@@ -188,10 +193,10 @@ class GUI(Gtk.Window):
     def run_rcon(self) -> str:
         """Return the current RCON settings."""
         with self.client_cls(
-                self.host.get_text().strip(),
-                self.port.get_value_as_int(),
-                timeout=self.args.timeout,
-                passwd=self.passwd.get_text()
+            self.host.get_text().strip(),
+            self.port.get_value_as_int(),
+            timeout=self.args.timeout,
+            passwd=self.passwd.get_text(),
         ) as client:
             return client.run(*self.command.get_text().strip().split())
 
@@ -204,13 +209,13 @@ class GUI(Gtk.Window):
         except gaierror as error:
             self.show_error(error.strerror)
         except ConnectionRefusedError:
-            self.show_error('Connection refused.')
+            self.show_error("Connection refused.")
         except (TimeoutError, timeout):
-            self.show_error('Connection timed out.')
+            self.show_error("Connection timed out.")
         except WrongPassword:
-            self.show_error('Wrong password.')
+            self.show_error("Wrong password.")
         except SessionTimeout:
-            self.show_error('Session timed out.')
+            self.show_error("Session timed out.")
         else:
             self.result_text = result
 
@@ -226,6 +231,6 @@ def main() -> None:
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=DEBUG if args.debug else INFO)
     win = GUI(args)
-    win.connect('destroy', win.terminate)
+    win.connect("destroy", win.terminate)
     win.show_all()
     Gtk.main()

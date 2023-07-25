@@ -11,11 +11,11 @@ from typing import IO, NamedTuple
 from rcon.exceptions import EmptyResponse
 
 
-__all__ = ['LittleEndianSignedInt32', 'Type', 'Packet', 'random_request_id']
+__all__ = ["LittleEndianSignedInt32", "Type", "Packet", "random_request_id"]
 
 
 LOGGER = getLogger(__file__)
-TERMINATOR = b'\x00\x00'
+TERMINATOR = b"\x00\x00"
 
 
 class LittleEndianSignedInt32(int):
@@ -29,21 +29,21 @@ class LittleEndianSignedInt32(int):
         super().__init__()
 
         if not self.MIN <= self <= self.MAX:
-            raise ValueError('Signed int32 out of bounds:', int(self))
+            raise ValueError("Signed int32 out of bounds:", int(self))
 
     def __bytes__(self):
         """Return the integer as signed little endian."""
-        return self.to_bytes(4, 'little', signed=True)
+        return self.to_bytes(4, "little", signed=True)
 
     @classmethod
     async def aread(cls, reader: StreamReader) -> LittleEndianSignedInt32:
         """Read the integer from an asynchronous file-like object."""
-        return cls.from_bytes(await reader.read(4), 'little', signed=True)
+        return cls.from_bytes(await reader.read(4), "little", signed=True)
 
     @classmethod
     def read(cls, file: IO) -> LittleEndianSignedInt32:
         """Read the integer from a file-like object."""
-        return cls.from_bytes(file.read(4), 'little', signed=True)
+        return cls.from_bytes(file.read(4), "little", signed=True)
 
 
 class Type(LittleEndianSignedInt32, Enum):
@@ -63,19 +63,19 @@ class Type(LittleEndianSignedInt32, Enum):
         return bytes(self.value)
 
     @classmethod
-    async def aread(cls, reader: StreamReader, *, prefix: str = '') -> Type:
+    async def aread(cls, reader: StreamReader, *, prefix: str = "") -> Type:
         """Read the type from an asynchronous file-like object."""
-        LOGGER.debug('%sReading type asynchronously.', prefix)
+        LOGGER.debug("%sReading type asynchronously.", prefix)
         value = await LittleEndianSignedInt32.aread(reader)
-        LOGGER.debug('%s  => value: %i', prefix, value)
+        LOGGER.debug("%s  => value: %i", prefix, value)
         return cls(value)
 
     @classmethod
-    def read(cls, file: IO, *, prefix: str = '') -> Type:
+    def read(cls, file: IO, *, prefix: str = "") -> Type:
         """Read the type from a file-like object."""
-        LOGGER.debug('%sReading type.', prefix)
+        LOGGER.debug("%sReading type.", prefix)
         value = LittleEndianSignedInt32.read(file)
-        LOGGER.debug('%s  => value: %i', prefix, value)
+        LOGGER.debug("%s  => value: %i", prefix, value)
         return cls(value)
 
 
@@ -92,20 +92,15 @@ class Packet(NamedTuple):
             return self
 
         if other.id != self.id:
-            raise ValueError('Can only add packages with same id.')
+            raise ValueError("Can only add packages with same id.")
 
         if other.type != self.type:
-            raise ValueError('Can only add packages of same type.')
+            raise ValueError("Can only add packages of same type.")
 
         if other.terminator != self.terminator:
-            raise ValueError('Can only add packages with same terminator.')
+            raise ValueError("Can only add packages with same terminator.")
 
-        return Packet(
-            self.id,
-            self.type,
-            self.payload + other.payload,
-            self.terminator
-        )
+        return Packet(self.id, self.type, self.payload + other.payload, self.terminator)
 
     def __radd__(self, other: Packet | None) -> Packet:
         if other is None:
@@ -125,65 +120,64 @@ class Packet(NamedTuple):
     @classmethod
     async def aread(cls, reader: StreamReader) -> Packet:
         """Read a packet from an asynchronous file-like object."""
-        LOGGER.debug('Reading packet asynchronously.')
+        LOGGER.debug("Reading packet asynchronously.")
         size = await LittleEndianSignedInt32.aread(reader)
-        LOGGER.debug('  => size: %i', size)
+        LOGGER.debug("  => size: %i", size)
 
         if not size:
             raise EmptyResponse()
 
         id_ = await LittleEndianSignedInt32.aread(reader)
-        LOGGER.debug('  => id: %i', id_)
-        type_ = await Type.aread(reader, prefix='  ')
-        LOGGER.debug('  => type: %i', type_)
+        LOGGER.debug("  => id: %i", id_)
+        type_ = await Type.aread(reader, prefix="  ")
+        LOGGER.debug("  => type: %i", type_)
         payload = await reader.read(size - 10)
-        LOGGER.debug('  => payload: %s', payload)
+        LOGGER.debug("  => payload: %s", payload)
         terminator = await reader.read(2)
-        LOGGER.debug('  => terminator: %s', terminator)
+        LOGGER.debug("  => terminator: %s", terminator)
 
         if terminator != TERMINATOR:
-            LOGGER.warning('Unexpected terminator: %s', terminator)
+            LOGGER.warning("Unexpected terminator: %s", terminator)
 
         return cls(id_, type_, payload, terminator)
 
     @classmethod
     def read(cls, file: IO) -> Packet:
         """Read a packet from a file-like object."""
-        LOGGER.debug('Reading packet.')
+        LOGGER.debug("Reading packet.")
         size = LittleEndianSignedInt32.read(file)
-        LOGGER.debug('  => size: %i', size)
+        LOGGER.debug("  => size: %i", size)
 
         if not size:
             raise EmptyResponse()
 
         id_ = LittleEndianSignedInt32.read(file)
-        LOGGER.debug('  => id: %i', id_)
-        type_ = Type.read(file, prefix='  ')
-        LOGGER.debug('  => type: %i', type_)
+        LOGGER.debug("  => id: %i", id_)
+        type_ = Type.read(file, prefix="  ")
+        LOGGER.debug("  => type: %i", type_)
         payload = file.read(size - 10)
-        LOGGER.debug('  => payload: %s', payload)
+        LOGGER.debug("  => payload: %s", payload)
         terminator = file.read(2)
-        LOGGER.debug('  => terminator: %s', terminator)
+        LOGGER.debug("  => terminator: %s", terminator)
 
         if terminator != TERMINATOR:
-            LOGGER.warning('Unexpected terminator: %s', terminator)
+            LOGGER.warning("Unexpected terminator: %s", terminator)
 
         return cls(id_, type_, payload, terminator)
 
     @classmethod
-    def make_command(cls, *args: str, encoding: str = 'utf-8') -> Packet:
+    def make_command(cls, *args: str, encoding: str = "utf-8") -> Packet:
         """Create a command packet."""
         return cls(
-            random_request_id(), Type.SERVERDATA_EXECCOMMAND,
-            b' '.join(map(partial(str.encode, encoding=encoding), args))
+            random_request_id(),
+            Type.SERVERDATA_EXECCOMMAND,
+            b" ".join(map(partial(str.encode, encoding=encoding), args)),
         )
 
     @classmethod
-    def make_login(cls, passwd: str, *, encoding: str = 'utf-8') -> Packet:
+    def make_login(cls, passwd: str, *, encoding: str = "utf-8") -> Packet:
         """Create a login packet."""
-        return cls(
-            random_request_id(), Type.SERVERDATA_AUTH, passwd.encode(encoding)
-        )
+        return cls(random_request_id(), Type.SERVERDATA_AUTH, passwd.encode(encoding))
 
 
 def random_request_id() -> LittleEndianSignedInt32:

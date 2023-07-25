@@ -3,16 +3,19 @@
 from socket import SocketKind, socket
 
 
-__all__ = ['BaseClient']
+__all__ = ["BaseClient"]
 
 
 class BaseClient:
     """A common RCON client."""
 
     def __init__(
-            self, host: str, port: int, *,
-            timeout: float | None = None,
-            passwd: str | None = None
+        self,
+        host: str,
+        port: int,
+        *,
+        timeout: float | None = None,
+        passwd: str | None = None
     ):
         """Initialize the base client."""
         self._socket = socket(type=self._socket_type)

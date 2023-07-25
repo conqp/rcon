@@ -11,32 +11,40 @@ from rcon.console import PROMPT, rconcmd
 from rcon.errorhandler import ErrorHandler
 
 
-__all__ = ['get_args', 'main']
+__all__ = ["get_args", "main"]
 
 
-LOGGER = getLogger('rconshell')
+LOGGER = getLogger("rconshell")
 
 
 def get_args() -> Namespace:
     """Parse and returns the CLI arguments."""
 
-    parser = ArgumentParser(description='An interactive RCON shell.')
-    parser.add_argument('server', nargs='?', help='the server to connect to')
+    parser = ArgumentParser(description="An interactive RCON shell.")
+    parser.add_argument("server", nargs="?", help="the server to connect to")
     parser.add_argument(
-        '-B', '--battleye', action='store_true',
-        help='use BattlEye RCon instead of Source RCON'
+        "-B",
+        "--battleye",
+        action="store_true",
+        help="use BattlEye RCon instead of Source RCON",
     )
     parser.add_argument(
-        '-c', '--config', type=Path, metavar='file', default=CONFIG_FILES,
-        help='the configuration file'
+        "-c",
+        "--config",
+        type=Path,
+        metavar="file",
+        default=CONFIG_FILES,
+        help="the configuration file",
     )
     parser.add_argument(
-        '-p', '--prompt', default=PROMPT, metavar='PS1',
-        help='the shell prompt'
+        "-p", "--prompt", default=PROMPT, metavar="PS1", help="the shell prompt"
     )
     parser.add_argument(
-        '-t', '--timeout', type=float, metavar='seconds',
-        help='connection timeout in seconds'
+        "-t",
+        "--timeout",
+        type=float,
+        metavar="seconds",
+        help="connection timeout in seconds",
     )
     return parser.parse_args()
 
@@ -55,12 +63,7 @@ def run() -> None:
 
     with CommandHistory(LOGGER):
         rconcmd(
-            client_cls,
-            host,
-            port,
-            passwd,
-            timeout=args.timeout,
-            prompt=args.prompt
+            client_cls, host, port, passwd, timeout=args.timeout, prompt=args.prompt
         )
 
 

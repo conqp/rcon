@@ -9,23 +9,23 @@ from rcon.exceptions import UserAbort
 from rcon.exceptions import WrongPassword
 
 
-__all__ = ['ErrorHandler']
+__all__ = ["ErrorHandler"]
 
 
 ERRORS = {
     UserAbort: (1, None),
     ConfigReadError: (2, None),
-    ConnectionRefusedError: (3, 'Connection refused.'),
-    (TimeoutError, timeout): (4, 'Connection timed out.'),
-    WrongPassword: (5, 'Wrong password.'),
-    SessionTimeout: (6, 'Session timed out.')
+    ConnectionRefusedError: (3, "Connection refused."),
+    (TimeoutError, timeout): (4, "Connection timed out."),
+    WrongPassword: (5, "Wrong password."),
+    SessionTimeout: (6, "Session timed out."),
 }
 
 
 class ErrorHandler:
     """Handles common errors and exits."""
 
-    __slots__ = ('logger', 'exit_code')
+    __slots__ = ("logger", "exit_code")
 
     def __init__(self, logger: Logger):
         """Set the logger."""

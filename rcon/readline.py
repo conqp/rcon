@@ -9,10 +9,10 @@ except ModuleNotFoundError:
     read_history_file = write_history_file = lambda _: None
 
 
-__all__ = ['CommandHistory']
+__all__ = ["CommandHistory"]
 
 
-HIST_FILE = Path.home() / '.rconshell_history'
+HIST_FILE = Path.home() / ".rconshell_history"
 
 
 class CommandHistory:
@@ -28,13 +28,9 @@ class CommandHistory:
         try:
             read_history_file(self.file)
         except FileNotFoundError:
-            self.logger.warning(
-                'Could not find history file: %s', self.file
-            )
+            self.logger.warning("Could not find history file: %s", self.file)
         except PermissionError:
-            self.logger.error(
-                'Insufficient permissions to read: %s', self.file
-            )
+            self.logger.error("Insufficient permissions to read: %s", self.file)
 
         return self
 
@@ -43,6 +39,4 @@ class CommandHistory:
         try:
             write_history_file(self.file)
         except PermissionError:
-            self.logger.error(
-                'Insufficient permissions to write: %s', self.file
-            )
+            self.logger.error("Insufficient permissions to write: %s", self.file)

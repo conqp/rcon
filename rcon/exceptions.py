@@ -1,11 +1,11 @@
 """Common exceptions."""
 
 __all__ = [
-    'ConfigReadError',
-    'EmptyResponse',
-    'SessionTimeout',
-    'UserAbort',
-    'WrongPassword'
+    "ConfigReadError",
+    "EmptyResponse",
+    "SessionTimeout",
+    "UserAbort",
+    "WrongPassword",
 ]
 
 

@@ -6,7 +6,7 @@ from rcon.exceptions import SessionTimeout, WrongPassword
 from rcon.source.proto import Packet, Type
 
 
-__all__ = ['rcon']
+__all__ = ["rcon"]
 
 
 async def close(writer: StreamWriter) -> None:
@@ -17,12 +17,12 @@ async def close(writer: StreamWriter) -> None:
 
 
 async def communicate(
-        reader: StreamReader,
-        writer: StreamWriter,
-        packet: Packet,
-        *,
-        frag_threshold: int = 4096,
-        frag_detect_cmd: str = ''
+    reader: StreamReader,
+    writer: StreamWriter,
+    packet: Packet,
+    *,
+    frag_threshold: int = 4096,
+    frag_detect_cmd: str = "",
 ) -> Packet:
     """Make an asynchronous request."""
 
@@ -43,14 +43,14 @@ async def communicate(
 
 
 async def rcon(
-        command: str,
-        *arguments: str,
-        host: str,
-        port: int,
-        passwd: str,
-        encoding: str = 'utf-8',
-        frag_threshold: int = 4096,
-        frag_detect_cmd: str = ''
+    command: str,
+    *arguments: str,
+    host: str,
+    port: int,
+    passwd: str,
+    encoding: str = "utf-8",
+    frag_threshold: int = 4096,
+    frag_detect_cmd: str = "",
 ) -> str:
     """Run a command asynchronously."""
 
@@ -60,7 +60,7 @@ async def rcon(
         writer,
         Packet.make_login(passwd, encoding=encoding),
         frag_threshold=frag_threshold,
-        frag_detect_cmd=frag_detect_cmd
+        frag_detect_cmd=frag_detect_cmd,
     )
 
     # Wait for SERVERDATA_AUTH_RESPONSE according to:

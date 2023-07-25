@@ -7,18 +7,14 @@ from rcon.exceptions import SessionTimeout, WrongPassword
 from rcon.source.proto import Packet, Type
 
 
-__all__ = ['Client']
+__all__ = ["Client"]
 
 
 class Client(BaseClient, socket_type=SOCK_STREAM):
     """An RCON client."""
 
     def __init__(
-            self,
-            *args,
-            frag_threshold: int = 4096,
-            frag_detect_cmd: str = '',
-            **kwargs
+        self, *args, frag_threshold: int = 4096, frag_detect_cmd: str = "", **kwargs
     ):
         """Set an optional fragmentation threshold and
         command in order to detect fragmented packets.
@@ -36,12 +32,12 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
 
     def send(self, packet: Packet) -> None:
         """Send a packet to the server."""
-        with self._socket.makefile('wb') as file:
+        with self._socket.makefile("wb") as file:
             file.write(bytes(packet))
 
     def read(self) -> Packet:
         """Read a packet from the server."""
-        with self._socket.makefile('rb') as file:
+        with self._socket.makefile("rb") as file:
             response = Packet.read(file)
 
             if len(response.payload) < self.frag_threshold:
@@ -54,7 +50,7 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
 
         return response
 
-    def login(self, passwd: str, *, encoding: str = 'utf-8') -> bool:
+    def login(self, passwd: str, *, encoding: str = "utf-8") -> bool:
         """Perform a login."""
         self.send(Packet.make_login(passwd, encoding=encoding))
 
@@ -68,7 +64,7 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
 
         return True
 
-    def run(self, command: str, *args: str, encoding: str = 'utf-8') -> str:
+    def run(self, command: str, *args: str, encoding: str = "utf-8") -> str:
         """Run a command."""
         request = Packet.make_command(command, *args, encoding=encoding)
         response = self.communicate(request)
