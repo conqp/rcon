@@ -67,12 +67,21 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
         """Send a request and receive a response."""
         acknowledged = defaultdict(set)
         command_responses = []
+        first = False
 
         with self._socket.makefile("wb") as file:
             file.write(bytes(request))
 
         while True:
-            response = self.receive()
+            try:
+                response = self.receive()
+            except TimeoutError:
+                if first:
+                    raise
+                else:
+                    break
+
+            first = False
 
             if isinstance(response, LoginResponse):
                 return response
