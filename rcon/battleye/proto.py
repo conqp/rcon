@@ -6,6 +6,7 @@ from zlib import crc32
 
 
 __all__ = [
+    "HEADER_SIZE",
     "RESPONSE_TYPES",
     "Header",
     "LoginRequest",
@@ -19,6 +20,7 @@ __all__ = [
 ]
 
 
+HEADER_SIZE = 8
 PREFIX = "BE"
 INFIX = 0xFF
 
@@ -54,7 +56,7 @@ class Header(NamedTuple):
     @classmethod
     def from_bytes(cls, payload: bytes) -> Header:
         """Create a header from the given bytes."""
-        if (size := len(payload)) != 8:
+        if (size := len(payload)) != HEADER_SIZE:
             raise ValueError("Invalid payload size", size)
 
         if (prefix := payload[:2].decode("ascii")) != PREFIX:

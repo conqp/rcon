@@ -5,11 +5,13 @@ from logging import getLogger
 from socket import SOCK_DGRAM
 from typing import Callable
 
+from rcon.battleye.proto import HEADER_SIZE
 from rcon.battleye.proto import RESPONSE_TYPES
 from rcon.battleye.proto import CommandRequest
 from rcon.battleye.proto import CommandResponse
 from rcon.battleye.proto import Header
 from rcon.battleye.proto import LoginRequest
+from rcon.battleye.proto import LoginResponse
 from rcon.battleye.proto import Request
 from rcon.battleye.proto import Response
 from rcon.battleye.proto import ServerMessage
@@ -56,10 +58,10 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
         return RESPONSE_TYPES[
             (
                 header := Header.from_bytes(
-                    (data := self._socket.recv(self.max_length))[:8]
+                    (data := self._socket.recv(self.max_length))[:HEADER_SIZE]
                 )
             ).type
-        ].from_bytes(header, data[8:])
+        ].from_bytes(header, data[HEADER_SIZE:])
 
     def communicate(self, request: Request) -> Response | str:
         """Send a request and receive a response."""
@@ -72,10 +74,10 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
         while True:
             response = self.receive()
 
-            try:
-                seq = response.seq
-            except AttributeError:
+            if isinstance(response, LoginResponse):
                 return response
+
+            seq = response.seq
 
             if isinstance(response, CommandResponse):
                 # Collect fragmented command responses with the same seq
