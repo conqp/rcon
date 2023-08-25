@@ -73,6 +73,8 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
             file.write(bytes(request))
 
         while True:
+            # FIXME: Can we have a better way to detect whether a
+            # command packet does or doesn't have a successor?
             try:
                 response = self.receive()
             except TimeoutError:
