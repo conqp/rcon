@@ -35,12 +35,18 @@ If you prefer to use Source RCON in an asynchronous environment, you can use
 `rcon()`.
 
 ```python
-from rcon.source import rcon
+from rcon.source import Rcon
 
-response = await rcon(
+response = await Rcon.rcon(
     'some_command', 'with', 'some', 'arguments',
     host='127.0.0.1', port=5000, passwd='mysecretpassword'
 )
+print(response)
+
+or
+
+connect = Rcon('127.0.0.1', 12715, 'mysecretpassword')
+response = await connect.rcon('some_command','with', 'some', 'arguments')
 print(response)
 ```
 
