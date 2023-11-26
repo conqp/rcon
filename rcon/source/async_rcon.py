@@ -51,7 +51,7 @@ async def rcon(
     encoding: str = "utf-8",
     frag_threshold: int = 4096,
     frag_detect_cmd: str = "",
-    timeout: int | None,
+    timeout: int | None = None,
 ) -> str:
     """Run a command asynchronously."""
 
