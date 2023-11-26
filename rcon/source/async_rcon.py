@@ -1,6 +1,6 @@
 """Asynchronous RCON."""
 
-from asyncio import StreamReader, StreamWriter, open_connection
+from asyncio import StreamReader, StreamWriter, open_connection, wait_for
 
 from rcon.exceptions import SessionTimeout, WrongPassword
 from rcon.source.proto import Packet, Type
@@ -51,10 +51,11 @@ async def rcon(
     encoding: str = "utf-8",
     frag_threshold: int = 4096,
     frag_detect_cmd: str = "",
+    timeout: int | None,
 ) -> str:
     """Run a command asynchronously."""
 
-    reader, writer = await open_connection(host, port)
+    reader, writer = await wait_for(open_connection(host, port), timeout=timeout)
     response = await communicate(
         reader,
         writer,
