@@ -52,6 +52,7 @@ async def rcon(
     frag_threshold: int = 4096,
     frag_detect_cmd: str = "",
     timeout: int | None = None,
+    enforce_id: bool = True,
 ) -> str:
     """Run a command asynchronously."""
 
@@ -77,7 +78,7 @@ async def rcon(
     response = await communicate(reader, writer, request)
     await close(writer)
 
-    if response.id != request.id:
+    if enforce_id and response.id != request.id:
         raise SessionTimeout()
 
     return response.payload.decode(encoding)
