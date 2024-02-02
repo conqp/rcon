@@ -64,12 +64,12 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
 
         return True
 
-    def run(self, command: str, *args: str, encoding: str = "utf-8") -> str:
+    def run(self, command: str, *args: str, encoding: str = "utf-8", enforce_id: bool = True) -> str:
         """Run a command."""
         request = Packet.make_command(command, *args, encoding=encoding)
         response = self.communicate(request)
 
-        if response.id != request.id:
-            raise SessionTimeout()
+        if enforce_id and response.id != request.id:
+            raise SessionTimeout("packet ID mismatch")
 
         return response.payload.decode(encoding)
