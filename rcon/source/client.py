@@ -64,7 +64,9 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
 
         return True
 
-    def run(self, command: str, *args: str, encoding: str = "utf-8", enforce_id: bool = True) -> str:
+    def run(
+        self, command: str, *args: str, encoding: str = "utf-8", enforce_id: bool = True
+    ) -> str:
         """Run a command."""
         request = Packet.make_command(command, *args, encoding=encoding)
         response = self.communicate(request)
