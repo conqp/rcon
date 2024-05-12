@@ -118,7 +118,7 @@ class Packet(NamedTuple):
         return size + payload
 
     @classmethod
-    async def aread(cls, reader: StreamReader) -> Packet:
+    async def aread(cls, reader: StreamReader, raise_unexpected_terminator: bool = False) -> Packet:
         """Read a packet from an asynchronous file-like object."""
         LOGGER.debug("Reading packet asynchronously.")
         size = await LittleEndianSignedInt32.aread(reader)
@@ -137,12 +137,14 @@ class Packet(NamedTuple):
         LOGGER.debug("  => terminator: %s", terminator)
 
         if terminator != TERMINATOR:
+            if raise_unexpected_terminator:
+                raise ValueError("Unexpected terminator")
             LOGGER.warning("Unexpected terminator: %s", terminator)
 
         return cls(id_, type_, payload, terminator)
 
     @classmethod
-    def read(cls, file: IO) -> Packet:
+    def read(cls, file: IO, raise_unexpected_terminator: bool = False) -> Packet:
         """Read a packet from a file-like object."""
         LOGGER.debug("Reading packet.")
         size = LittleEndianSignedInt32.read(file)
@@ -161,6 +163,8 @@ class Packet(NamedTuple):
         LOGGER.debug("  => terminator: %s", terminator)
 
         if terminator != TERMINATOR:
+            if raise_unexpected_terminator:
+                raise ValueError("Unexpected terminator")
             LOGGER.warning("Unexpected terminator: %s", terminator)
 
         return cls(id_, type_, payload, terminator)
