@@ -8,7 +8,7 @@ from logging import getLogger
 from random import randint
 from typing import IO, NamedTuple
 
-from rcon.exceptions import EmptyResponse
+from rcon.exceptions import EmptyResponse, UnexpectedTerminator
 
 
 __all__ = ["LittleEndianSignedInt32", "Type", "Packet", "random_request_id"]
@@ -118,7 +118,9 @@ class Packet(NamedTuple):
         return size + payload
 
     @classmethod
-    async def aread(cls, reader: StreamReader, raise_unexpected_terminator: bool = False) -> Packet:
+    async def aread(
+        cls, reader: StreamReader, raise_unexpected_terminator: bool = False
+    ) -> Packet:
         """Read a packet from an asynchronous file-like object."""
         LOGGER.debug("Reading packet asynchronously.")
         size = await LittleEndianSignedInt32.aread(reader)
@@ -138,7 +140,7 @@ class Packet(NamedTuple):
 
         if terminator != TERMINATOR:
             if raise_unexpected_terminator:
-                raise ValueError("Unexpected terminator")
+                raise UnexpectedTerminator(terminator)
             LOGGER.warning("Unexpected terminator: %s", terminator)
 
         return cls(id_, type_, payload, terminator)
@@ -164,7 +166,7 @@ class Packet(NamedTuple):
 
         if terminator != TERMINATOR:
             if raise_unexpected_terminator:
-                raise ValueError("Unexpected terminator")
+                raise UnexpectedTerminator(terminator)
             LOGGER.warning("Unexpected terminator: %s", terminator)
 
         return cls(id_, type_, payload, terminator)
