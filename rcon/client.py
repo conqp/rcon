@@ -39,7 +39,7 @@ class BaseClient:
         return self._socket.__exit__(typ, value, traceback)
 
     @property
-    def timeout(self) -> float | None:
+    def timeout(self) -> float:
         """Return the socket timeout."""
         return self._socket.gettimeout()
 
