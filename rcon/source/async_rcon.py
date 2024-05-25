@@ -23,12 +23,13 @@ async def communicate(
     *,
     frag_threshold: int = 4096,
     frag_detect_cmd: str = "",
+    raise_unexpected_terminator: bool = False,
 ) -> Packet:
     """Make an asynchronous request."""
 
     writer.write(bytes(packet))
     await writer.drain()
-    response = await Packet.aread(reader)
+    response = await Packet.aread(reader, raise_unexpected_terminator)
 
     if len(response.payload) < frag_threshold:
         return response
@@ -36,7 +37,7 @@ async def communicate(
     writer.write(bytes(Packet.make_command(frag_detect_cmd)))
     await writer.drain()
 
-    while (successor := await Packet.aread(reader)).id == response.id:
+    while (successor := await Packet.aread(reader, raise_unexpected_terminator)).id == response.id:
         response += successor
 
     return response
@@ -53,6 +54,7 @@ async def rcon(
     frag_detect_cmd: str = "",
     timeout: int | None = None,
     enforce_id: bool = True,
+    raise_unexpected_terminator: bool = False,
 ) -> str:
     """Run a command asynchronously."""
 
@@ -68,14 +70,14 @@ async def rcon(
     # Wait for SERVERDATA_AUTH_RESPONSE according to:
     # https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
     while response.type != Type.SERVERDATA_AUTH_RESPONSE:
-        response = await Packet.aread(reader)
+        response = await Packet.aread(reader, raise_unexpected_terminator)
 
     if response.id == -1:
         await close(writer)
         raise WrongPassword()
 
     request = Packet.make_command(command, *arguments, encoding=encoding)
-    response = await communicate(reader, writer, request)
+    response = await communicate(reader, writer, request, raise_unexpected_terminator)
     await close(writer)
 
     if enforce_id and response.id != request.id:

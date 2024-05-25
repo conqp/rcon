@@ -6,7 +6,6 @@ from rcon.client import BaseClient
 from rcon.exceptions import SessionTimeout, WrongPassword
 from rcon.source.proto import Packet, Type
 
-
 __all__ = ["Client"]
 
 
@@ -25,20 +24,22 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
         self.frag_threshold = frag_threshold
         self.frag_detect_cmd = frag_detect_cmd
 
-    def communicate(self, packet: Packet) -> Packet:
+    def communicate(
+        self, packet: Packet, raise_unexpected_terminator: bool = False
+    ) -> Packet:
         """Send and receive a packet."""
         self.send(packet)
-        return self.read()
+        return self.read(raise_unexpected_terminator)
 
     def send(self, packet: Packet) -> None:
         """Send a packet to the server."""
         with self._socket.makefile("wb") as file:
             file.write(bytes(packet))
 
-    def read(self) -> Packet:
+    def read(self, raise_unexpected_terminator: bool = False) -> Packet:
         """Read a packet from the server."""
         with self._socket.makefile("rb") as file:
-            response = Packet.read(file)
+            response = Packet.read(file, raise_unexpected_terminator)
 
             if len(response.payload) < self.frag_threshold:
                 return response
@@ -65,11 +66,16 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
         return True
 
     def run(
-        self, command: str, *args: str, encoding: str = "utf-8", enforce_id: bool = True
+        self,
+        command: str,
+        *args: str,
+        encoding: str = "utf-8",
+        enforce_id: bool = True,
+        raise_unexpected_terminator: bool = False,
     ) -> str:
         """Run a command."""
         request = Packet.make_command(command, *args, encoding=encoding)
-        response = self.communicate(request)
+        response = self.communicate(request, raise_unexpected_terminator)
 
         if enforce_id and response.id != request.id:
             raise SessionTimeout("packet ID mismatch")

@@ -27,3 +27,7 @@ class UserAbort(Exception):
 
 class WrongPassword(Exception):
     """Indicates a wrong password."""
+
+
+class UnexpectedTerminator(Exception):
+    """Indicates an unexpected terminator in the response."""
