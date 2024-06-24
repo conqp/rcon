@@ -5,7 +5,6 @@ from asyncio import StreamReader, StreamWriter, open_connection, wait_for
 from rcon.exceptions import SessionTimeout, WrongPassword
 from rcon.source.proto import Packet, Type
 
-
 __all__ = ["rcon"]
 
 
@@ -77,7 +76,7 @@ async def rcon(
         raise WrongPassword()
 
     request = Packet.make_command(command, *arguments, encoding=encoding)
-    response = await communicate(reader, writer, request, raise_unexpected_terminator)
+    response = await communicate(reader, writer, request, raise_unexpected_terminator=raise_unexpected_terminator)
     await close(writer)
 
     if enforce_id and response.id != request.id:
