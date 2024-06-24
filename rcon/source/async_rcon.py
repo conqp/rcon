@@ -5,6 +5,7 @@ from asyncio import StreamReader, StreamWriter, open_connection, wait_for
 from rcon.exceptions import SessionTimeout, WrongPassword
 from rcon.source.proto import Packet, Type
 
+
 __all__ = ["rcon"]
 
 
