@@ -12,9 +12,7 @@ __all__ = ["Client"]
 class Client(BaseClient, socket_type=SOCK_STREAM):
     """An RCON client."""
 
-    def __init__(
-        self, *args, frag_threshold: int = 4096, frag_detect_cmd: str = "", **kwargs
-    ):
+    def __init__(self, *args, frag_threshold: int = 4096, **kwargs):
         """Set an optional fragmentation threshold and
         command in order to detect fragmented packets.
 
@@ -22,7 +20,6 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
         """
         super().__init__(*args, **kwargs)
         self.frag_threshold = frag_threshold
-        self.frag_detect_cmd = frag_detect_cmd
 
     def communicate(
         self, packet: Packet, raise_unexpected_terminator: bool = False
@@ -44,7 +41,7 @@ class Client(BaseClient, socket_type=SOCK_STREAM):
             if len(response.payload) < self.frag_threshold:
                 return response
 
-            self.send(Packet.make_command(self.frag_detect_cmd))
+            self.send(Packet.make_empty_response())
 
             while (successor := Packet.read(file)).id == response.id:
                 response += successor

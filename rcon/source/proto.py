@@ -181,6 +181,11 @@ class Packet(NamedTuple):
         )
 
     @classmethod
+    def make_empty_response(cls) -> Packet:
+        """Create an empty response packet."""
+        return cls(random_request_id(), Type.SERVERDATA_RESPONSE_VALUE, b"")
+
+    @classmethod
     def make_login(cls, passwd: str, *, encoding: str = "utf-8") -> Packet:
         """Create a login packet."""
         return cls(random_request_id(), Type.SERVERDATA_AUTH, passwd.encode(encoding))
