@@ -21,4 +21,4 @@ class TestLocalMinecraftServer(TestCase):
         with self.client as client:
             response = client.run("list")
 
-        self.assertEqual(response, "There are 0 of a max of 20 players " "online: ")
+        self.assertEqual(response, "There are 0 of a max of 20 players online: ")
