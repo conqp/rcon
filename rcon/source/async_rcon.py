@@ -37,7 +37,9 @@ async def communicate(
     writer.write(bytes(Packet.make_command(frag_detect_cmd)))
     await writer.drain()
 
-    while (successor := await Packet.aread(reader, raise_unexpected_terminator)).id == response.id:
+    while (
+        successor := await Packet.aread(reader, raise_unexpected_terminator)
+    ).id == response.id:
         response += successor
 
     return response
@@ -77,7 +79,9 @@ async def rcon(
         raise WrongPassword()
 
     request = Packet.make_command(command, *arguments, encoding=encoding)
-    response = await communicate(reader, writer, request, raise_unexpected_terminator=raise_unexpected_terminator)
+    response = await communicate(
+        reader, writer, request, raise_unexpected_terminator=raise_unexpected_terminator
+    )
     await close(writer)
 
     if enforce_id and response.id != request.id:
