@@ -12,6 +12,7 @@ setup(
     python_requires=">=3.10",
     packages=["rcon", "rcon.battleye", "rcon.source"],
     extras_require={"GUI": ["pygobject", "pygtk"]},
+    tests_require=["pytest"],
     entry_points={
         "console_scripts": [
             "rcongui = rcon.gui:main",
