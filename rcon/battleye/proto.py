@@ -169,7 +169,6 @@ class ServerMessage(NamedTuple):
 class ServerMessageAck(NamedTuple):
     """An acknowledgement of a message from the server."""
 
-    header: Header
     seq: int
 
     def __bytes__(self):
