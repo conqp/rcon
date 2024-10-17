@@ -1,6 +1,5 @@
 """BattlEye RCon client."""
 
-from collections import defaultdict
 from logging import getLogger
 from socket import SOCK_DGRAM
 from typing import Callable
@@ -63,49 +62,43 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
             ).type
         ].from_bytes(header, data[HEADER_SIZE:])
 
-    def communicate(self, request: Request) -> Response | str:
-        """Send a request and receive a response."""
-        acknowledged = defaultdict(set)
+    def receive_transaction(self):
         command_responses = []
-        first = False
-
-        with self._socket.makefile("wb") as file:
-            file.write(bytes(request))
+        login_response = None
+        seq = 0
 
         while True:
-            # FIXME: Can we have a better way to detect whether a
-            # command packet does or doesn't have a successor?
-            try:
-                response = self.receive()
-            except TimeoutError:
-                if first:
-                    raise
-                else:
-                    break
+            response = self.receive()
 
-            first = False
-
-            if isinstance(response, LoginResponse):
-                return response
-
-            seq = response.seq
+            if isinstance(response, LoginResponse) and login_response is None:
+                login_response = response
+                continue
 
             if isinstance(response, CommandResponse):
-                # Collect fragmented command responses with the same seq
                 command_responses.append(response)
-            else:
-                if seq in acknowledged[response_type := type(response)]:
-                    break
-                else:
-                    acknowledged[response_type].add(seq)
+                seq = response.seq
+                continue
 
             if isinstance(response, ServerMessage):
                 self.handle_server_message(response)
+
+                if login_response is not None:
+                    return login_response
+
+                if len(command_responses) >= seq:
+                    break
 
         return "".join(
             command_response.message
             for command_response in sorted(command_responses, key=lambda cr: cr.seq)
         )
+
+    def communicate(self, request: Request) -> Response | str:
+        """Send a request and receive a response."""
+        with self._socket.makefile("wb") as file:
+            file.write(bytes(request))
+
+        return self.receive_transaction()
 
     def login(self, passwd: str) -> bool:
         """Log-in the user."""
