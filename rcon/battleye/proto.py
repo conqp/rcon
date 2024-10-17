@@ -169,10 +169,16 @@ class ServerMessage(NamedTuple):
 class ServerMessageAck(NamedTuple):
     """An acknowledgement of a message from the server."""
 
+    header: Header
     seq: int
 
     def __bytes__(self):
-        return (0x02).to_bytes(1, "little") + self.payload
+        return bytes(self.header) + self.payload
+
+    @property
+    def header(self) -> Header:
+        """Return the appropriate header."""
+        return Header.create(0x02, self.payload)
 
     @property
     def payload(self) -> bytes:
