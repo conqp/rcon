@@ -77,6 +77,8 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
             if isinstance(response, CommandResponse):
                 command_responses.append(response)
                 seq = response.seq
+                if len(command_responses) >= seq:
+                    break
                 continue
 
             if isinstance(response, ServerMessage):
@@ -85,8 +87,6 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
                 if login_response is not None:
                     return login_response
 
-                if len(command_responses) >= seq:
-                    break
 
         return "".join(
             command_response.message
