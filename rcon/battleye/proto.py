@@ -172,7 +172,8 @@ class ServerMessageAck(NamedTuple):
     seq: int
 
     def __bytes__(self):
-        return bytes(self.header) + self.payload
+        # Correct: prepend BE header (0x42, 0x45) to the ack packet
+        return b"BE" + bytes(self.header) + self.payload
 
     @property
     def header(self) -> Header:
