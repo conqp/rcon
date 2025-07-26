@@ -33,6 +33,7 @@ def log_message(server_message: ServerMessage) -> None:
 
 class Client(BaseClient, socket_type=SOCK_DGRAM):
     """BattlEye RCon client."""
+    seq_num: int = 0x00
 
     def __init__(
         self,
@@ -65,7 +66,6 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
     def receive_transaction(self):
         command_responses = []
         login_response = None
-        seq = 0
 
         while True:
             response = self.receive()
@@ -76,8 +76,7 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
 
             if isinstance(response, CommandResponse):
                 command_responses.append(response)
-                seq = response.seq
-                if len(command_responses) >= seq:
+                if len(command_responses) >= response.seq:
                     break
                 continue
 
@@ -86,8 +85,8 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
 
                 if login_response is not None:
                     return login_response
-
-
+                break
+        
         return "".join(
             command_response.message
             for command_response in sorted(command_responses, key=lambda cr: cr.seq)
@@ -98,15 +97,17 @@ class Client(BaseClient, socket_type=SOCK_DGRAM):
         with self._socket.makefile("wb") as file:
             file.write(bytes(request))
 
+        if isinstance(request, CommandRequest):
+            self.seq_num = self.seq_num + 1 & 0xff
+
         return self.receive_transaction()
 
     def login(self, passwd: str) -> bool:
         """Log-in the user."""
         if not self.communicate(LoginRequest(passwd)).success:
             raise WrongPassword()
-
         return True
 
     def run(self, command: str, *args: str) -> str:
         """Execute a command and return the text message."""
-        return self.communicate(CommandRequest.from_command(command, *args))
+        return self.communicate(CommandRequest.from_command(self.seq_num, command, *args))
