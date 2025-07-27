@@ -120,14 +120,14 @@ class CommandRequest(NamedTuple):
         return Header.create(0x01, self.payload)
 
     @classmethod
-    def from_string(cls, command: str) -> CommandRequest:
+    def from_string(cls, seq: int, command: str) -> CommandRequest:
         """Create a command packet from the given string."""
-        return cls(0x00, command)
+        return cls(seq, command)
 
     @classmethod
-    def from_command(cls, command: str, *args: str) -> CommandRequest:
+    def from_command(cls, seq: int, command: str, *args: str) -> CommandRequest:
         """Create a command packet from the command and arguments."""
-        return cls.from_string(" ".join([command, *args]))
+        return cls.from_string(seq, " ".join([command, *args]))
 
 
 class CommandResponse(NamedTuple):
