@@ -1,5 +1,12 @@
 [![Documentation Status](https://readthedocs.org/projects/rcon/badge/?version=latest)](https://rcon.readthedocs.io/en/latest/)
 
+# Archive note
+Since I haven't been using Python in recent years too frequently, I also have not
+been working on the issues and necessary fixes to this library.  
+Therefore I decided to archive this project.  
+Feel free to fork and continue the project.
+If you want to also take over the corresponding project on PyPI, please drop me an email. 
+
 # rcon
 An RCON client implementation.
 * [Source RCON protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol)
